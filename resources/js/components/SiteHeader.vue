@@ -2,6 +2,12 @@
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { useDark, useToggle } from '@vueuse/core'
+import { IconSun, IconMoon } from '@tabler/icons-vue'
+
+// Logika dark mode: otomatis mendeteksi sistem & menambah/menghapus class 'dark'
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
 </script>
 
 <template>
@@ -26,6 +32,11 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
             GitHub
           </a>
         </Button>
+        <Button variant="ghost" size="icon" @click="toggleDark()">
+        <IconSun v-if="isDark" class="size-5 text-fuchsia-400" />
+        <IconMoon v-else class="size-5 text-fuchsia-600" />
+        <span class="sr-only">Toggle Theme</span>
+      </Button>
       </div>
     </div>
   </header>
