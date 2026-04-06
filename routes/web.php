@@ -2,12 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\DashboardController;
 
-Route::get('/', function () {
-    return Inertia::render('Event/Show', [
-        'event' => [
-            'id' => 1,
-            'title' => 'judul',
-        ],
-    ]);
-});
+
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
