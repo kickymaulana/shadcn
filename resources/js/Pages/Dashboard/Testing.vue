@@ -1,13 +1,11 @@
 <script lang="ts">
 export const iframeHeight = "800px"
-export const description = "A dashboard with sidebar, data table, and analytics cards."
+export const description = "Halaman Testing"
+import { Link } from '@inertiajs/vue3'
 </script>
 
 <script setup lang="ts">
 import AppSidebar from "@/components/AppSidebar.vue"
-import ChartAreaInteractive from "@/components/ChartAreaInteractive.vue"
-import DataTable from "@/components/DataTable.vue"
-import SectionCards from "@/components/SectionCards.vue"
 import SiteHeader from "@/components/SiteHeader.vue"
 import {
   SidebarInset,
@@ -29,6 +27,7 @@ import {
       <div class="flex flex-1 flex-col">
         <div class="@container/main flex flex-1 flex-col gap-2">
           <div class="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+              <Link :href="route('dashboard')">Kembali ke Home</Link>
           </div>
         </div>
       </div>

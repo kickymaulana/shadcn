@@ -158,7 +158,7 @@ const data = {
             as-child
             class="data-[slot=sidebar-menu-button]:!p-1.5"
           >
-            <Link href="/testing" as="button" class="w-full text-left">
+            <Link :href="route('testing')" as="button" class="w-full text-left">
                 <IconInnerShadowTop class="!size-5" />
                 <span>Acme Inc</span>
             </Link>
