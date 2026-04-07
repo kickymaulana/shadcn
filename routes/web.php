@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Master\UserController;
 
 
 
@@ -16,3 +17,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
+
+Route::middleware('auth')->group(function () {
+    // ... route lainnya
+    Route::get('master/users', [UserController::class, 'index'])->name('users.index');
+});

@@ -43,4 +43,13 @@ class LoginController extends Controller
 
         return redirect('/');
     }
+
+    public function list_user(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
 }

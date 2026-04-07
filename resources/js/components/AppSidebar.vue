@@ -17,6 +17,7 @@ import {
 } from "@tabler/icons-vue"
 
 import NavDocuments from "@/components/NavDocuments.vue"
+import Master from "@/components/Master.vue"
 import NavMain from "@/components/NavMain.vue"
 import NavSecondary from "@/components/NavSecondary.vue"
 import NavUser from "@/components/NavUser.vue"
@@ -146,6 +147,14 @@ const data = {
       icon: IconFileDescription,
     },
   ],
+
+  master: [
+    {
+      name: "Pengguna",
+      url: route('users.index'),
+      icon: IconUsers,
+    },
+  ],
 }
 </script>
 
@@ -169,6 +178,7 @@ const data = {
     <SidebarContent>
       <NavMain :items="data.navMain" />
       <NavDocuments :items="data.documents" />
+      <Master :items="data.master" />
       <NavSecondary :items="data.navSecondary" class="mt-auto" />
     </SidebarContent>
     <SidebarFooter>
