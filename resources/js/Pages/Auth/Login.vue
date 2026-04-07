@@ -15,7 +15,7 @@ const toggleDark = useToggle(isDark)
 <template>
   <div
     class="relative flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-cover bg-center bg-no-repeat transition-all duration-500"
-    style="background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1470&auto=format&fit=cro');"
+    style="background-image: url('https://images.unsplash.com/photo-1582524886475-7730d3092a88?q=80&w=2029&auto=format&fit=crop');"
   >
 
     <div class="absolute inset-0 bg-white/30 dark:bg-black/70 backdrop-blur-[2px] transition-colors duration-500"></div>
