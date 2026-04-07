@@ -39,7 +39,7 @@ const submit = () => {
 
 <template>
   <div :class="cn('flex flex-col gap-6', props.class)">
-    <Card>
+    <Card class="bg-white/30 dark:bg-black/20 backdrop-blur-xl border-white/20 dark:border-white/5 shadow-2xl">
       <CardHeader>
         <CardTitle>Sisamcus</CardTitle>
         <CardDescription>
