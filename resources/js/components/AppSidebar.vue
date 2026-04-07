@@ -29,6 +29,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Link } from '@inertiajs/vue3'
 
 const data = {
   user: {
@@ -157,10 +158,10 @@ const data = {
             as-child
             class="data-[slot=sidebar-menu-button]:!p-1.5"
           >
-            <a href="#">
-              <IconInnerShadowTop class="!size-5" />
-              <span class="text-base font-semibold">Acme Inc.</span>
-            </a>
+            <Link href="/testing" as="button" class="w-full text-left">
+                <IconInnerShadowTop class="!size-5" />
+                <span>Acme Inc</span>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
