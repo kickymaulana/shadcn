@@ -24,7 +24,7 @@ const props = defineProps<{
 
 // 2. Inisialisasi Form Inertia
 const form = useForm({
-  email: '',
+  username: '',
   password: '',
   remember: false,
 })
@@ -43,7 +43,7 @@ const submit = () => {
       <CardHeader>
         <CardTitle>Sisamcus</CardTitle>
         <CardDescription>
-          Masukan email untuk masuk ke aplikasi
+          Masukan username untuk masuk ke aplikasi
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -51,16 +51,16 @@ const submit = () => {
           <FieldGroup>
             <Field>
               <FieldLabel for="email">
-                Email
+                Username
               </FieldLabel>
               <Input
-                id="email"
-                v-model="form.email"
-                type="email"
+                id="username"
+                v-model="form.username"
+                type="text"
                 placeholder="m@example.com"
                 required
               />
-              <p v-if="form.errors.email" class="text-destructive text-xs mt-1">{{ form.errors.email }}</p>
+              <p v-if="form.errors.username" class="text-destructive text-xs mt-1">{{ form.errors.username }}</p>
             </Field>
             <Field>
               <div class="flex items-center">
