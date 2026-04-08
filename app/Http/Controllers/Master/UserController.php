@@ -12,22 +12,24 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
 
-
-    public function index()
+    public function index(Request $request)
     {
-        // Gunakan paginate() alih-alih get()
-        $users = User::select('id', 'name', 'username', 'email', 'created_at')
+        $users = User::query()
+            ->select('id', 'name', 'username', 'email', 'created_at')
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
+            })
             ->latest()
-            ->paginate(10) // Tampilkan 10 user per halaman
-            ->withQueryString(); // Agar filter/pencarian tetap ada saat pindah halaman
+            ->paginate(10)
+            ->withQueryString(); // Sangat penting agar filter pencarian tidak hilang saat klik page 2
 
         return Inertia::render('Master/Users/Index', [
-            'users' => $users
+            'users' => $users,
+            'filters' => $request->only(['search']) // Kirim balik input pencarian ke frontend
         ]);
     }
-
-
-
 
     public function create()
     {
