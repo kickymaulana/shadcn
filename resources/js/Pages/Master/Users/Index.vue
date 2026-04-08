@@ -12,6 +12,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { IconUserPlus, IconPencil, IconTrash } from "@tabler/icons-vue"
+import { usePage } from '@inertiajs/vue3'
+import { computed, watch } from 'vue'
 
 // 1. Definisikan Persistent Layout
 defineOptions({ layout: AuthenticatedLayout })
@@ -34,6 +36,7 @@ const formatDate = (dateString: string) => {
     year: 'numeric'
   })
 }
+
 </script>
 
 <template>
@@ -45,9 +48,11 @@ const formatDate = (dateString: string) => {
         <h2 class="text-3xl font-bold tracking-tight">Pengguna</h2>
         <p class="text-muted-foreground text-sm">Kelola akses pengguna sistem Sisamcus.</p>
       </div>
-      <Button>
-        <IconUserPlus class="mr-2 size-4" />
-        Tambah User
+      <Button as-child>
+        <Link :href="route('users.create')">
+            <IconUserPlus class="mr-2 size-4" />
+            Tambah User
+        </Link>
       </Button>
     </div>
 

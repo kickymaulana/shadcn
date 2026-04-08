@@ -21,4 +21,6 @@ Route::post('logout', [LoginController::class, 'destroy'])->name('logout')->midd
 Route::middleware('auth')->group(function () {
     // ... route lainnya
     Route::get('master/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('master/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('master/users/create', [UserController::class, 'store'])->name('users.store');
 });
