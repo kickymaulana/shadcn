@@ -14,19 +14,52 @@ import { Button } from "@/components/ui/button"
 import { IconUserPlus, IconPencil, IconTrash } from "@tabler/icons-vue"
 import { usePage } from '@inertiajs/vue3'
 import { computed, watch } from 'vue'
+import {
+  Pagination,
+  PaginationEllipsis,
+  PaginationFirst,
+  PaginationLast,
+  PaginationList,
+  PaginationListItem,
+  PaginationNext,
+  PaginationPrev,
+} from '@/components/ui/pagination'
 
 // 1. Definisikan Persistent Layout
 defineOptions({ layout: AuthenticatedLayout })
 
-// Ambil data users dari props
+// Definisi props diperbarui sesuai struktur LengthAwarePaginator Laravel
 defineProps<{
-  users: Array<{
-    id: number
-    name: string
-    username: string
-    email: string
-    created_at: string
-  }>
+  users: {
+    data: Array<{
+      id: number
+      name: string
+      username: string
+      email: string
+      created_at: string
+    }>
+    links: Array<{
+      url: string | null
+      label: string
+      active: boolean
+    }>
+    meta: {
+      current_page: number
+      from: number
+      last_page: number
+      path: string
+      per_page: number
+      to: number
+      total: number
+    }
+    // Jika menggunakan simplePaginate, strukturnya lebih sederhana,
+    // tapi paginate() standar biasanya mengirimkan field di bawah ini di root:
+    current_page: number
+    last_page: number
+    total: number
+    prev_page_url: string | null
+    next_page_url: string | null
+  }
 }>()
 
 const formatDate = (dateString: string) => {
@@ -72,7 +105,7 @@ const formatDate = (dateString: string) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="user in users" :key="user.id">
+            <TableRow v-for="user in users.data" :key="user.id">
               <TableCell class="font-medium">{{ user.name }}</TableCell>
               <TableCell>{{ user.username }}</TableCell>
               <TableCell>{{ user.email }}</TableCell>
@@ -88,6 +121,24 @@ const formatDate = (dateString: string) => {
             </TableRow>
           </TableBody>
         </Table>
+
+
+        <div class="flex items-center justify-center space-x-1 py-4">
+            <template v-for="(link, k) in users.links" :key="k">
+                <div v-if="link.url === null" class="px-4 py-2 text-sm text-gray-500" v-html="link.label" />
+
+                <Link
+                v-else
+                :href="link.url"
+                class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring px-4 py-2"
+                :class="link.active
+                    ? 'bg-primary text-primary-foreground shadow hover:bg-primary/90'
+                    : 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'"
+                v-html="link.label"
+                />
+            </template>
+            </div>
+
       </CardContent>
     </Card>
 

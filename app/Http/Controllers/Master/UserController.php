@@ -11,16 +11,23 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+
     public function index()
     {
+        // Gunakan paginate() alih-alih get()
         $users = User::select('id', 'name', 'username', 'email', 'created_at')
             ->latest()
-            ->get();
+            ->paginate(10) // Tampilkan 10 user per halaman
+            ->withQueryString(); // Agar filter/pencarian tetap ada saat pindah halaman
 
         return Inertia::render('Master/Users/Index', [
             'users' => $users
         ]);
     }
+
+
+
 
     public function create()
     {
