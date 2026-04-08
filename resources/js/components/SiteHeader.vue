@@ -18,9 +18,6 @@ const toggleDark = useToggle(isDark)
         orientation="vertical"
         class="mx-2 data-[orientation=vertical]:h-4"
       />
-      <h1 class="text-base font-medium">
-        Documents
-      </h1>
       <div class="ml-auto flex items-center gap-2">
         <Button variant="ghost" as-child size="sm" class="hidden sm:flex">
           <a

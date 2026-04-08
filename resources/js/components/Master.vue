@@ -24,7 +24,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { Link } from '@inertiajs/vue3'
+import { Link, usePage } from '@inertiajs/vue3'
 
 interface Document {
   name: string
@@ -37,6 +37,7 @@ defineProps<{
 }>()
 
 const { isMobile } = useSidebar()
+const page = usePage()
 </script>
 
 <template>
@@ -44,7 +45,9 @@ const { isMobile } = useSidebar()
     <SidebarGroupLabel>Master</SidebarGroupLabel>
     <SidebarMenu>
       <SidebarMenuItem v-for="item in items" :key="item.name">
-        <SidebarMenuButton as-child>
+        <SidebarMenuButton as-child
+                           :is-active="page.component.startsWith('Master/Users')"
+        >
           <Link :href="item.url">
             <component :is="item.icon" />
             <span>{{ item.name }}</span>
