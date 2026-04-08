@@ -16,7 +16,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
     <SidebarInset>
       <SiteHeader />
 
-      <main class="flex flex-1 flex-col pt-6 @container/main">
+      <main class="flex flex-1 flex-col @container/main">
         <slot />
       </main>
 

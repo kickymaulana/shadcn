@@ -39,7 +39,7 @@ const formatDate = (dateString: string) => {
 <template>
   <Head title="Manajemen Pengguna" />
 
-  <div class="flex flex-col gap-6 p-4 md:p-8">
+  <div class="flex flex-col gap-6 p-4 md:p-8 pt-1 md:pt-1">
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-3xl font-bold tracking-tight">Pengguna</h2>
