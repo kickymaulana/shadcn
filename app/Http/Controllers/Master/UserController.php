@@ -54,4 +54,23 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User berhasil dibuat.');
     }
+
+
+    public function show(User $user)
+    {
+        // Kita bisa meload relasi di sini jika nanti user punya roles atau logs
+        // $user->load('roles');
+
+        return Inertia::render('Master/Users/Show', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'email' => $user->email,
+                'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
+                // Tambahkan field lain jika perlu, misal: 'email_verified_at'
+            ]
+        ]);
+    }
 }
