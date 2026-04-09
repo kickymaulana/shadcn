@@ -18,7 +18,8 @@ import {
   IconTrash,
   IconSearch,
   IconX,
-  IconPlus
+  IconPlus,
+  IconEye
 } from "@tabler/icons-vue"
 import { ref, watch } from 'vue'
 
@@ -160,13 +161,11 @@ const cleanLabel = (label: string) => {
                 <TableCell>{{ formatDate(role.created_at) }}</TableCell>
                 <TableCell class="text-right space-x-1">
                   <Button variant="ghost" size="icon" class="size-8" as-child>
-                    <Link :href="route('roles.edit', role.id)">
-                      <IconPencil class="size-4 text-blue-600" />
+                    <Link>
+                        <IconEye class="size-4 text-destructive" />
                     </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" class="size-8">
-                    <IconTrash class="size-4 text-destructive" />
-                  </Button>
+
                 </TableCell>
               </TableRow>
             </TableBody>
