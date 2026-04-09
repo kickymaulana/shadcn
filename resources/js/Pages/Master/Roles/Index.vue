@@ -161,7 +161,7 @@ const cleanLabel = (label: string) => {
                 <TableCell>{{ formatDate(role.created_at) }}</TableCell>
                 <TableCell class="text-right space-x-1">
                   <Button variant="ghost" size="icon" class="size-8" as-child>
-                    <Link>
+                    <Link :href="route('roles.edit', role.id)">
                         <IconEye class="size-4 text-destructive" />
                     </Link>
                   </Button>

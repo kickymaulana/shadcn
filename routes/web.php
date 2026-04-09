@@ -31,5 +31,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
 
     Route::get('master/roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('master/roles/create', [RoleController::class, 'create'])->name('roles.create');
-    Route::get('master/roles/{role}/edit', [UserController::class, 'edit'])->name('roles.edit');
+    Route::get('master/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('master/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+    Route::delete('master/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
 });

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
@@ -46,5 +47,44 @@ class RoleController extends Controller
         ]);
 
         return redirect()->route('roles.index')->with('success', 'Jabatan baru berhasil ditambahkan.');
+    }
+
+
+    public function edit(Role $role)
+    {
+        return Inertia::render('Master/Roles/Edit', [
+            'role' => [
+                'id' => $role->id,
+                'name' => $role->name,
+                'guard_name' => $role->guard_name,
+            ],
+            // Kita siapkan data permissions untuk masa depan
+            'permissions' => Permission::all()
+        ]);
+    }
+
+    public function update(Request $request, Role $role)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+        ]);
+
+        $role->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('roles.index')->with('success', 'Jabatan berhasil diperbarui.');
+    }
+
+    public function destroy(Role $role)
+    {
+        // Proteksi: Jangan hapus role admin utama
+        if ($role->name === 'admin') {
+            return back()->with('error', 'Role Administrator tidak dapat dihapus.');
+        }
+
+        $role->delete();
+
+        return redirect()->route('roles.index')->with('success', 'Jabatan berhasil dihapus.');
     }
 }
