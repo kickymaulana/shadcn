@@ -154,11 +154,13 @@ const data = {
       name: "Pengguna",
       url: route('users.index'),
       icon: IconUsers,
+      root: 'Master/Users'
     },
     {
       name: "Jabatan",
-      url: route('users.index'),
+      url: route('roles.index'),
       icon: IconHierarchy,
+      root: 'Master/Roles'
     },
   ],
 }

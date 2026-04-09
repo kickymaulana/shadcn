@@ -45,8 +45,9 @@ const page = usePage()
     <SidebarGroupLabel>Master</SidebarGroupLabel>
     <SidebarMenu>
       <SidebarMenuItem v-for="item in items" :key="item.name">
-        <SidebarMenuButton as-child
-                           :is-active="page.component.startsWith('Master/Users')"
+        <SidebarMenuButton
+          as-child
+          :is-active="page.component.startsWith(item.root)"
         >
           <Link :href="item.url">
             <component :is="item.icon" />
