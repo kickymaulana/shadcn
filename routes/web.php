@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Master\RoleController;
 
 
 
@@ -27,4 +28,8 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('master/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('master/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('master/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    Route::get('master/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('master/roles/create', [RoleController::class, 'create'])->name('roles.create');
+    Route::get('master/roles/{role}/edit', [UserController::class, 'edit'])->name('roles.edit');
 });

@@ -14,6 +14,7 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
+  IconHierarchy
 } from "@tabler/icons-vue"
 
 import NavDocuments from "@/components/NavDocuments.vue"
@@ -153,6 +154,11 @@ const data = {
       name: "Pengguna",
       url: route('users.index'),
       icon: IconUsers,
+    },
+    {
+      name: "Jabatan",
+      url: route('users.index'),
+      icon: IconHierarchy,
     },
   ],
 }
