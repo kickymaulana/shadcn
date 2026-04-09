@@ -13,14 +13,20 @@ import {
   IconFingerprint,
   IconClock
 } from "@tabler/icons-vue"
-import { router } from "@inertiajs/vue3"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { IconTrash } from "@tabler/icons-vue"
+import { router } from "@inertiajs/vue3"
 
-const deleteUser = () => {
-  if (confirm('Apakah Anda yakin ingin menghapus pengguna ini? Data yang dihapus tidak bisa dikembalikan.')) {
-    router.delete(route('users.destroy', props.user.id))
-  }
-}
 
 // 1. Definisikan Persistent Layout
 defineOptions({ layout: AuthenticatedLayout })
@@ -36,6 +42,15 @@ const props = defineProps<{
     updated_at: string
   }
 }>()
+
+const deleteUser = () => {
+  router.delete(route('users.destroy', props.user.id), {
+    preserveScroll: true,
+    onSuccess: () => {
+      // Notifikasi sukses biasanya ditangani oleh flash message Laravel
+    }
+  })
+}
 
 // 3. Helper Formatter
 const formatDate = (dateString: string) => {
@@ -79,10 +94,33 @@ const formatDate = (dateString: string) => {
                   Edit Profil
                 </Link>
               </Button>
-              <Button variant="destructive" @click="deleteUser">
-                <IconTrash class="mr-2 size-4" />
-                Hapus Pengguna
+
+
+            <AlertDialog>
+              <AlertDialogTrigger as-child>
+                <Button variant="destructive" class="w-full">
+                  <IconTrash class="mr-2 size-4" />
+                  Hapus User
                 </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Apakah anda benar-benar yakin?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tindakan ini tidak dapat dibatalkan. Ini akan menghapus akun
+                    <strong>{{ user.name }}</strong> secara permanen dari sistem.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                  <AlertDialogAction @click="deleteUser" class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Ya, Hapus User
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+
             </div>
           </div>
         </CardContent>
