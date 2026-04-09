@@ -49,31 +49,34 @@ class RoleController extends Controller
         return redirect()->route('roles.index')->with('success', 'Jabatan baru berhasil ditambahkan.');
     }
 
-
     public function edit(Role $role)
     {
+        // 1. Load relasi permissions
+        $role->load('permissions');
+
         return Inertia::render('Master/Roles/Edit', [
-            'role' => [
-                'id' => $role->id,
-                'name' => $role->name,
-                'guard_name' => $role->guard_name,
-            ],
-            // Kita siapkan data permissions untuk masa depan
-            'permissions' => Permission::all()
+            // 2. Kirim $role secara utuh agar relasi 'permissions' terbawa ke props
+            'role' => $role,
+            'all_permissions' => Permission::all(),
         ]);
     }
+
+
 
     public function update(Request $request, Role $role)
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            'permissions' => 'array',
         ]);
 
-        $role->update([
-            'name' => $request->name,
-        ]);
+        $role->update(['name' => $request->name]);
 
-        return redirect()->route('roles.index')->with('success', 'Jabatan berhasil diperbarui.');
+        // Spatie syncPermissions bisa menerima array ID [1, 2, 3]
+        // atau array nama ['user-list', 'user-create']
+        $role->syncPermissions($request->permissions);
+
+        return redirect()->route('roles.index')->with('success', 'Perubahan disimpan.');
     }
 
     public function destroy(Role $role)
