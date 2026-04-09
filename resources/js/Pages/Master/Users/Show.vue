@@ -13,6 +13,14 @@ import {
   IconFingerprint,
   IconClock
 } from "@tabler/icons-vue"
+import { router } from "@inertiajs/vue3"
+import { IconTrash } from "@tabler/icons-vue"
+
+const deleteUser = () => {
+  if (confirm('Apakah Anda yakin ingin menghapus pengguna ini? Data yang dihapus tidak bisa dikembalikan.')) {
+    router.delete(route('users.destroy', props.user.id))
+  }
+}
 
 // 1. Definisikan Persistent Layout
 defineOptions({ layout: AuthenticatedLayout })
@@ -71,6 +79,10 @@ const formatDate = (dateString: string) => {
                   Edit Profil
                 </Link>
               </Button>
+              <Button variant="destructive" @click="deleteUser">
+                <IconTrash class="mr-2 size-4" />
+                Hapus Pengguna
+                </Button>
             </div>
           </div>
         </CardContent>

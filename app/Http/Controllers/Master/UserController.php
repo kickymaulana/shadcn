@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -72,5 +73,55 @@ class UserController extends Controller
                 // Tambahkan field lain jika perlu, misal: 'email_verified_at'
             ]
         ]);
+    }
+
+    public function edit(User $user)
+    {
+        return Inertia::render('Master/Users/Edit', [
+            'user' => $user
+        ]);
+    }
+
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            // Validasi unique perlu mengecualikan ID user saat ini agar tidak error saat simpan data yang sama
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            // Password bersifat nullable (boleh kosong)
+            'password' => ['nullable', 'confirmed', Password::defaults()],
+        ]);
+
+        // Update data dasar
+        $user->name = $request->name;
+        $user->username = $request->username;
+        $user->email = $request->email;
+
+        // Cek jika password diisi, baru kita update
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()
+            ->route('users.show', $user->id)
+            ->with('success', 'Data user berhasil diperbarui.');
+    }
+
+    public function destroy(User $user)
+    {
+        // Pastikan user tidak menghapus dirinya sendiri (Opsional tapi penting!)
+        if (auth()->id() === $user->id) {
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        $user->delete();
+
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'User berhasil dihapus selamanya.');
     }
 }
