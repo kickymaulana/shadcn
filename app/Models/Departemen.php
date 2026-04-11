@@ -15,4 +15,9 @@ class Departemen extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function subDepartemens(): HasMany
+    {
+        return $this->hasMany(SubDepartemen::class, 'departemen_id');
+    }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\DepartemenController;
+use App\Http\Controllers\Master\SubDepartemenController;
 
 
 
@@ -44,4 +45,12 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('master/departemens/{departemen}/edit', [DepartemenController::class, 'edit'])->name('departemens.edit');
     Route::put('master/departemens/{departemen}', [DepartemenController::class, 'update'])->name('departemens.update');
     Route::delete('master/departemens/{departemen}', [DepartemenController::class, 'destroy'])->name('departemens.destroy');
+
+    Route::get('master/sub-departemens', [SubDepartemenController::class, 'index'])->name('sub.departemens.index');
+    Route::get('master/sub-departemens/create', [SubDepartemenController::class, 'create'])->name('sub.departemens.create');
+    Route::post('master/sub-departemens/create', [SubDepartemenController::class, 'store'])->name('sub.departemens.store');
+    Route::get('master/sub-departemens/{subDepartemen}', [SubDepartemenController::class, 'show'])->name('sub.departemens.show');
+    Route::get('master/sub-departemens/{subDepartemen}/edit', [SubDepartemenController::class, 'edit'])->name('sub.departemens.edit');
+    Route::put('master/sub-departemens/{subDepartemen}', [SubDepartemenController::class, 'update'])->name('sub.departemens.update');
+    Route::delete('master/sub-departemens/{subDepartemen}', [SubDepartemenController::class, 'destroy'])->name('sub.departemens.destroy');
 });
