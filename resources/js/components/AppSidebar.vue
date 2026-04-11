@@ -46,6 +46,12 @@ const data = {
             icon: IconPackage,
             root: "Sample",
         },
+        {
+            title: "Formulir Permintaan",
+            url: route("formulirs.index"),
+            icon: IconFileDescription,
+            root: "Formulir",
+        },
     ],
     navClouds: [
         {

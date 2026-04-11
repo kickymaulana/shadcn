@@ -10,6 +10,7 @@ use App\Http\Controllers\Master\DepartemenController;
 use App\Http\Controllers\Master\SubDepartemenController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SampleController;
+use App\Http\Controllers\FormulirController;
 
 
 
@@ -67,4 +68,6 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('samples/{sample}/edit', [SampleController::class, 'edit'])->name('samples.edit');
     Route::put('samples/{sample}', [SampleController::class, 'update'])->name('samples.update');
     Route::delete('samples/{sample}', [SampleController::class, 'destroy'])->name('samples.destroy');
+
+    Route::get('formulirs', [FormulirController::class, 'index'])->name('formulirs.index');
 });

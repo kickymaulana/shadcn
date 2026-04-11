@@ -20,10 +20,6 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 ])]
 class Formulir extends Model
 {
-    public function sampel(): BelongsTo
-    {
-        return $this->belongsTo(Sample::class);
-    }
 
     public function pemeriksa(): BelongsTo
     {
