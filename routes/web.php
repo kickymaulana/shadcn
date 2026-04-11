@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Master\RoleController;
+use App\Http\Controllers\Master\DepartemenController;
 
 
 
@@ -35,4 +36,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('master/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
     Route::put('master/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
     Route::delete('master/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+
+    Route::get('master/departemens', [DepartemenController::class, 'index'])->name('departemens.index');
+    Route::get('master/departemens/create', [DepartemenController::class, 'create'])->name('departemens.create');
 });
