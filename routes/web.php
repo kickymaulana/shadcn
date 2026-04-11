@@ -8,6 +8,7 @@ use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\DepartemenController;
 use App\Http\Controllers\Master\SubDepartemenController;
+use App\Http\Controllers\ProfileController;
 
 
 
@@ -53,4 +54,8 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('master/sub-departemens/{subDepartemen}/edit', [SubDepartemenController::class, 'edit'])->name('sub.departemens.edit');
     Route::put('master/sub-departemens/{subDepartemen}', [SubDepartemenController::class, 'update'])->name('sub.departemens.update');
     Route::delete('master/sub-departemens/{subDepartemen}', [SubDepartemenController::class, 'destroy'])->name('sub.departemens.destroy');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
