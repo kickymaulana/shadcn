@@ -20,7 +20,14 @@ class RoleSeeder extends Seeder
         Role::firstOrCreate(['name' => 'admin']);
 
         // Membuat Role Staff/User (Opsional, tambah sesuai kebutuhan)
-        Role::firstOrCreate(['name' => 'staff']);
-        Role::firstOrCreate(['name' => 'user']);
+        Role::firstOrCreate(['name' => 'Quality Control']);
+        Role::firstOrCreate(['name' => 'General Manager']);
+        Role::firstOrCreate(['name' => 'Factory Manager']);
+        Role::firstOrCreate(['name' => 'QC Manager']);
+        Role::firstOrCreate(['name' => 'Manager']);
+        Role::firstOrCreate(['name' => 'Supervisor']);
+        Role::firstOrCreate(['name' => 'Leader']);
+        Role::firstOrCreate(['name' => 'Operator']);
+
     }
 }
