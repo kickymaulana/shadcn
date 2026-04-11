@@ -16,6 +16,7 @@ import {
     IconUsers,
     IconHierarchy,
     IconBuilding,
+    IconGitMerge,
 } from "@tabler/icons-vue";
 
 import NavDocuments from "@/components/NavDocuments.vue";
@@ -168,6 +169,12 @@ const data = {
             url: route("departemens.index"),
             icon: IconBuilding,
             root: "Master/Departemen",
+        },
+        {
+            name: "Sub Departemen",
+            url: route("sub.departemens.index"),
+            icon: IconGitMerge,
+            root: "Master/SubDepartemen",
         },
     ],
 };
