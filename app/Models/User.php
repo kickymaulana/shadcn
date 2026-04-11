@@ -32,7 +32,7 @@ class User extends Authenticatable
         ];
     }
 
-    public function department(): BelongsTo
+    public function departemen(): BelongsTo
     {
         return $this->belongsTo(Departemen::class);
     }
