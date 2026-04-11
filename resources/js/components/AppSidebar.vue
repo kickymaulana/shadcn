@@ -165,9 +165,9 @@ const data = {
         },
         {
             name: "Departemen",
-            url: route("roles.index"),
+            url: route("departemens.index"),
             icon: IconBuilding,
-            root: "Master/Roles",
+            root: "Master/Departemen",
         },
     ],
 };

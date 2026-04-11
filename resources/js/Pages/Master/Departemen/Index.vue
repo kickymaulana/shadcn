@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
     IconBuildingCommunity,
-    IconPencil,
+    IconEye,
     IconSearch,
     IconX,
     IconUsers,
@@ -185,12 +185,12 @@ const cleanLabel = (label: string) => {
                                         <Link
                                             :href="
                                                 route(
-                                                    'departemen.edit',
+                                                    'departemens.show',
                                                     dept.id,
                                                 )
                                             "
                                         >
-                                            <IconPencil
+                                            <IconEye
                                                 class="size-4 text-primary"
                                             />
                                         </Link>

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
         // Kita tambah kolomnya sekarang
-        $table->foreignId('department_id')
+        $table->foreignId('departemen_id')
               ->nullable() // Sebaiknya nullable dulu agar user yang sudah ada tidak error
               ->after('id') // Meletakkan kolom setelah 'id'
               ->constrained('departemen') // Menunjuk ke tabel departments
@@ -28,8 +28,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Cara hapus foreign key: [nama_kolom]
-            $table->dropForeign(['department_id']);
-            $table->dropColumn('department_id');
+            $table->dropForeign(['departemen_id']);
+            $table->dropColumn('departemen_id');
         });
     }
 };
