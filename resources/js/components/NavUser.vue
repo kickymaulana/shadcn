@@ -73,7 +73,7 @@ const getInitials = (name: string) => {
                         >
                             <Avatar class="h-8 w-8 rounded-lg grayscale">
                                 <AvatarImage
-                                    :src="user.avatar"
+                                    :src="user.avatar ?? ''"
                                     :alt="user.name"
                                 />
                                 <AvatarFallback class="rounded-lg">
@@ -108,7 +108,7 @@ const getInitials = (name: string) => {
                             >
                                 <Avatar class="h-8 w-8 rounded-lg">
                                     <AvatarImage
-                                        :src="user.avatar"
+                                        :src="user.avatar ?? ''"
                                         :alt="user.name"
                                     />
                                     <AvatarFallback class="rounded-lg">

@@ -9,10 +9,11 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\DepartemenController;
 use App\Http\Controllers\Master\SubDepartemenController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SampleController;
 
 
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 Route::get('testing', [DashboardController::class, 'testing'])->name('testing');
 
 Route::middleware('guest')->group(function () {
@@ -58,4 +59,12 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('samples', [SampleController::class, 'index'])->name('samples.index');
+    Route::get('samples/create', [SampleController::class, 'create'])->name('samples.create');
+    Route::post('samples/create', [SampleController::class, 'store'])->name('samples.store');
+    Route::get('samples/{sample}', [SampleController::class, 'show'])->name('samples.show');
+    Route::get('samples/{sample}/edit', [SampleController::class, 'edit'])->name('samples.edit');
+    Route::put('samples/{sample}', [SampleController::class, 'update'])->name('samples.update');
+    Route::delete('samples/{sample}', [SampleController::class, 'destroy'])->name('samples.destroy');
 });
