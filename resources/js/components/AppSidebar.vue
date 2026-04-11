@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import {
     IconCamera,
-    IconChartBar,
-    IconDashboard,
     IconDatabase,
     IconFileAi,
     IconFileDescription,
-    IconFolder,
     IconHelp,
     IconInnerShadowTop,
-    IconListDetails,
+    IconPackage,
     IconReport,
     IconSearch,
     IconSettings,
@@ -44,29 +41,10 @@ const data = {
     },
     navMain: [
         {
-            title: "Dashboard",
-            url: "#",
-            icon: IconDashboard,
-        },
-        {
-            title: "Lifecycle",
-            url: "#",
-            icon: IconListDetails,
-        },
-        {
-            title: "Analytics",
-            url: "#",
-            icon: IconChartBar,
-        },
-        {
-            title: "Projects",
-            url: "#",
-            icon: IconFolder,
-        },
-        {
-            title: "Team",
-            url: "#",
-            icon: IconUsers,
+            title: "Sampel",
+            url: route("samples.index"),
+            icon: IconPackage,
+            root: "Sample",
         },
     ],
     navClouds: [
@@ -198,7 +176,7 @@ const user = usePage().props.auth.user;
                             class="w-full text-left"
                         >
                             <IconInnerShadowTop class="!size-5" />
-                            <span>Acme Inc</span>
+                            <span>Sisamcus</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
