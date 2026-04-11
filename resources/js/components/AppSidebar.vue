@@ -34,6 +34,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 
 const data = {
     user: {
@@ -178,6 +179,8 @@ const data = {
         },
     ],
 };
+
+const user = usePage().props.auth.user;
 </script>
 
 <template>
@@ -208,7 +211,7 @@ const data = {
             <NavSecondary :items="data.navSecondary" class="mt-auto" />
         </SidebarContent>
         <SidebarFooter>
-            <NavUser :user="data.user" />
+            <NavUser :user="user" />
         </SidebarFooter>
     </Sidebar>
 </template>

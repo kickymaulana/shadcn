@@ -49,6 +49,16 @@ defineProps<{
 }>();
 
 const { isMobile } = useSidebar();
+
+// Fungsi untuk mengambil inisial (Contoh: John Doe -> JD)
+const getInitials = (name: string) => {
+    return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .substring(0, 2);
+};
 </script>
 
 <template>
@@ -67,7 +77,7 @@ const { isMobile } = useSidebar();
                                     :alt="user.name"
                                 />
                                 <AvatarFallback class="rounded-lg">
-                                    CN
+                                    {{ getInitials(user.name) }}
                                 </AvatarFallback>
                             </Avatar>
                             <div
@@ -102,7 +112,7 @@ const { isMobile } = useSidebar();
                                         :alt="user.name"
                                     />
                                     <AvatarFallback class="rounded-lg">
-                                        CN
+                                        {{ getInitials(user.name) }}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div
