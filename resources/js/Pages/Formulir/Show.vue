@@ -328,6 +328,9 @@ const getStatusBadge = (status: string) => {
                             <TableHead class="text-center w-[100px]"
                                 >Paraf SPV</TableHead
                             >
+                            <TableHead class="text-center w-[100px]"
+                                >Aksi</TableHead
+                            >
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -415,6 +418,31 @@ const getStatusBadge = (status: string) => {
                                         v-else
                                         class="size-3 text-muted-foreground/20"
                                     />
+                                </div>
+                            </TableCell>
+                            <TableCell class="text-center">
+                                <div class="flex justify-center gap-2">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        as-child
+                                        class="size-8 text-orange-500"
+                                    >
+                                        <Link
+                                            :href="
+                                                route(
+                                                    'formulirs.departemen.edit',
+                                                    {
+                                                        formulir: formulir.id,
+                                                        departemen_terlibat:
+                                                            dept.id,
+                                                    },
+                                                )
+                                            "
+                                        >
+                                            <IconPencil class="size-4" />
+                                        </Link>
+                                    </Button>
                                 </div>
                             </TableCell>
                         </TableRow>

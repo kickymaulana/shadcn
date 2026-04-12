@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('departemen_terlibat', function (Blueprint $table) {
             $table->id();
             $table->foreignId('formulir_id')->constrained('formulirs')->onDelete('cascade');
-            $table->foreignId('departemen_id')->constrained('departemen');
+            $table->foreignId('sub_departemen_id')->constrained('sub_departemen');
             $table->timestamp('tanggal_diterima')->nullable();
             $table->foreignId('diterima_oleh')->nullable()->constrained('users');
             $table->timestamp('tanggal_selesai')->nullable();

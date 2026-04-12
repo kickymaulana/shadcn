@@ -65,54 +65,66 @@ class FormulirController extends Controller
     }
 
 
+
+
     public function show(Formulir $formulir): Response
     {
-        // Muat relasi departemen_terlibat, departemennya, dan sub_departemennya
+        // 1. Eager Load semua relasi yang dibutuhkan agar tidak N+1 query
+        // Kita muat sampel, lalu departemen_terlibat beserta sub_departemen dan departemen induknya
         $formulir->load([
             'sampel',
-            'pemeriksa',
-            'penyetuju',
-            'departemen_terlibat.departemen.subDepartemens', // Muat sub departemen untuk ambil urutan
+            'departemen_terlibat.sub_departemen.departemen',
             'departemen_terlibat.penerima'
         ]);
 
+        // 2. Transformasi data departemen_terlibat
+        $departemen_terlibat = $formulir->departemen_terlibat
+            ->sortBy(function ($dt) {
+                // Urutkan berdasarkan kolom 'urutan' yang ada di tabel sub_departemen
+                return $dt->sub_departemen?->urutan ?? 999;
+            })
+            ->values() // Reset index array setelah disort
+            ->map(function ($dt) {
+                return [
+                    'id'               => $dt->id,
+                    'urutan'           => $dt->sub_departemen?->urutan ?? '-',
+                    // Kita ambil nama dari sub_departemen (misal: WASHING)
+                    'nama_departemen'  => $dt->sub_departemen?->nama ?? 'N/A',
+                    // Jika ingin menampilkan Nama Departemen Induk juga (misal: WASHING (PRODUKSI))
+                    // 'nama_induk'    => $dt->sub_departemen?->departemen?->nama ?? '-',
+                    'penerima'         => $dt->penerima?->name ?? '-',
+                    'tanggal_terima'   => $dt->tanggal_diterima ? $dt->tanggal_diterima->format('d M Y') : '-',
+                    'tanggal_selesai'  => $dt->tanggal_selesai ? $dt->tanggal_selesai->format('d M Y') : '-',
+                    'qty'              => $dt->qty ?? 0,
+                    'is_qc'            => !is_null($dt->paraf_qc),
+                    'is_spv'           => !is_null($dt->paraf_spv),
+                    // Kita sertakan data JSON untuk kebutuhan di frontend jika perlu
+                    'item_pemeriksaan' => $dt->item_pemeriksaan,
+                    'data_tambahan'    => $dt->data_tambahan,
+                ];
+            });
+
+        // 3. Render ke Inertia
         return Inertia::render('Formulir/Show', [
             'formulir' => [
                 'id'                 => $formulir->id,
-                'sampel'             => $formulir->sampel,
+                'sampel'             => [
+                    'id'          => $formulir->sampel?->id,
+                    'kode_sample' => $formulir->sampel?->kode_sample ?? 'N/A',
+                    'customer'    => $formulir->sampel?->customer ?? 'N/A',
+                    'model'       => $formulir->sampel?->model ?? 'N/A',
+                ],
                 'size'               => $formulir->size,
                 'qty_sampel_kirim'   => $formulir->qty_sampel_kirim,
                 'running_ke'         => $formulir->running_ke,
                 'tanggal_permintaan' => $formulir->tanggal_permintaan,
                 'status'             => $formulir->status,
-                'pemeriksa'          => $formulir->pemeriksa?->name ?? '-',
-                'penyetuju'          => $formulir->penyetuju?->name ?? '-',
-                'created_at'         => $formulir->created_at?->format('Y-m-d H:i:s') ?? '-',
-                'updated_at'         => $formulir->updated_at?->format('Y-m-d H:i:s') ?? '-',
-
-                // Mengurutkan berdasarkan urutan yang ada di table sub_departemen
-                'departemen_terlibat' => $formulir->departemen_terlibat->sortBy(function($dt) {
-                    // Ambil urutan dari sub_departemen pertama yang terkait dengan departemen ini
-                    // Jika departemen tidak punya sub, beri nilai default tinggi agar di akhir
-                    return $dt->departemen->subDepartemens->min('urutan') ?? 999;
-                })->values()->map(function($dt) {
-                    return [
-                        'id'              => $dt->id,
-                        // Tampilkan urutan dari sub_departemen (opsional)
-                        'urutan'          => $dt->departemen->subDepartemens->min('urutan') ?? '-',
-                        'nama_departemen' => $dt->departemen?->nama ?? 'N/A',
-                        'penerima'        => $dt->penerima?->name ?? '-',
-                        'tanggal_terima'  => $dt->tanggal_diterima?->format('d M Y') ?? '-',
-                        'tanggal_selesai' => $dt->tanggal_selesai?->format('d M Y') ?? '-',
-                        'qty'             => $dt->qty ?? 0,
-                        'is_qc'           => !is_null($dt->paraf_qc),
-                        'is_spv'          => !is_null($dt->paraf_spv),
-                    ];
-                }),
+                'pemeriksa'          => $formulir->pemeriksa ?? '-', // Sesuaikan dengan field di tabel formulirs
+                'penyetuju'          => $formulir->penyetuju ?? '-', // Sesuaikan dengan field di tabel formulirs
+                'departemen_terlibat'=> $departemen_terlibat,
             ]
         ]);
     }
-
 
 
 

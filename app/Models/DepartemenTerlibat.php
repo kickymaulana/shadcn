@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 #[Table('departemen_terlibat')]
 #[Fillable([
     'formulir_id',
-    'departemen_id',
+    'sub_departemen_id',
     'tanggal_diterima',
     'diterima_oleh',
     'tanggal_selesai',
@@ -39,11 +39,6 @@ class DepartemenTerlibat extends Model
     public function formulir(): BelongsTo
     {
         return $this->belongsTo(Formulir::class);
-    }
-
-    public function departemen(): BelongsTo
-    {
-        return $this->belongsTo(Departemen::class);
     }
 
     public function penerima(): BelongsTo
@@ -82,6 +77,19 @@ class DepartemenTerlibat extends Model
             'formulir_id',  // Local key di tabel departemen_terlibat
             'sampel_id'     // Local key di tabel formulir
         );
+    }
+
+
+    public function sub_departemen(): BelongsTo
+    {
+        // Beritahu Laravel bahwa foreign key-nya adalah sub_departemen_id
+        return $this->belongsTo(SubDepartemen::class, 'sub_departemen_id');
+    }
+
+    public function departemen()
+    {
+        // Mengambil departemen melalui relasi di sub_departemen
+        return $this->sub_departemen->departemen();
     }
 
 }

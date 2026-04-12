@@ -79,7 +79,13 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::delete('formulirs/{formulir}', [FormulirController::class, 'destroy'])->name('formulirs.destroy');
 
     Route::get('formulirs/{formulir}/departemen/create', [DepartemenTerlibatController::class, 'create'])
-    ->name('formulirs.departemen.create');
+        ->name('formulirs.departemen.create');
     Route::post('formulirs/{formulir}/departemen', [DepartemenTerlibatController::class, 'store'])
-    ->name('formulirs.departemen.store');
-});
+        ->name('formulirs.departemen.store');
+    Route::get('formulirs/{formulir}/departemen/{departemen_terlibat}/edit', [DepartemenTerlibatController::class, 'edit'])
+        ->name('formulirs.departemen.edit');
+    Route::put('formulirs/{formulir}/departemen/{departemen_terlibat}', [DepartemenTerlibatController::class, 'update'])
+        ->name('formulirs.departemen.update');
+    Route::delete('formulirs/{formulir}/departemen/{departemen_terlibat}', [DepartemenTerlibatController::class, 'destroy'])
+        ->name('formulirs.departemen.destroy');
+    });
