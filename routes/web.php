@@ -101,4 +101,5 @@ Route::middleware('auth', 'role:admin')->group(function () {
     ->name('formulirs.departemen.paraf-spv');
 
     Route::get('persetujuan-manager', [PersetujuanManagerController::class, 'index'])->name('persetujuan.manager.index');
+    Route::get('persetujuan-manager/{formulir}', [PersetujuanManagerController::class, 'show'])->name('persetujuan.manager.show');
 });

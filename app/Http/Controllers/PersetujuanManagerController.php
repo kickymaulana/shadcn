@@ -30,4 +30,31 @@ class PersetujuanManagerController extends Controller
             'filters' => $request->only(['search'])
         ]);
     }
+
+
+
+
+    public function show(Formulir $formulir)
+    {
+        $formulir->load([
+            'sampel',
+            'pemeriksa',
+            'penyetuju',
+            // Kita gunakan join agar bisa sorting berdasarkan kolom di tabel sub_departemen
+            'departemen_terlibat' => function($query) {
+                $query->select('departemen_terlibat.*')
+                    ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+                    ->orderBy('sub_departemen.urutan', 'asc');
+            },
+            'departemen_terlibat.sub_departemen',
+            'departemen_terlibat.penerima',
+            'departemen_terlibat.qcUser',
+            'departemen_terlibat.spvUser'
+        ]);
+
+        return Inertia::render('PersetujuanManager/Show', [
+            'sampel' => $formulir->sampel,
+            'formulir' => $formulir,
+        ]);
+    }
 }

@@ -221,7 +221,10 @@ const cleanLabel = (label: string) => {
                                     >
                                         <Link
                                             :href="
-                                                route('formulirs.show', form.id)
+                                                route(
+                                                    'persetujuan.manager.show',
+                                                    form.id,
+                                                )
                                             "
                                         >
                                             <IconEye
