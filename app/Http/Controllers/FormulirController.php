@@ -64,15 +64,23 @@ class FormulirController extends Controller
             ->with('success', 'Formulir permintaan berhasil dibuat.');
     }
 
+
+
     public function show(Formulir $formulir): Response
     {
-        // Kita muat data sampel terkait agar bisa ditampilkan detailnya
-        $formulir->load(['sampel', 'pemeriksa', 'penyetuju']);
+        // Muat semua relasi yang dibutuhkan termasuk departemen yang terlibat
+        $formulir->load([
+            'sampel',
+            'pemeriksa',
+            'penyetuju',
+            'departemen_terlibat.departemen',
+            'departemen_terlibat.penerima'
+        ]);
 
         return Inertia::render('Formulir/Show', [
             'formulir' => [
                 'id'                 => $formulir->id,
-                'sampel'             => $formulir->sampel, // Data Master Sample
+                'sampel'             => $formulir->sampel,
                 'size'               => $formulir->size,
                 'qty_sampel_kirim'   => $formulir->qty_sampel_kirim,
                 'running_ke'         => $formulir->running_ke,
@@ -80,8 +88,22 @@ class FormulirController extends Controller
                 'status'             => $formulir->status,
                 'pemeriksa'          => $formulir->pemeriksa?->name ?? '-',
                 'penyetuju'          => $formulir->penyetuju?->name ?? '-',
-                'created_at'         => $formulir->created_at->format('Y-m-d H:i:s'),
-                'updated_at'         => $formulir->updated_at->format('Y-m-d H:i:s'),
+                'created_at'         => $formulir->created_at?->format('Y-m-d H:i:s') ?? '-',
+                'updated_at'         => $formulir->updated_at?->format('Y-m-d H:i:s') ?? '-',
+                // Kirim data departemen terlibat yang sudah diurutkan
+                'departemen_terlibat' => $formulir->departemen_terlibat->sortBy('urutan')->values()->map(function($dt) {
+                    return [
+                        'id'              => $dt->id,
+                        'urutan'          => $dt->urutan,
+                        'nama_departemen' => $dt->departemen?->nama ?? 'N/A',
+                        'penerima'        => $dt->penerima?->name ?? '-',
+                        'tanggal_terima'  => $dt->tanggal_diterima?->format('d M Y') ?? '-',
+                        'tanggal_selesai' => $dt->tanggal_selesai?->format('d M Y') ?? '-',
+                        'qty'             => $dt->qty ?? 0,
+                        'is_qc'           => !is_null($dt->paraf_qc),
+                        'is_spv'          => !is_null($dt->paraf_spv),
+                    ];
+                }),
             ]
         ]);
     }
