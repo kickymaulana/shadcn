@@ -42,6 +42,7 @@ const initialDataTambahan = Object.entries(
 }));
 
 const form = useForm({
+    sub_departemen_id: props.departemen_terlibat.sub_departemen_id,
     qty: props.departemen_terlibat.qty,
     pemeriksaan: props.departemen_terlibat.item_pemeriksaan || [],
     data_tambahan: initialDataTambahan,

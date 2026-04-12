@@ -43,9 +43,15 @@ class DepartemenTerlibatController extends Controller
 
     public function edit(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
     {
+        // Load relasi agar nama muncul di frontend
+        $departemen_terlibat->load('sub_departemen');
+
         return Inertia::render('Formulir/Departemen/Edit', [
             'formulir' => $formulir->load('sampel'),
-            'departemen_terlibat' => $departemen_terlibat,
+            // Tambahkan atribut nama_departemen secara manual agar sesuai dengan pemanggilan di Vue
+            'departemen_terlibat' => array_merge($departemen_terlibat->toArray(), [
+                'nama_departemen' => $departemen_terlibat->sub_departemen?->nama ?? 'N/A'
+            ]),
             'list_sub_departemen' => SubDepartemen::with('departemen')->orderBy('urutan')->get(),
             'list_users' => User::select('id', 'name')->get(),
         ]);
@@ -55,15 +61,12 @@ class DepartemenTerlibatController extends Controller
     {
         $validated = $request->validate([
             'sub_departemen_id' => 'required|exists:sub_departemen,id',
-            'qty' => 'required|integer',
-            'item_pemeriksaan' => 'nullable|array',
-            'data_tambahan' => 'nullable|array',
+            'qty'               => 'required|integer',
+            'item_pemeriksaan'  => 'nullable|array',
+            'data_tambahan'     => 'nullable|array',
         ]);
 
-        // Ambil departemen_id induk dari sub_departemen yang dipilih
-        $sub = SubDepartemen::findOrFail($validated['sub_departemen_id']);
-        $validated['departemen_id'] = $sub->departemen_id;
-
+        // Update data (Laravel otomatis menghandle JSON casting karena sudah ada di Model)
         $departemen_terlibat->update($validated);
 
         return redirect()->route('formulirs.show', $formulir->id)
