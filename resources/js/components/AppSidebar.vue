@@ -101,7 +101,7 @@ const user = usePage().props.auth.user;
                         class="data-[slot=sidebar-menu-button]:!p-1.5"
                     >
                         <Link
-                            :href="route('testing')"
+                            :href="route('dashboard')"
                             as="button"
                             class="w-full text-left"
                         >
