@@ -60,89 +60,6 @@ const data = {
             root: "TugasProduksi",
         },
     ],
-    navClouds: [
-        {
-            title: "Capture",
-            icon: IconCamera,
-            isActive: true,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Proposal",
-            icon: IconFileDescription,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Prompts",
-            icon: IconFileAi,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-    ],
-    navSecondary: [
-        {
-            title: "Settings",
-            url: "#",
-            icon: IconSettings,
-        },
-        {
-            title: "Get Help",
-            url: "#",
-            icon: IconHelp,
-        },
-        {
-            title: "Search",
-            url: "#",
-            icon: IconSearch,
-        },
-    ],
-    documents: [
-        {
-            name: "Data Library",
-            url: "#",
-            icon: IconDatabase,
-        },
-        {
-            name: "Reports",
-            url: "#",
-            icon: IconReport,
-        },
-        {
-            name: "Word Assistant",
-            url: "#",
-            icon: IconFileDescription,
-        },
-    ],
-
     master: [
         {
             name: "Pengguna",
@@ -197,9 +114,7 @@ const user = usePage().props.auth.user;
         </SidebarHeader>
         <SidebarContent>
             <NavMain :items="data.navMain" />
-            <NavDocuments :items="data.documents" />
             <Master :items="data.master" />
-            <NavSecondary :items="data.navSecondary" class="mt-auto" />
         </SidebarContent>
         <SidebarFooter>
             <NavUser :user="user" />
