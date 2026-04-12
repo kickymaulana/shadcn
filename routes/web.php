@@ -13,6 +13,7 @@ use App\Http\Controllers\SampleController;
 use App\Http\Controllers\FormulirController;
 use App\Http\Controllers\DepartemenTerlibatController;
 use App\Http\Controllers\TugasProduksiController;
+use App\Http\Controllers\PersetujuanManagerController;
 
 
 
@@ -98,4 +99,6 @@ Route::middleware('auth', 'role:admin')->group(function () {
     ->name('tugas.produksi.terima');
     Route::patch('formulirs/{formulir}/departemen/{departemen_terlibat}/paraf-spv', [TugasProduksiController::class, 'parafSpv'])
     ->name('formulirs.departemen.paraf-spv');
+
+    Route::get('persetujuan-manager', [PersetujuanManagerController::class, 'index'])->name('persetujuan.manager.index');
 });

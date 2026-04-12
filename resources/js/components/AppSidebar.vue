@@ -8,8 +8,8 @@ import {
     IconInnerShadowTop,
     IconPackage,
     IconReport,
-    IconSearch,
-    IconSettings,
+    IconSettingsAutomation,
+    IconSteeringWheel,
     IconUsers,
     IconHierarchy,
     IconBuilding,
@@ -56,8 +56,14 @@ const data = {
         {
             title: "Tugas Produksi",
             url: route("tugas.produksi.index"),
-            icon: IconClipboardList, // <--- Ini
+            icon: IconClipboardList,
             root: "TugasProduksi",
+        },
+        {
+            title: "Persetujuan Manager",
+            url: route("persetujuan.manager.index"),
+            icon: IconSettingsAutomation,
+            root: "PersetujuanManager",
         },
     ],
     master: [
