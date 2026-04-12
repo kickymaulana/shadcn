@@ -72,4 +72,14 @@ class DepartemenTerlibatController extends Controller
         return redirect()->route('formulirs.show', $formulir->id)
             ->with('success', 'Alur departemen berhasil diperbarui.');
     }
+
+    public function destroy(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
+    {
+        // 1. Hapus data dari database
+        $departemen_terlibat->delete();
+
+        // 2. Kembalikan ke halaman show formulir dengan pesan sukses
+        return redirect()->route('formulirs.show', $formulir->id)
+            ->with('success', 'Alur proses departemen berhasil dihapus.');
+    }
 }
