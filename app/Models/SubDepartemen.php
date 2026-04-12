@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
 #[Table('sub_departemen')]
-#[Fillable(['departemen_id', 'nama'])]
+#[Fillable(['departemen_id', 'nama', 'urutan'])]
 class SubDepartemen extends Model
 {
     public function departemen(): BelongsTo

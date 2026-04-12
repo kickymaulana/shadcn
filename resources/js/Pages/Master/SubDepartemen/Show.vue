@@ -19,6 +19,7 @@ import {
     IconClock,
     IconGitMerge,
     IconTrash,
+    IconListNumbers, // Tambah icon urutan
 } from "@tabler/icons-vue";
 import {
     AlertDialog,
@@ -35,11 +36,12 @@ import {
 // 1. Definisikan Persistent Layout
 defineOptions({ layout: AuthenticatedLayout });
 
-// 2. Definisi Props
+// 2. Definisi Props (Tambah properti urutan)
 const props = defineProps<{
     sub: {
         id: number;
         nama: string;
+        urutan: number; // Tambahkan ini
         created_at: string;
         updated_at: string;
         departemen: {
@@ -90,9 +92,14 @@ const formatDate = (dateString: string) => {
                 <CardContent class="pt-6">
                     <div class="flex flex-col items-center text-center">
                         <div
-                            class="size-24 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"
+                            class="size-24 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 relative"
                         >
                             <IconGitMerge class="size-12 text-primary" />
+                            <div
+                                class="absolute -top-2 -right-2 size-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold border-4 border-background text-xs"
+                            >
+                                {{ sub.urutan }}
+                            </div>
                         </div>
                         <h2 class="text-xl font-bold uppercase tracking-tight">
                             {{ sub.nama }}
@@ -164,18 +171,20 @@ const formatDate = (dateString: string) => {
 
                     <Separator class="my-8" />
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8"
+                    >
                         <div class="flex items-center gap-3 text-sm">
-                            <IconFingerprint
+                            <IconListNumbers
                                 class="size-5 text-muted-foreground"
                             />
                             <div class="flex flex-col">
                                 <span
                                     class="text-[10px] uppercase font-bold text-muted-foreground leading-none mb-1"
-                                    >ID Internal</span
+                                    >Urutan Proses</span
                                 >
-                                <span class="font-mono font-medium"
-                                    >#{{ sub.id }}</span
+                                <span class="font-medium"
+                                    >Ke-{{ sub.urutan }}</span
                                 >
                             </div>
                         </div>
@@ -196,6 +205,21 @@ const formatDate = (dateString: string) => {
                         </div>
 
                         <div class="flex items-center gap-3 text-sm">
+                            <IconFingerprint
+                                class="size-5 text-muted-foreground"
+                            />
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-[10px] uppercase font-bold text-muted-foreground leading-none mb-1"
+                                    >ID Internal</span
+                                >
+                                <span class="font-mono font-medium"
+                                    >#{{ sub.id }}</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 text-sm">
                             <IconCalendar
                                 class="size-5 text-muted-foreground"
                             />
@@ -210,7 +234,9 @@ const formatDate = (dateString: string) => {
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3 text-sm">
+                        <div
+                            class="flex items-center gap-3 text-sm md:col-span-2"
+                        >
                             <IconClock class="size-5 text-muted-foreground" />
                             <div class="flex flex-col">
                                 <span

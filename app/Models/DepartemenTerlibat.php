@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 #[Table('departemen_terlibat')]
 #[Fillable([
     'formulir_id',
-    'urutan',
     'departemen_id',
     'tanggal_diterima',
     'diterima_oleh',

@@ -37,6 +37,7 @@ import {
     IconDotsVertical,
     IconTrash,
     IconGitMerge,
+    IconListNumbers, // Import icon urutan
 } from "@tabler/icons-vue";
 
 defineOptions({ layout: AuthenticatedLayout });
@@ -46,6 +47,7 @@ const props = defineProps<{
         id: number;
         nama: string;
         departemen_id: number;
+        urutan: number; // Tambahkan prop urutan
     };
     departemens: Array<{
         id: number;
@@ -58,6 +60,7 @@ const showDeleteDialog = ref(false);
 const form = useForm({
     nama: props.sub.nama,
     departemen_id: props.sub.departemen_id,
+    urutan: props.sub.urutan, // Masukkan ke dalam form
 });
 
 const submit = () => {
@@ -152,7 +155,7 @@ const deleteSub = () => {
                             <select
                                 id="departemen_id"
                                 v-model="form.departemen_id"
-                                class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                                 :class="{
                                     'border-destructive':
                                         form.errors.departemen_id,
@@ -188,7 +191,6 @@ const deleteSub = () => {
                                     id="nama"
                                     v-model="form.nama"
                                     type="text"
-                                    placeholder="Masukkan nama sub unit"
                                     class="h-11 pl-10 shadow-sm focus-visible:ring-primary uppercase"
                                     :class="{
                                         'border-destructive': form.errors.nama,
@@ -200,6 +202,37 @@ const deleteSub = () => {
                                 class="text-xs font-medium text-destructive"
                             >
                                 {{ form.errors.nama }}
+                            </p>
+                        </div>
+
+                        <div class="grid gap-3">
+                            <Label
+                                for="urutan"
+                                class="text-sm font-medium leading-none ml-0.5 text-primary uppercase text-[10px] font-bold"
+                                >Urutan Proses</Label
+                            >
+                            <div class="relative">
+                                <IconListNumbers
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
+                                />
+                                <Input
+                                    id="urutan"
+                                    v-model="form.urutan"
+                                    type="number"
+                                    min="1"
+                                    placeholder="Contoh: 1"
+                                    class="h-11 pl-10 shadow-sm focus-visible:ring-primary"
+                                    :class="{
+                                        'border-destructive':
+                                            form.errors.urutan,
+                                    }"
+                                />
+                            </div>
+                            <p
+                                v-if="form.errors.urutan"
+                                class="text-xs font-medium text-destructive"
+                            >
+                                {{ form.errors.urutan }}
                             </p>
                         </div>
                     </CardContent>
@@ -214,7 +247,7 @@ const deleteSub = () => {
                             :disabled="form.processing"
                             class="h-10 px-6"
                         >
-                            <Link :href="route('sub.departemens.index')"
+                            <Link :href="route('sub.departemens.show', sub.id)"
                                 >Batal</Link
                             >
                         </Button>

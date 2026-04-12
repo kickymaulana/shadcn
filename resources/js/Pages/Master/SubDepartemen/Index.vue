@@ -66,6 +66,7 @@ watch(search, (value) => {
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead>Urutan</TableHead>
                             <TableHead>Nama Sub</TableHead>
                             <TableHead>Induk Departemen</TableHead>
                             <TableHead class="text-right">Aksi</TableHead>
@@ -73,6 +74,9 @@ watch(search, (value) => {
                     </TableHeader>
                     <TableBody>
                         <TableRow v-for="sub in list_sub.data" :key="sub.id">
+                            <TableCell class="font-medium italic">{{
+                                sub.urutan
+                            }}</TableCell>
                             <TableCell class="font-medium italic">{{
                                 sub.nama
                             }}</TableCell>

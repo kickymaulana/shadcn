@@ -29,12 +29,13 @@ class SubDepartemenSeeder extends Seeder
             ['id' => 11, 'departemen_id' => 9, 'nama' => 'FQC'],
         ];
 
-        foreach ($data as $item) {
+        foreach ($data as $key => $item) {
             DB::table('sub_departemen')->updateOrInsert(
                 ['id' => $item['id']], // Unik berdasarkan ID Sub
                 [
                     'departemen_id' => $item['departemen_id'],
                     'nama'          => $item['nama'],
+                    'urutan'        => $key + 1, // Otomatis berurut 1, 2, 3...
                     'created_at'    => Carbon::now(),
                     'updated_at'    => Carbon::now(),
                 ]
