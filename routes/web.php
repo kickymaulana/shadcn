@@ -11,6 +11,7 @@ use App\Http\Controllers\Master\SubDepartemenController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SampleController;
 use App\Http\Controllers\FormulirController;
+use App\Http\Controllers\DepartemenTerlibatController;
 
 
 
@@ -76,4 +77,9 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('formulirs/{formulir}/edit', [FormulirController::class, 'edit'])->name('formulirs.edit');
     Route::put('formulirs/{formulir}', [FormulirController::class, 'update'])->name('formulirs.update');
     Route::delete('formulirs/{formulir}', [FormulirController::class, 'destroy'])->name('formulirs.destroy');
+
+    Route::get('formulirs/{formulir}/departemen/create', [DepartemenTerlibatController::class, 'create'])
+    ->name('formulirs.departemen.create');
+    Route::post('formulirs/{formulir}/departemen', [DepartemenTerlibatController::class, 'store'])
+    ->name('formulirs.departemen.store');
 });
