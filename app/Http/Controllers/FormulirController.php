@@ -65,15 +65,14 @@ class FormulirController extends Controller
     }
 
 
-
     public function show(Formulir $formulir): Response
     {
-        // Muat semua relasi yang dibutuhkan termasuk departemen yang terlibat
+        // Muat relasi departemen_terlibat, departemennya, dan sub_departemennya
         $formulir->load([
             'sampel',
             'pemeriksa',
             'penyetuju',
-            'departemen_terlibat.departemen',
+            'departemen_terlibat.departemen.subDepartemens', // Muat sub departemen untuk ambil urutan
             'departemen_terlibat.penerima'
         ]);
 
@@ -90,11 +89,17 @@ class FormulirController extends Controller
                 'penyetuju'          => $formulir->penyetuju?->name ?? '-',
                 'created_at'         => $formulir->created_at?->format('Y-m-d H:i:s') ?? '-',
                 'updated_at'         => $formulir->updated_at?->format('Y-m-d H:i:s') ?? '-',
-                // Kirim data departemen terlibat yang sudah diurutkan
-                'departemen_terlibat' => $formulir->departemen_terlibat->sortBy('urutan')->values()->map(function($dt) {
+
+                // Mengurutkan berdasarkan urutan yang ada di table sub_departemen
+                'departemen_terlibat' => $formulir->departemen_terlibat->sortBy(function($dt) {
+                    // Ambil urutan dari sub_departemen pertama yang terkait dengan departemen ini
+                    // Jika departemen tidak punya sub, beri nilai default tinggi agar di akhir
+                    return $dt->departemen->subDepartemens->min('urutan') ?? 999;
+                })->values()->map(function($dt) {
                     return [
                         'id'              => $dt->id,
-                        'urutan'          => $dt->urutan,
+                        // Tampilkan urutan dari sub_departemen (opsional)
+                        'urutan'          => $dt->departemen->subDepartemens->min('urutan') ?? '-',
                         'nama_departemen' => $dt->departemen?->nama ?? 'N/A',
                         'penerima'        => $dt->penerima?->name ?? '-',
                         'tanggal_terima'  => $dt->tanggal_diterima?->format('d M Y') ?? '-',
@@ -107,6 +112,8 @@ class FormulirController extends Controller
             ]
         ]);
     }
+
+
 
 
     public function edit(Formulir $formulir): Response
