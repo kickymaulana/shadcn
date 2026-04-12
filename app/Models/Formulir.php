@@ -33,7 +33,7 @@ class Formulir extends Model
 
     public function sampel()
     {
-        return $this->belongsTo(Sampel::class, 'sampel_id', 'id');
+        return $this->belongsTo(Sample::class, 'sampel_id', 'id');
     }
 
     public function departemen_terlibat()

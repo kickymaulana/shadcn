@@ -70,4 +70,10 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::delete('samples/{sample}', [SampleController::class, 'destroy'])->name('samples.destroy');
 
     Route::get('formulirs', [FormulirController::class, 'index'])->name('formulirs.index');
+    Route::get('formulirs/create', [FormulirController::class, 'create'])->name('formulirs.create');
+    Route::post('formulirs/create', [FormulirController::class, 'store'])->name('formulirs.store');
+    Route::get('formulirs/{formulir}', [FormulirController::class, 'show'])->name('formulirs.show');
+    Route::get('formulirs/{formulir}/edit', [FormulirController::class, 'edit'])->name('formulirs.edit');
+    Route::put('formulirs/{formulir}', [FormulirController::class, 'update'])->name('formulirs.update');
+    Route::delete('formulirs/{formulir}', [FormulirController::class, 'destroy'])->name('formulirs.destroy');
 });
