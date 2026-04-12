@@ -88,4 +88,6 @@ Route::middleware('auth', 'role:admin')->group(function () {
         ->name('formulirs.departemen.update');
     Route::delete('formulirs/{formulir}/departemen/{departemen_terlibat}', [DepartemenTerlibatController::class, 'destroy'])
         ->name('formulirs.departemen.destroy');
-    });
+    Route::patch('formulirs/{formulir}/departemen/{departemen_terlibat}/paraf-qc', [DepartemenTerlibatController::class, 'parafQc'])
+        ->name('formulirs.departemen.paraf-qc');
+});

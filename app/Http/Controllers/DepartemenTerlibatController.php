@@ -82,4 +82,16 @@ class DepartemenTerlibatController extends Controller
         return redirect()->route('formulirs.show', $formulir->id)
             ->with('success', 'Alur proses departemen berhasil dihapus.');
     }
+
+    public function parafQc(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
+    {
+        // Kita isi kolom paraf_qc dengan ID user yang sedang login
+        $departemen_terlibat->update([
+            'paraf_qc' => auth()->id(),
+            // Opsional: Jika ingin otomatis mencatat waktu paraf
+            // 'tanggal_selesai' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Berhasil melakukan Paraf QC.');
+    }
 }

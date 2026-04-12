@@ -41,6 +41,7 @@ import {
     IconClipboardCheck,
     IconDatabase,
     IconDotsVertical,
+    IconSignature,
 } from "@tabler/icons-vue";
 
 defineOptions({ layout: AuthenticatedLayout });
@@ -51,6 +52,7 @@ const props = defineProps<{
     list_sub_departemen: Array<any>;
 }>();
 
+// LOGIC: Inisialisasi Data Tambahan (Object ke Array)
 const initialDataTambahan = Object.entries(
     props.departemen_terlibat.data_tambahan || {},
 ).map(([key, value]) => ({
@@ -88,10 +90,19 @@ const submit = () => {
     );
 };
 
-// Fungsi Hapus Alur
+// Fungsi Aksi Destruktif & Status
 const deleteAlur = () => {
     router.delete(
         route("formulirs.departemen.destroy", {
+            formulir: props.formulir.id,
+            departemen_terlibat: props.departemen_terlibat.id,
+        }),
+    );
+};
+
+const parafQC = () => {
+    router.patch(
+        route("formulirs.departemen.paraf-qc", {
             formulir: props.formulir.id,
             departemen_terlibat: props.departemen_terlibat.id,
         }),
@@ -135,59 +146,115 @@ const deleteAlur = () => {
                             <IconSettings class="size-4" /> Konfigurasi Utama
                         </CardTitle>
 
-                        <DropdownMenu>
-                            <DropdownMenuTrigger as-child>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    class="h-8 w-8 rounded-full"
-                                >
-                                    <IconDotsVertical
-                                        class="size-4 text-muted-foreground"
-                                    />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" class="w-56">
-                                <AlertDialog>
-                                    <AlertDialogTrigger as-child>
-                                        <DropdownMenuItem
-                                            @select.prevent
-                                            class="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer"
+                        <div class="flex items-center gap-2">
+                            <AlertDialog v-if="!departemen_terlibat.is_qc">
+                                <AlertDialogTrigger as-child>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        class="h-8 border-primary text-primary hover:bg-primary hover:text-white font-bold text-[10px] uppercase"
+                                    >
+                                        <IconSignature class="mr-1 size-4" />
+                                        Paraf QC
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle
+                                            >Konfirmasi Paraf
+                                            QC</AlertDialogTitle
                                         >
-                                            <IconTrash class="mr-2 size-4" />
-                                            Hapus Alur Proses
-                                        </DropdownMenuItem>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle
-                                                >Apakah Anda
-                                                yakin?</AlertDialogTitle
+                                        <AlertDialogDescription>
+                                            Apakah Anda yakin ingin memberikan
+                                            paraf pada unit
+                                            <strong>{{
+                                                departemen_terlibat.nama_departemen
+                                            }}</strong
+                                            >? Nama Anda akan tercatat secara
+                                            permanen sebagai pemeriksa.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel
+                                            >Batal</AlertDialogCancel
+                                        >
+                                        <AlertDialogAction
+                                            @click="parafQC"
+                                            class="bg-primary text-white hover:bg-primary/90"
+                                        >
+                                            Ya, Paraf Sekarang
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+
+                            <div
+                                v-else
+                                class="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full border border-green-200 text-[10px] font-black uppercase"
+                            >
+                                <IconClipboardCheck class="size-3" /> Diparaf
+                            </div>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger as-child>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        class="h-8 w-8 rounded-full"
+                                    >
+                                        <IconDotsVertical
+                                            class="size-4 text-muted-foreground"
+                                        />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" class="w-56">
+                                    <AlertDialog>
+                                        <AlertDialogTrigger as-child>
+                                            <DropdownMenuItem
+                                                @select.prevent
+                                                class="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer"
                                             >
-                                            <AlertDialogDescription>
-                                                Data pengerjaan di unit
-                                                <strong>{{
-                                                    departemen_terlibat.nama_departemen
-                                                }}</strong>
-                                                akan dihapus permanen.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel
-                                                >Batal</AlertDialogCancel
-                                            >
-                                            <AlertDialogAction
-                                                @click="deleteAlur"
-                                                class="bg-destructive hover:bg-destructive/90 text-white"
-                                            >
-                                                Ya, Hapus Data
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                                <IconTrash
+                                                    class="mr-2 size-4"
+                                                />
+                                                Hapus Alur Proses
+                                            </DropdownMenuItem>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle
+                                                    >Hapus Data
+                                                    Unit?</AlertDialogTitle
+                                                >
+                                                <AlertDialogDescription>
+                                                    Tindakan ini akan menghapus
+                                                    seluruh data pengerjaan di
+                                                    unit
+                                                    <strong>{{
+                                                        departemen_terlibat.nama_departemen
+                                                    }}</strong
+                                                    >.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel
+                                                    >Batal</AlertDialogCancel
+                                                >
+                                                <AlertDialogAction
+                                                    @click="deleteAlur"
+                                                    class="bg-destructive hover:bg-destructive/90 text-white"
+                                                >
+                                                    Ya, Hapus
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     </CardHeader>
+
                     <CardContent
                         class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6"
                     >
@@ -274,7 +341,7 @@ const deleteAlur = () => {
                                     >
                                         <Input
                                             v-model="data.value"
-                                            placeholder="Masukkan nilai data..."
+                                            placeholder="Masukkan nilai..."
                                             class="border-none shadow-none focus-visible:ring-0 text-sm bg-transparent"
                                         />
                                     </TableCell>
@@ -351,7 +418,7 @@ const deleteAlur = () => {
                                     <TableCell class="p-2">
                                         <Input
                                             v-model="item.actual"
-                                            placeholder="Isi hasil..."
+                                            placeholder="Hasil..."
                                             class="h-9 bg-primary/5 border-primary/20 focus:border-primary font-bold text-sm text-primary"
                                         />
                                     </TableCell>
