@@ -163,6 +163,9 @@ const cleanLabel = (label: string) => {
                                 <TableHead class="font-bold"
                                     >Paraf SPV</TableHead
                                 >
+                                <TableHead class="font-bold"
+                                    >Tgl Selesai</TableHead
+                                >
                                 <TableHead class="text-right font-bold"
                                     >Aksi</TableHead
                                 >
@@ -249,6 +252,10 @@ const cleanLabel = (label: string) => {
                                             >Belum Paraf</span
                                         >
                                     </div>
+                                </TableCell>
+
+                                <TableCell class="text-xs">
+                                    {{ formatDate(tugas.tanggal_selesai) }}
                                 </TableCell>
 
                                 <TableCell class="text-right">

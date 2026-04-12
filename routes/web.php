@@ -96,4 +96,6 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('tugas-produksi/{departemen_terlibat}', [TugasProduksiController::class, 'edit'])->name('tugas.produksi.edit');
     Route::patch('tugas-produksi/{departemen_terlibat}/terima', [TugasProduksiController::class, 'terima'])
     ->name('tugas.produksi.terima');
+    Route::patch('formulirs/{formulir}/departemen/{departemen_terlibat}/paraf-spv', [TugasProduksiController::class, 'parafSpv'])
+    ->name('formulirs.departemen.paraf-spv');
 });

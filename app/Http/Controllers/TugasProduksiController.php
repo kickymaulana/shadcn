@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\DepartemenTerlibat;
 use App\Models\SubDepartemen;
 use App\Models\Sample;
+use App\Models\Formulir;
 use Inertia\Inertia;
 
 class TugasProduksiController extends Controller
@@ -72,5 +73,20 @@ class TugasProduksiController extends Controller
 
         // Redirect back akan me-refresh props di halaman Edit.vue secara otomatis
         return back()->with('success', 'Tugas diterima.');
+    }
+
+
+
+    public function parafSpv(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
+    {
+        // Pastikan user memiliki hak akses (opsional: bisa tambah role check di sini)
+
+        // Update data paraf supervisor
+        $departemen_terlibat->update([
+            'paraf_spv' => auth()->id(),
+            'tanggal_selesai' => now(), // Mencatat kapan proses di unit ini benar-benar selesai
+        ]);
+
+        return back()->with('success', 'Paraf Supervisor berhasil disimpan.');
     }
 }

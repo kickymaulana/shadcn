@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, useForm, router } from "@inertiajs/vue3";
+import { computed } from "vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,8 +36,8 @@ import {
     IconSignature,
     IconLock,
     IconLockOpen,
+    IconUserCheck,
 } from "@tabler/icons-vue";
-import { computed } from "vue";
 
 defineOptions({ layout: AuthenticatedLayout });
 
@@ -45,10 +46,12 @@ const props = defineProps<{
     departemen_terlibat: any;
 }>();
 
-// Gunakan computed agar reaktif saat data dari back() datang
+// Logika Status Reaktif
 const isReceived = computed(() => !!props.departemen_terlibat.tanggal_diterima);
+const isQC = computed(() => !!props.departemen_terlibat.paraf_qc);
+const isSPV = computed(() => !!props.departemen_terlibat.paraf_spv);
 
-// Mapping Data Tambahan (Object JSON to Array for Form)
+// Mapping Data Tambahan (Object to Array)
 const initialDataTambahan = Object.entries(
     props.departemen_terlibat.data_tambahan || {},
 ).map(([key, value]) => ({
@@ -87,10 +90,6 @@ const terimaTugas = () => {
         {},
         {
             preserveScroll: true,
-            preserveState: false, // Tambahkan ini untuk memaksa refresh state props
-            onSuccess: () => {
-                console.log("Berhasil diterima!");
-            },
         },
     );
 };
@@ -101,6 +100,19 @@ const parafQC = () => {
             formulir: props.formulir.id,
             departemen_terlibat: props.departemen_terlibat.id,
         }),
+        {},
+        { preserveScroll: true },
+    );
+};
+
+const parafSPV = () => {
+    router.patch(
+        route("formulirs.departemen.paraf-spv", {
+            formulir: props.formulir.id,
+            departemen_terlibat: props.departemen_terlibat.id,
+        }),
+        {},
+        { preserveScroll: true },
     );
 };
 
@@ -143,7 +155,7 @@ const formatDate = (date: string | null) => {
                     >
                         {{
                             isReceived
-                                ? "Status: Tugas Sedang Dikerjakan"
+                                ? "Status: Proses Pengerjaan"
                                 : "Status: Menunggu Konfirmasi Terima"
                         }}
                     </p>
@@ -155,8 +167,7 @@ const formatDate = (date: string | null) => {
                     <Button
                         class="bg-orange-500 hover:bg-orange-600 font-black text-xs uppercase h-10 px-6 shadow-lg shadow-orange-100"
                     >
-                        <IconLockOpen class="mr-2 size-4 font-bold" /> Terima
-                        Tugas
+                        <IconLockOpen class="mr-2 size-4" /> Terima Tugas
                     </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -165,10 +176,9 @@ const formatDate = (date: string | null) => {
                             >Konfirmasi Terima Tugas</AlertDialogTitle
                         >
                         <AlertDialogDescription>
-                            Apakah Anda yakin ingin menerima tugas untuk sampel
+                            Terima sampel
                             <strong>{{ formulir.sampel.kode_sample }}</strong
-                            >? Sistem akan mencatat waktu penerimaan atas nama
-                            Anda.
+                            >? Waktu penerimaan akan dicatat.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -200,7 +210,7 @@ const formatDate = (date: string | null) => {
                         <p
                             class="font-black text-slate-900 uppercase text-xs truncate"
                         >
-                            {{ formulir.sampel.customer?.nama ?? "INTERNAL" }}
+                            {{ formulir.sampel.customer ?? "INTERNAL" }}
                         </p>
                     </div>
                     <div class="space-y-0.5">
@@ -220,7 +230,7 @@ const formatDate = (date: string | null) => {
                         >
                             Running / Tgl Terima
                         </p>
-                        <p class="font-bold text-slate-700">
+                        <p class="font-bold text-slate-700 uppercase">
                             Run #{{ formulir.running_ke }} —
                             {{
                                 isReceived
@@ -279,79 +289,98 @@ const formatDate = (date: string | null) => {
             <form @submit.prevent="submit" class="space-y-4 relative">
                 <div
                     v-if="!isReceived"
-                    class="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1.5px] flex items-center justify-center rounded-xl border-2 border-dashed border-muted/50"
+                    class="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1px] flex items-center justify-center rounded-xl border-2 border-dashed border-muted/50"
                 >
-                    <div
-                        class="bg-white p-5 rounded-2xl shadow-2xl border flex flex-col items-center gap-3 text-center"
-                    >
-                        <IconLock
-                            class="size-10 text-orange-500 animate-pulse"
-                        />
-                        <div class="space-y-1">
-                            <p
-                                class="text-sm font-black uppercase text-slate-800 tracking-tight"
-                            >
-                                Input Terkunci
-                            </p>
-                            <p
-                                class="text-[10px] text-muted-foreground leading-relaxed px-4"
-                            >
-                                Silahkan klik tombol
-                                <strong>"Terima Tugas"</strong> di pojok kanan
-                                atas untuk membuka form.
-                            </p>
-                        </div>
-                    </div>
+                    <IconLock class="size-10 text-orange-500 opacity-20" />
                 </div>
 
                 <Card class="border-none shadow-sm overflow-hidden">
                     <CardHeader
-                        class="bg-muted/30 py-2 px-4 flex flex-row items-center justify-between border-b"
+                        class="bg-muted/30 py-2 px-4 flex flex-row items-center justify-between border-b text-[10px] font-bold uppercase tracking-widest"
                     >
-                        <CardTitle
-                            class="text-[10px] font-bold uppercase flex items-center gap-2 text-primary tracking-widest"
-                        >
-                            <IconSettings class="size-4" /> Kuantitas Produksi
-                        </CardTitle>
+                        <div class="flex items-center gap-2 text-primary">
+                            <IconSettings class="size-4" /> Kontrol Produksi
+                        </div>
 
-                        <AlertDialog
-                            v-if="isReceived && !departemen_terlibat.is_qc"
-                        >
-                            <AlertDialogTrigger as-child>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    class="h-7 border-primary text-primary hover:bg-primary hover:text-white font-bold text-[9px] uppercase px-4 shadow-sm"
-                                >
-                                    <IconSignature class="mr-1.5 size-3.5" />
-                                    Paraf QC
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader
-                                    ><AlertDialogTitle
-                                        >Verifikasi QC</AlertDialogTitle
-                                    ></AlertDialogHeader
-                                >
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Batal</AlertDialogCancel>
-                                    <AlertDialogAction
-                                        @click="parafQC"
-                                        class="bg-primary text-white"
-                                        >Ya, Verifikasi</AlertDialogAction
+                        <div class="flex items-center gap-2">
+                            <AlertDialog v-if="isReceived && !isQC">
+                                <AlertDialogTrigger as-child>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        class="h-7 border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-bold text-[9px] uppercase px-3 shadow-sm"
                                     >
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                                        <IconSignature class="mr-1 size-3" />
+                                        Paraf QC
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader
+                                        ><AlertDialogTitle
+                                            >Paraf QC</AlertDialogTitle
+                                        ></AlertDialogHeader
+                                    >
+                                    <AlertDialogFooter
+                                        ><AlertDialogCancel
+                                            >Batal</AlertDialogCancel
+                                        ><AlertDialogAction
+                                            @click="parafQC"
+                                            class="bg-green-600"
+                                            >Ya, Paraf</AlertDialogAction
+                                        ></AlertDialogFooter
+                                    >
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <div
+                                v-else-if="isQC"
+                                class="flex items-center gap-1 text-green-600"
+                            >
+                                <IconClipboardCheck class="size-3" /> QC OK
+                            </div>
+
+                            <AlertDialog v-if="isReceived && !isSPV">
+                                <AlertDialogTrigger as-child>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        class="h-7 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-bold text-[9px] uppercase px-3 shadow-sm"
+                                    >
+                                        <IconUserCheck class="mr-1 size-3" />
+                                        Paraf SPV
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader
+                                        ><AlertDialogTitle
+                                            >Paraf Supervisor</AlertDialogTitle
+                                        ></AlertDialogHeader
+                                    >
+                                    <AlertDialogFooter
+                                        ><AlertDialogCancel
+                                            >Batal</AlertDialogCancel
+                                        ><AlertDialogAction
+                                            @click="parafSPV"
+                                            class="bg-blue-600"
+                                            >Ya, Paraf</AlertDialogAction
+                                        ></AlertDialogFooter
+                                    >
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <div
+                                v-else-if="isSPV"
+                                class="flex items-center gap-1 text-blue-600"
+                            >
+                                <IconUserCheck class="size-3" /> SPV OK
+                            </div>
+                        </div>
                     </CardHeader>
-                    <CardContent
-                        class="py-4 px-6 flex items-center gap-6 bg-primary/5"
-                    >
-                        <div class="flex-1">
+                    <CardContent class="py-4 px-6 bg-primary/5">
+                        <div class="max-w-[200px] mx-auto space-y-1">
                             <Label
-                                class="text-[9px] font-black uppercase text-primary tracking-widest"
-                                >Jumlah Hasil (Qty Pcs)</Label
+                                class="text-[9px] font-black uppercase text-primary tracking-widest block text-center"
+                                >Jumlah Pcs</Label
                             >
                             <Input
                                 type="number"
@@ -364,13 +393,11 @@ const formatDate = (date: string | null) => {
                 </Card>
 
                 <Card class="border-none shadow-sm overflow-hidden">
-                    <CardHeader class="bg-muted/30 py-2 border-b px-4">
-                        <CardTitle
-                            class="text-[10px] font-bold uppercase flex items-center gap-2 text-muted-foreground"
-                        >
-                            <IconDatabase class="size-4" /> Parameter Pendukung
-                        </CardTitle>
-                    </CardHeader>
+                    <CardHeader
+                        class="bg-muted/30 py-2 border-b px-4 text-[10px] font-bold uppercase text-muted-foreground"
+                        ><IconDatabase class="size-4 mr-2 inline-block" />
+                        Parameter Pendukung</CardHeader
+                    >
                     <CardContent class="p-0">
                         <Table>
                             <TableBody>
@@ -390,7 +417,7 @@ const formatDate = (date: string | null) => {
                                             v-model="data.value"
                                             :disabled="!isReceived"
                                             class="h-8 border-none shadow-none focus-visible:ring-0 p-0 bg-transparent"
-                                            placeholder="Ketik nilai..."
+                                            placeholder="..."
                                         />
                                     </TableCell>
                                 </TableRow>
@@ -400,28 +427,23 @@ const formatDate = (date: string | null) => {
                 </Card>
 
                 <Card class="border-none shadow-sm overflow-hidden">
-                    <CardHeader class="bg-muted/30 py-2 border-b px-4">
-                        <CardTitle
-                            class="text-[10px] font-bold uppercase flex items-center gap-2 text-muted-foreground"
-                        >
-                            <IconClipboardCheck class="size-4" /> Lembar
-                            Pemeriksaan Kualitas
-                        </CardTitle>
-                    </CardHeader>
+                    <CardHeader
+                        class="bg-muted/30 py-2 border-b px-4 text-[10px] font-bold uppercase text-muted-foreground"
+                        ><IconClipboardCheck class="size-4 mr-2 inline-block" />
+                        Pemeriksaan Kualitas</CardHeader
+                    >
                     <CardContent class="p-0">
                         <Table>
                             <TableHeader
                                 class="bg-muted/50 text-[9px] uppercase font-black tracking-wider h-10"
                             >
-                                <TableRow>
-                                    <TableHead class="pl-8"
-                                        >Parameter Item</TableHead
-                                    >
-                                    <TableHead>Spec Standar</TableHead>
-                                    <TableHead class="w-[300px] text-primary"
-                                        >Hasil Aktual (Input)</TableHead
-                                    >
-                                </TableRow>
+                                <TableRow
+                                    ><TableHead class="pl-8">Item</TableHead
+                                    ><TableHead>Spec</TableHead
+                                    ><TableHead class="w-[300px] text-primary"
+                                        >Hasil Aktual</TableHead
+                                    ></TableRow
+                                >
                             </TableHeader>
                             <TableBody>
                                 <TableRow
@@ -441,7 +463,6 @@ const formatDate = (date: string | null) => {
                                         <Input
                                             v-model="item.actual"
                                             :disabled="!isReceived"
-                                            placeholder="Input hasil..."
                                             class="h-10 bg-primary/5 border-primary/20 focus:border-primary font-black text-base text-primary shadow-sm"
                                         />
                                     </TableCell>
@@ -458,7 +479,7 @@ const formatDate = (date: string | null) => {
                     <Button
                         variant="ghost"
                         as-child
-                        class="font-bold text-[10px] uppercase h-10 px-6"
+                        class="font-bold text-[10px] uppercase h-10 px-6 text-muted-foreground hover:text-foreground"
                     >
                         <Link :href="route('tugas.produksi.index')">Batal</Link>
                     </Button>
@@ -471,11 +492,8 @@ const formatDate = (date: string | null) => {
                             v-if="form.processing"
                             class="mr-2 size-4 animate-spin"
                         />
-                        <IconDeviceFloppy
-                            v-else
-                            class="mr-2 size-4 font-bold"
-                        />
-                        Simpan Hasil
+                        <IconDeviceFloppy v-else class="mr-2 size-4" /> Simpan
+                        Hasil
                     </Button>
                 </div>
             </form>
