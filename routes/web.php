@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SampleController;
 use App\Http\Controllers\FormulirController;
 use App\Http\Controllers\DepartemenTerlibatController;
+use App\Http\Controllers\TugasProduksiController;
 
 
 
@@ -90,4 +91,6 @@ Route::middleware('auth', 'role:admin')->group(function () {
         ->name('formulirs.departemen.destroy');
     Route::patch('formulirs/{formulir}/departemen/{departemen_terlibat}/paraf-qc', [DepartemenTerlibatController::class, 'parafQc'])
         ->name('formulirs.departemen.paraf-qc');
+
+    Route::get('tugas-produksi', [TugasProduksiController::class, 'index'])->name('tugas.produksi.index');
 });
