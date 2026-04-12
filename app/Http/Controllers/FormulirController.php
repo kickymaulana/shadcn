@@ -74,7 +74,9 @@ class FormulirController extends Controller
         $formulir->load([
             'sampel',
             'departemen_terlibat.sub_departemen.departemen',
-            'departemen_terlibat.penerima'
+            'departemen_terlibat.penerima',
+            'departemen_terlibat.qcUser',
+            'departemen_terlibat.spvUser'
         ]);
 
         // 2. Transformasi data departemen_terlibat
@@ -98,6 +100,8 @@ class FormulirController extends Controller
                     'qty'              => $dt->qty ?? 0,
                     'is_qc'            => !is_null($dt->paraf_qc),
                     'is_spv'           => !is_null($dt->paraf_spv),
+                    'nama_qc'          => $dt->qcUser?->name ?? '-',
+                    'nama_spv'         => $dt->spvUser?->name ?? '-',
                     // Kita sertakan data JSON untuk kebutuhan di frontend jika perlu
                     'item_pemeriksaan' => $dt->item_pemeriksaan,
                     'data_tambahan'    => $dt->data_tambahan,

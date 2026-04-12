@@ -388,38 +388,13 @@ const getStatusBadge = (status: string) => {
                                     >{{ dept.qty }}</Badge
                                 ></TableCell
                             >
-                            <TableCell class="text-center">
-                                <div class="flex justify-center">
-                                    <div
-                                        v-if="dept.is_qc"
-                                        class="bg-green-100 p-1 rounded-full shadow-sm"
-                                    >
-                                        <IconCheck
-                                            class="size-3 text-green-600"
-                                        />
-                                    </div>
-                                    <IconX
-                                        v-else
-                                        class="size-3 text-muted-foreground/20"
-                                    />
-                                </div>
-                            </TableCell>
-                            <TableCell class="text-center">
-                                <div class="flex justify-center">
-                                    <div
-                                        v-if="dept.is_spv"
-                                        class="bg-green-100 p-1 rounded-full shadow-sm"
-                                    >
-                                        <IconCheck
-                                            class="size-3 text-green-600"
-                                        />
-                                    </div>
-                                    <IconX
-                                        v-else
-                                        class="size-3 text-muted-foreground/20"
-                                    />
-                                </div>
-                            </TableCell>
+                            <TableCell class="text-xs">{{
+                                dept.nama_qc
+                            }}</TableCell>
+                            <TableCell class="text-xs">{{
+                                dept.nama_spv
+                            }}</TableCell>
+
                             <TableCell class="text-center">
                                 <div class="flex justify-center gap-2">
                                     <Button

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
 #[Table('departemen_terlibat')]
 #[Fillable([
@@ -24,7 +24,8 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 class DepartemenTerlibat extends Model
 {
     /**
-     * Casting untuk kolom JSON agar otomatis menjadi array/object PHP
+     * Casting untuk kolom date dan JSON.
+     * Laravel 11/12/13 menggunakan method casts() untuk fleksibilitas lebih tinggi.
      */
     protected function casts(): array
     {
@@ -36,39 +37,51 @@ class DepartemenTerlibat extends Model
         ];
     }
 
+    /**
+     * Relasi ke Formulir induk
+     */
     public function formulir(): BelongsTo
     {
         return $this->belongsTo(Formulir::class);
     }
 
+    /**
+     * Relasi ke User yang menerima sample di departemen tersebut
+     */
     public function penerima(): BelongsTo
     {
         return $this->belongsTo(User::class, 'diterima_oleh');
     }
 
-    public function paraf_qc()
+    /**
+     * Relasi ke User QC (Gunakan nama method berbeda dari kolom database)
+     */
+    public function qcUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'paraf_qc');
     }
 
-    public function parafQcUser()
-    {
-        return $this->belongsTo(User::class, 'paraf_qc');
-    }
-    public function paraf_spv()
-    {
-        return $this->belongsTo(User::class, 'paraf_spv');
-    }
-    public function parafSpvUser()
+    /**
+     * Relasi ke User SPV (Gunakan nama method berbeda dari kolom database)
+     */
+    public function spvUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'paraf_spv');
     }
 
-
-    public function sampel()
+    /**
+     * Relasi ke Master Sub Departemen
+     */
+    public function sub_departemen(): BelongsTo
     {
-        // Jika di tabel departemen_terlibat tidak ada sampel_id,
-        // kita gunakan relasi melalui Formulir
+        return $this->belongsTo(SubDepartemen::class, 'sub_departemen_id');
+    }
+
+    /**
+     * Shortcut untuk mengambil data Sampel melalui Formulir
+     */
+    public function sampel(): HasOneThrough
+    {
         return $this->hasOneThrough(
             Sampel::class,
             Formulir::class,
@@ -78,18 +91,4 @@ class DepartemenTerlibat extends Model
             'sampel_id'     // Local key di tabel formulir
         );
     }
-
-
-    public function sub_departemen(): BelongsTo
-    {
-        // Beritahu Laravel bahwa foreign key-nya adalah sub_departemen_id
-        return $this->belongsTo(SubDepartemen::class, 'sub_departemen_id');
-    }
-
-    public function departemen()
-    {
-        // Mengambil departemen melalui relasi di sub_departemen
-        return $this->sub_departemen->departemen();
-    }
-
 }
