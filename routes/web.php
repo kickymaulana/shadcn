@@ -93,4 +93,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
         ->name('formulirs.departemen.paraf-qc');
 
     Route::get('tugas-produksi', [TugasProduksiController::class, 'index'])->name('tugas.produksi.index');
+    Route::get('tugas-produksi/{departemen_terlibat}', [TugasProduksiController::class, 'edit'])->name('tugas.produksi.edit');
+    Route::patch('tugas-produksi/{departemen_terlibat}/terima', [TugasProduksiController::class, 'terima'])
+    ->name('tugas.produksi.terima');
 });

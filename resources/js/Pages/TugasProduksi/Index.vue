@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
     IconClipboardList,
-    IconEye,
+    IconPencil,
     IconSearch,
     IconX,
 } from "@tabler/icons-vue";
@@ -255,19 +255,19 @@ const cleanLabel = (label: string) => {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        class="size-8 rounded-full hover:bg-primary/10"
+                                        class="size-8 rounded-full hover:bg-orange-100"
                                         as-child
                                     >
                                         <Link
                                             :href="
                                                 route(
-                                                    'formulirs.show',
-                                                    tugas.formulir.id,
+                                                    'tugas.produksi.edit',
+                                                    tugas.id,
                                                 )
                                             "
                                         >
-                                            <IconEye
-                                                class="size-4 text-primary"
+                                            <IconPencil
+                                                class="size-4 text-orange-500"
                                             />
                                         </Link>
                                     </Button>
