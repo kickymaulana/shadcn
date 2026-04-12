@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,23 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
     IconArrowLeft,
     IconDeviceFloppy,
     IconLoader2,
@@ -23,6 +40,7 @@ import {
     IconHierarchy2,
     IconClipboardCheck,
     IconDatabase,
+    IconDotsVertical,
 } from "@tabler/icons-vue";
 
 defineOptions({ layout: AuthenticatedLayout });
@@ -33,7 +51,6 @@ const props = defineProps<{
     list_sub_departemen: Array<any>;
 }>();
 
-// LOGIC: Inisialisasi Data Tambahan (Object ke Array agar bisa di-map ke input)
 const initialDataTambahan = Object.entries(
     props.departemen_terlibat.data_tambahan || {},
 ).map(([key, value]) => ({
@@ -54,7 +71,6 @@ const addData = () => form.data_tambahan.push({ key: "", value: "" });
 const removeData = (index: number) => form.data_tambahan.splice(index, 1);
 
 const submit = () => {
-    // Transformasi kembali array ke object untuk simpan ke JSON database
     const dataTambahanObj: Record<string, any> = {};
     form.data_tambahan.forEach((i) => {
         if (i.key) dataTambahanObj[i.key] = i.value;
@@ -66,6 +82,16 @@ const submit = () => {
         item_pemeriksaan: data.pemeriksaan,
     })).put(
         route("formulirs.departemen.update", {
+            formulir: props.formulir.id,
+            departemen_terlibat: props.departemen_terlibat.id,
+        }),
+    );
+};
+
+// Fungsi Hapus Alur
+const deleteAlur = () => {
+    router.delete(
+        route("formulirs.departemen.destroy", {
             formulir: props.formulir.id,
             departemen_terlibat: props.departemen_terlibat.id,
         }),
@@ -100,12 +126,67 @@ const submit = () => {
         <div class="max-w-5xl">
             <form @submit.prevent="submit" class="space-y-6">
                 <Card class="border-none shadow-sm overflow-hidden">
-                    <CardHeader class="bg-muted/30 border-b py-4">
+                    <CardHeader
+                        class="bg-muted/30 border-b py-2 px-6 flex flex-row items-center justify-between"
+                    >
                         <CardTitle
                             class="text-sm font-bold uppercase flex items-center gap-2 text-primary"
                         >
                             <IconSettings class="size-4" /> Konfigurasi Utama
                         </CardTitle>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="h-8 w-8 rounded-full"
+                                >
+                                    <IconDotsVertical
+                                        class="size-4 text-muted-foreground"
+                                    />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" class="w-56">
+                                <AlertDialog>
+                                    <AlertDialogTrigger as-child>
+                                        <DropdownMenuItem
+                                            @select.prevent
+                                            class="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer"
+                                        >
+                                            <IconTrash class="mr-2 size-4" />
+                                            Hapus Alur Proses
+                                        </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle
+                                                >Apakah Anda
+                                                yakin?</AlertDialogTitle
+                                            >
+                                            <AlertDialogDescription>
+                                                Data pengerjaan di unit
+                                                <strong>{{
+                                                    departemen_terlibat.nama_departemen
+                                                }}</strong>
+                                                akan dihapus permanen.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel
+                                                >Batal</AlertDialogCancel
+                                            >
+                                            <AlertDialogAction
+                                                @click="deleteAlur"
+                                                class="bg-destructive hover:bg-destructive/90 text-white"
+                                            >
+                                                Ya, Hapus Data
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </CardHeader>
                     <CardContent
                         class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6"
@@ -125,10 +206,9 @@ const submit = () => {
                                 </div>
                                 <span
                                     class="text-lg font-black uppercase tracking-tight"
-                                    >{{
-                                        departemen_terlibat.nama_departemen
-                                    }}</span
                                 >
+                                    {{ departemen_terlibat.nama_departemen }}
+                                </span>
                             </div>
                         </div>
                         <div class="space-y-2">
@@ -311,8 +391,8 @@ const submit = () => {
                             v-if="form.processing"
                             class="mr-2 size-4 animate-spin"
                         />
-                        <IconDeviceFloppy v-else class="mr-2 size-4" /> Simpan
-                        Perubahan
+                        <IconDeviceFloppy v-else class="mr-2 size-4" />
+                        Simpan Perubahan
                     </Button>
                 </div>
             </form>
