@@ -14,6 +14,7 @@ import {
     IconHierarchy,
     IconBuilding,
     IconGitMerge,
+    IconClipboardList,
 } from "@tabler/icons-vue";
 
 import NavDocuments from "@/components/NavDocuments.vue";
@@ -51,6 +52,12 @@ const data = {
             url: route("formulirs.index"),
             icon: IconFileDescription,
             root: "Formulir",
+        },
+        {
+            title: "Tugas Produksi",
+            url: route("tugas.produksi.index"),
+            icon: IconClipboardList, // <--- Ini
+            root: "TugasProduksi",
         },
     ],
     navClouds: [
