@@ -33,6 +33,9 @@ const props = defineProps<{
       name: string
       username: string
       email: string
+      departemen?: { // Tambahkan ini
+        nama: string
+      }
       created_at: string
     }>
     links: Array<{
@@ -126,7 +129,7 @@ const cleanLabel = (label: string) => {
               <TableRow class="bg-muted/50">
                 <TableHead>Nama</TableHead>
                 <TableHead>Username</TableHead>
-                <TableHead>Email</TableHead>
+                <TableHead>Departemen</TableHead>
                 <TableHead>Tgl Terdaftar</TableHead>
                 <TableHead class="text-right">Aksi</TableHead>
               </TableRow>
@@ -143,7 +146,7 @@ const cleanLabel = (label: string) => {
                 <TableCell>
                    <span class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{{ user.username }}</span>
                 </TableCell>
-                <TableCell>{{ user.email }}</TableCell>
+                <TableCell>{{ user.departemen?.nama ?? 'Belum ada' }}</TableCell>
                 <TableCell>{{ formatDate(user.created_at) }}</TableCell>
                 <TableCell class="text-right space-x-1">
                   <Button variant="ghost" size="icon" class="size-8" as-child>

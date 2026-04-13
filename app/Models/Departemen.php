@@ -18,6 +18,6 @@ class Departemen extends Model
 
     public function subDepartemens(): HasMany
     {
-        return $this->hasMany(SubDepartemen::class, 'departemen_id');
+        return $this->hasMany(SubDepartemen::class, 'departemen_id', 'id');
     }
 }

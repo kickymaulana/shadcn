@@ -15,7 +15,7 @@ class DepartemenSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['id' => 1, 'nama' => 'WORKING MOULD'],
+            ['id' => 1, 'nama' => 'MOULD'],
             ['id' => 2, 'nama' => 'FILLING'],
             ['id' => 3, 'nama' => 'WASHING'],
             ['id' => 4, 'nama' => 'SPRAY ON KASAR'],
@@ -24,6 +24,7 @@ class DepartemenSeeder extends Seeder
             ['id' => 7, 'nama' => 'OVEN'],
             ['id' => 8, 'nama' => 'ASAH / GRATING'],
             ['id' => 9, 'nama' => 'FQC'],
+            ['id' => 9, 'nama' => 'OFFICE QC'],
         ];
 
         foreach ($data as $item) {
