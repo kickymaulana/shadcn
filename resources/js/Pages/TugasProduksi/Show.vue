@@ -4,31 +4,11 @@ import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
     IconArrowLeft,
     IconFileTypePdf,
-    IconCircleCheck,
     IconSignature,
     IconUserCheck,
-    IconClock,
+    IconClipboardCheck,
 } from "@tabler/icons-vue";
 
 defineOptions({ layout: AuthenticatedLayout });
@@ -42,8 +22,10 @@ const props = defineProps<{
 const page = usePage();
 const userRoles: string[] = (page.props.auth as any).roles || [];
 
+// Logika Hak Akses
 const canParafPemeriksa = () =>
     userRoles.includes("QC Manager") || userRoles.includes("admin");
+
 const canParafPenyetuju = () =>
     userRoles.includes("Factory Manager") || userRoles.includes("admin");
 
@@ -51,9 +33,7 @@ const submitParaf = (routeName: string) => {
     router.post(
         route(routeName, { formulir: props.formulir.id }),
         {},
-        {
-            preserveScroll: true,
-        },
+        { preserveScroll: true }
     );
 };
 
@@ -68,7 +48,7 @@ const formatDate = (dateString: string | null) => {
 </script>
 
 <template>
-    <Head :title="'Persetujuan - ' + sampel.kode_sample" />
+    <Head :title="'Dokumen - ' + sampel.kode_sample" />
 
     <div class="flex flex-col gap-6 p-4 md:p-8 pt-4">
         <div class="flex items-center justify-between w-full max-w-[210mm] mx-auto">
@@ -84,58 +64,26 @@ const formatDate = (dateString: string | null) => {
             </Button>
 
             <div class="flex items-center gap-2">
-                <AlertDialog v-if="!formulir.diperiksa_oleh && canParafPemeriksa()">
-                    <AlertDialogTrigger as-child>
-                        <Button size="sm" class="font-black uppercase text-[10px] h-8 shadow-md">
-                            <IconSignature class="mr-1.5 size-3.5" /> Paraf QC Manager
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Konfirmasi Paraf</AlertDialogTitle>
-                            <AlertDialogDescription>Berikan paraf digital sebagai <strong>QC Manager</strong>?</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Batal</AlertDialogCancel>
-                            <AlertDialogAction @click="submitParaf('formulirs.paraf_pemeriksa')">Ya, Paraf</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-
-                <AlertDialog v-if="!formulir.disetujui_oleh && formulir.diperiksa_oleh && canParafPenyetuju()">
-                    <AlertDialogTrigger as-child>
-                        <Button size="sm" class="font-black uppercase text-[10px] h-8 bg-blue-600 hover:bg-blue-700 shadow-md">
-                            <IconUserCheck class="mr-1.5 size-3.5" /> Setujui Dokumen (FM)
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Konfirmasi Persetujuan</AlertDialogTitle>
-                            <AlertDialogDescription>Berikan persetujuan akhir sebagai <strong>Factory Manager</strong>?</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Batal</AlertDialogCancel>
-                            <AlertDialogAction @click="submitParaf('formulirs.paraf_penyetuju')" class="bg-blue-600">Ya, Setujui</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-
-                <Button variant="destructive" size="sm" class="rounded-full shadow-md h-8 text-[10px] font-bold uppercase">
-                    <IconFileTypePdf class="mr-1.5 size-3.5" /> Export PDF
+                <Button variant="destructive" size="sm" class="rounded-full shadow-md h-8 text-[10px] font-bold uppercase" as-child>
+                    <a :href="route('pdf.formulir', { formulir: formulir.id })" target="_blank">
+                        <IconFileTypePdf class="mr-1.5 size-3.5" /> Export PDF
+                    </a>
                 </Button>
             </div>
         </div>
 
         <div class="w-full flex justify-center">
             <Card class="border-none shadow-2xl overflow-hidden bg-slate-200 flex justify-center py-10 px-4 w-full">
-                <div class="bg-white w-[210mm] min-h-[297mm] p-[12mm] shadow-sm text-slate-900 font-sans border border-slate-300 mx-auto">
+                <div class="bg-white w-[210mm] min-h-[297mm] p-[12mm] shadow-sm text-slate-900 font-sans border border-slate-300 mx-auto relative">
 
                     <div class="border-2 border-slate-900 grid grid-cols-12 mb-6 text-center italic font-bold">
                         <div class="col-span-3 border-r-2 border-slate-900 p-2 flex items-center justify-center text-[10px] uppercase">
                             PT Mark Dynamics Indonesia Tbk
                         </div>
                         <div class="col-span-6 border-r-2 border-slate-900 p-2 flex flex-col justify-center leading-tight">
-                            <h1 class="text-sm uppercase tracking-tighter italic">Formulir Pembuatan<br />Sample Customer</h1>
+                            <h1 class="text-sm uppercase tracking-tighter italic">
+                                Formulir Pembuatan<br />Sample Customer
+                            </h1>
                         </div>
                         <div class="col-span-3 text-[8px] p-2 text-left space-y-0.5 uppercase italic">
                             <div>No. Dok : MDDFM-QC37</div>
@@ -182,66 +130,76 @@ const formatDate = (dateString: string | null) => {
                         </div>
 
                         <div class="grid grid-cols-3 text-[9px] px-1 mb-2 font-medium">
-                            <div>Diterima: {{ formatDate(dept.tanggal_diterima) }} <span v-if="dept.penerima">({{ dept.penerima.name }})</span></div>
-                            <div class="text-center font-black">Hasil: <span class="underline">{{ dept.qty || 0 }} Pcs</span> (Selesai: {{ formatDate(dept.tanggal_selesai) }})</div>
-                            <div class="text-right uppercase font-bold">QC: {{ dept.qcUser?.name ?? "-" }} | SPV: {{ dept.spvUser?.name ?? "-" }}</div>
+                            <div>
+                                Diterima: {{ formatDate(dept.tanggal_diterima) }}
+                                <span v-if="dept.penerima">({{ dept.penerima.name }})</span>
+                            </div>
+                            <div class="text-center font-black">
+                                Hasil: <span class="underline">{{ dept.qty || 0 }} Pcs</span>
+                                (Selesai: {{ formatDate(dept.tanggal_selesai) }})
+                            </div>
+                            <div class="text-right uppercase font-bold">
+                                QC: {{ dept.qcUser?.name || dept.qc_user?.name || "-" }} |
+                                SPV: {{ dept.spvUser?.name || dept.spv_user?.name || "-" }}
+                            </div>
                         </div>
 
-                        <div class="border-2 border-slate-900 overflow-hidden">
-                            <table class="w-full text-slate-900 border-collapse">
-                                <thead class="bg-slate-50 border-b-2 border-slate-900">
-                                    <tr class="text-[9px] font-black uppercase italic">
-                                        <th class="p-1.5 text-left border-r-2 border-slate-900">Item Pemeriksaan</th>
-                                        <th class="p-1.5 text-center w-24 border-r-2 border-slate-900">Spec</th>
-                                        <th class="p-1.5 text-center w-32">Actual</th>
+                        <div v-if="dept.item_pemeriksaan && dept.item_pemeriksaan.length > 0" class="mt-2 border-2 border-slate-900">
+                            <table class="w-full text-[8px] border-collapse">
+                                <thead class="bg-slate-50 font-bold text-slate-900 border-b-2 border-slate-900">
+                                    <tr class="uppercase italic h-6">
+                                        <th class="border-r-2 border-slate-900 px-2 text-left">Item Pemeriksaan</th>
+                                        <th class="border-r-2 border-slate-900 px-2 w-24 text-center">Spec</th>
+                                        <th class="px-2 w-32 text-center">Hasil Aktual</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="row in dept.item_pemeriksaan || []" :key="row.item" class="border-b border-slate-900 last:border-0 h-7 text-[9px]">
-                                        <td class="px-3 font-bold uppercase">{{ row.item }}</td>
-                                        <td class="px-3 text-center border-x-2 border-slate-900 font-mono font-bold">{{ row.spec }}</td>
-                                        <td class="px-3 text-center font-black text-primary">{{ row.actual || "-" }}</td>
+                                    <tr v-for="(item, idx) in dept.item_pemeriksaan" :key="idx" class="border-b border-slate-900 last:border-0 h-6">
+                                        <td class="px-2 uppercase border-r-2 border-slate-900">{{ item.item }}</td>
+                                        <td class="px-2 text-center border-r-2 border-slate-900 font-mono">{{ item.spec || '-' }}</td>
+                                        <td class="px-2 text-center font-black text-primary">{{ item.actual || '-' }}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div class="mt-12 grid grid-cols-2 border-2 border-slate-900 italic font-bold">
-                        <div class="border-r-2 border-slate-900 flex flex-col">
-                            <div class="bg-slate-50 py-1 text-[9px] font-black uppercase border-b-2 border-slate-900 text-center text-slate-500">Di Periksa Oleh :</div>
-                            <div class="h-28 flex flex-col items-center justify-center gap-1.5">
-                                <template v-if="formulir.pemeriksa">
-                                    <IconCircleCheck class="size-10 text-green-600" />
-                                    <span class="text-[7px] text-muted-foreground uppercase tracking-widest font-black italic">Digitally Signed</span>
-                                </template>
-                                <IconClock v-else class="size-10 text-slate-100" />
+                    <div class="mt-16 grid grid-cols-2 border-2 border-slate-900 text-center text-[10px] italic font-bold uppercase">
+                        <div class="flex flex-col border-r-2 border-slate-900">
+                            <div class="bg-slate-50 py-1 border-b-2 border-slate-900">Diperiksa Oleh :</div>
+                            <div class="h-24 flex items-center justify-center flex-col gap-1">
+                                <div v-if="formulir.pemeriksa" class="flex flex-col items-center">
+                                    <IconClipboardCheck class="size-8 text-green-600" />
+                                    <span class="text-[6px] text-slate-400">Digitally Signed</span>
+                                </div>
+                                <span v-else class="text-slate-200">...................</span>
                             </div>
-                            <div class="p-3 border-t-2 border-slate-900 text-center">
-                                <div class="text-[11px] font-black underline uppercase">{{ formulir.pemeriksa?.name ?? "................................" }}</div>
-                                <div class="text-[8px] text-muted-foreground mt-0.5 uppercase">QC Manager</div>
+                            <div class="p-2 border-t-2 border-slate-900">
+                                <p class="underline">{{ formulir.pemeriksa?.name ?? ".........................." }}</p>
+                                <p class="text-[8px] text-muted-foreground mt-0.5">QC Manager</p>
                             </div>
                         </div>
                         <div class="flex flex-col">
-                            <div class="bg-slate-50 py-1 text-[9px] font-black uppercase border-b-2 border-slate-900 text-center text-slate-500">Di Setujui Oleh :</div>
-                            <div class="h-28 flex flex-col items-center justify-center gap-1.5">
-                                <template v-if="formulir.penyetuju">
-                                    <IconCircleCheck class="size-10 text-blue-600" />
-                                    <span class="text-[7px] text-muted-foreground uppercase tracking-widest font-black italic">Digitally Signed</span>
-                                </template>
-                                <IconClock v-else class="size-10 text-slate-100" />
+                            <div class="bg-slate-50 py-1 border-b-2 border-slate-900">Disetujui Oleh :</div>
+                            <div class="h-24 flex items-center justify-center flex-col gap-1">
+                                <div v-if="formulir.penyetuju" class="flex flex-col items-center">
+                                    <IconUserCheck class="size-8 text-blue-600" />
+                                    <span class="text-[6px] text-slate-400">Digitally Signed</span>
+                                </div>
+                                <span v-else class="text-slate-200">...................</span>
                             </div>
-                            <div class="p-3 border-t-2 border-slate-900 text-center">
-                                <div class="text-[11px] font-black underline uppercase">{{ formulir.penyetuju?.name ?? "................................" }}</div>
-                                <div class="text-[8px] text-muted-foreground mt-0.5 uppercase">Factory Manager / GM</div>
+                            <div class="p-2 border-t-2 border-slate-900">
+                                <p class="underline">{{ formulir.penyetuju?.name ?? ".........................." }}</p>
+                                <p class="text-[8px] text-muted-foreground mt-0.5">Factory Manager / GM</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-8 flex justify-between items-center text-[8px] font-black text-slate-300 uppercase italic">
+                    <div class="mt-10 flex justify-between text-[8px] text-slate-300 font-bold italic uppercase">
                         <span>PT Mark Dynamics Indonesia Tbk</span>
-                        <span>SISAMCUS Digital Archive {{ new Date().getFullYear() }}</span>
+                        <span>SISAMCUS Digital Archive 2026</span>
                     </div>
+
                 </div>
             </Card>
         </div>
