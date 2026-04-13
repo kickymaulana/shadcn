@@ -60,9 +60,6 @@ Route::middleware('auth', 'role:admin|Quality Control')->group(function () {
     Route::put('master/sub-departemens/{subDepartemen}', [SubDepartemenController::class, 'update'])->name('sub.departemens.update');
     Route::delete('master/sub-departemens/{subDepartemen}', [SubDepartemenController::class, 'destroy'])->name('sub.departemens.destroy');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('samples', [SampleController::class, 'index'])->name('samples.index');
     Route::get('samples/create', [SampleController::class, 'create'])->name('samples.create');
@@ -106,4 +103,8 @@ Route::middleware('auth')->group(function () {
     ->name('tugas.produksi.terima');
     Route::patch('formulirs/{formulir}/departemen/{departemen_terlibat}/paraf-spv', [TugasProduksiController::class, 'parafSpv'])
     ->name('formulirs.departemen.paraf-spv');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

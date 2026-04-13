@@ -33,36 +33,27 @@ const userRoles = computed(() => (page.props.auth as any).roles as string[]);
 
 /**
  * Logika Hak Akses:
- * Menentukan apakah user adalah Admin atau Quality Control
+ * Menentukan role spesifik untuk filter menu
  */
 const isAdminOrQC = computed(() => {
     return userRoles.value.includes('admin') || userRoles.value.includes('Quality Control');
 });
 
+const canAccessManagerApproval = computed(() => {
+    return isAdminOrQC.value ||
+           userRoles.value.includes('General Manager') ||
+           userRoles.value.includes('Factory Manager');
+});
+
 /**
  * Menu Navigasi Utama
- * Menggunakan computed agar daftar menu menyesuaikan dengan role user
  */
 const filteredNavMain = computed(() => {
-    // Menu yang bisa diakses SEMUA user
-    const commonMenus = [
-        {
-            title: "Tugas Produksi",
-            url: route("tugas.produksi.index"),
-            icon: IconClipboardList,
-            root: "TugasProduksi",
-        },
-        {
-            title: "Persetujuan Manager",
-            url: route("persetujuan.manager.index"),
-            icon: IconSettingsAutomation,
-            root: "PersetujuanManager",
-        },
-    ];
+    let menus: any[] = [];
 
-    // Jika user adalah Admin atau QC, tambahkan menu Sampel dan Formulir di awal
+    // 1. Menu Sampel & Formulir (Hanya Admin & QC)
     if (isAdminOrQC.value) {
-        return [
+        menus.push(
             {
                 title: "Sampel",
                 url: route("samples.index"),
@@ -74,12 +65,29 @@ const filteredNavMain = computed(() => {
                 url: route("formulirs.index"),
                 icon: IconFileDescription,
                 root: "Formulir",
-            },
-            ...commonMenus
-        ];
+            }
+        );
     }
 
-    return commonMenus;
+    // 2. Menu Tugas Produksi (Bisa diakses SEMUA user yang login)
+    menus.push({
+        title: "Tugas Produksi",
+        url: route("tugas.produksi.index"),
+        icon: IconClipboardList,
+        root: "TugasProduksi",
+    });
+
+    // 3. Menu Persetujuan Manager (Admin, QC, GM, Factory Manager)
+    if (canAccessManagerApproval.value) {
+        menus.push({
+            title: "Persetujuan Manager",
+            url: route("persetujuan.manager.index"),
+            icon: IconSettingsAutomation,
+            root: "PersetujuanManager",
+        });
+    }
+
+    return menus;
 });
 
 // Data untuk menu Master
@@ -135,7 +143,6 @@ const masterData = [
 
         <SidebarContent>
             <NavMain :items="filteredNavMain" />
-
             <Master v-if="isAdminOrQC" :items="masterData" />
         </SidebarContent>
 
