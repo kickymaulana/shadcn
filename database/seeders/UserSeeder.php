@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
             ['id' => 1, 'username' => 'D260065', 'name' => 'Admin', 'departemen_id' => 9],
             ['id' => 2, 'username' => 'K110011', 'name' => 'Afrida Hanum', 'departemen_id' => 9],
             ['id' => 3, 'username' => '200064',  'name' => 'Parinton Silaen', 'departemen_id' => 9],
-            ['id' => 4, 'username' => '200344',  'name' => 'Marzuki Ilham (QC ADMIN)', 'departemen_id' => 9],
+            ['id' => 4, 'username' => '200344',  'name' => 'Marzuki Ilham', 'departemen_id' => 9],
             ['id' => 5, 'username' => 'K190809', 'name' => 'Sarah halawa', 'departemen_id' => 9],
             ['id' => 6, 'username' => '130225',  'name' => 'Jamal Mirdad Purba', 'departemen_id' => 1],
             ['id' => 7, 'username' => 'D110020', 'name' => 'Fahri irawan', 'departemen_id' => 1],
