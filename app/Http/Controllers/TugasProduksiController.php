@@ -16,6 +16,10 @@ class TugasProduksiController extends Controller
         $user = $request->user();
 
         $tugas_list = DepartemenTerlibat::query()
+            ->whereHas('formulir', function($query) {
+                $query->where('status', 'Proses');
+
+            })
             // Filter berdasarkan departemen user login
             ->whereHas('sub_departemen', function ($query) use ($user) {
                 $query->where('departemen_id', $user->departemen_id);
