@@ -75,6 +75,7 @@ Route::middleware('auth', 'role:admin|Quality Control')->group(function () {
     Route::post('formulirs/create', [FormulirController::class, 'store'])->name('formulirs.store');
     Route::get('formulirs/{formulir}', [FormulirController::class, 'show'])->name('formulirs.show');
     Route::get('formulirs/{formulir}/edit', [FormulirController::class, 'edit'])->name('formulirs.edit');
+    Route::get('formulirs/{formulir}/preview', [FormulirController::class, 'preview'])->name('formulirs.preview');
     Route::put('formulirs/{formulir}', [FormulirController::class, 'update'])->name('formulirs.update');
     Route::delete('formulirs/{formulir}', [FormulirController::class, 'destroy'])->name('formulirs.destroy');
 

@@ -169,4 +169,28 @@ class FormulirController extends Controller
             ->with('success', 'Formulir berhasil dihapus.');
     }
 
+    public function preview(Formulir $formulir)
+    {
+        $formulir->load([
+            'sampel',
+            'pemeriksa',
+            'penyetuju',
+            // Join untuk sorting departemen berdasarkan urutan di tabel sub_departemen
+            'departemen_terlibat' => function($query) {
+                $query->select('departemen_terlibat.*')
+                    ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+                    ->orderBy('sub_departemen.urutan', 'asc');
+            },
+            'departemen_terlibat.sub_departemen',
+            'departemen_terlibat.penerima',
+            'departemen_terlibat.qcUser',
+            'departemen_terlibat.spvUser'
+        ]);
+
+        return Inertia::render('Formulir/Preview', [
+            'sampel' => $formulir->sampel,
+            'formulir' => $formulir,
+        ]);
+    }
+
 }
