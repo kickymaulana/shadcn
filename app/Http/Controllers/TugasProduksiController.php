@@ -11,15 +11,23 @@ use Inertia\Inertia;
 
 class TugasProduksiController extends Controller
 {
+
+
     public function index(Request $request)
     {
         $user = $request->user();
 
         $tugas_list = DepartemenTerlibat::query()
+            // 1. Lakukan Join dengan sub_departemen agar bisa akses kolom 'urutan'
+            ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+
+            // 2. Pastikan select kolom dari departemen_terlibat agar ID tidak tertimpa
+            ->select('departemen_terlibat.*')
+
             ->whereHas('formulir', function($query) {
                 $query->where('status', 'Proses');
-
             })
+
             // Filter berdasarkan departemen user login
             ->whereHas('sub_departemen', function ($query) use ($user) {
                 $query->where('departemen_id', $user->departemen_id);
@@ -36,7 +44,12 @@ class TugasProduksiController extends Controller
                     $q->where('kode_sample', 'like', "%{$search}%");
                 });
             })
-            ->latest()
+
+            // 3. Urutkan berdasarkan kolom urutan di tabel sub_departemen
+            ->orderBy('sub_departemen.urutan', 'asc')
+            // Bisa juga ditambah urutan kedua jika urutan departemen sama (misal berdasarkan yang terbaru)
+            ->orderBy('departemen_terlibat.created_at', 'desc')
+
             ->paginate(10)
             ->withQueryString();
 
