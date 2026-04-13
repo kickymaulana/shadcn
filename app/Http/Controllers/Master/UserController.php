@@ -18,6 +18,7 @@ class UserController extends Controller
         $users = User::query()
             ->select('id', 'name', 'username', 'email', 'created_at', 'departemen_id')
             ->with(['departemen:id,nama'])
+            ->with(['roles:id,name'])
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")

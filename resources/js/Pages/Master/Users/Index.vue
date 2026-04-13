@@ -36,6 +36,10 @@ const props = defineProps<{
       departemen?: { // Tambahkan ini
         nama: string
       }
+      roles: Array<{ // Tambahkan ini
+        id: number
+        name: string
+      }>
       created_at: string
     }>
     links: Array<{
@@ -130,7 +134,7 @@ const cleanLabel = (label: string) => {
                 <TableHead>Nama</TableHead>
                 <TableHead>Username</TableHead>
                 <TableHead>Departemen</TableHead>
-                <TableHead>Tgl Terdaftar</TableHead>
+                <TableHead>Jabatan</TableHead>
                 <TableHead class="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
@@ -147,7 +151,22 @@ const cleanLabel = (label: string) => {
                    <span class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{{ user.username }}</span>
                 </TableCell>
                 <TableCell>{{ user.departemen?.nama ?? 'Belum ada' }}</TableCell>
-                <TableCell>{{ formatDate(user.created_at) }}</TableCell>
+
+                <TableCell>
+                    <div class="flex flex-wrap gap-1">
+                        <span
+                        v-for="role in user.roles"
+                        :key="role.id"
+                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 capitalize"
+                        >
+                        {{ role.name }}
+                        </span>
+                        <span v-if="user.roles.length === 0" class="text-xs text-muted-foreground italic">
+                        No Role
+                        </span>
+                    </div>
+                </TableCell>
+
                 <TableCell class="text-right space-x-1">
                   <Button variant="ghost" size="icon" class="size-8" as-child>
                     <Link :href="route('users.show', user.id)">

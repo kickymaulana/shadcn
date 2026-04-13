@@ -67,15 +67,5 @@ class UserSeeder extends Seeder
                 ]
             );
         }
-
-        // ASSIGN ROLE ADMIN (ID 1) KE USER ADMIN (ID 1)
-        DB::table('model_has_roles')->updateOrInsert(
-            [
-                'role_id' => 1,
-                'model_id' => 1,
-                'model_type' => 'App\Models\User'
-            ],
-            []
-        );
     }
 }

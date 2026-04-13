@@ -16,18 +16,15 @@ class RoleSeeder extends Seeder
         // Menghapus cache permission agar role baru langsung terdeteksi
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Membuat Role Admin
-        Role::firstOrCreate(['name' => 'admin']);
-
-        // Membuat Role Staff/User (Opsional, tambah sesuai kebutuhan)
-        Role::firstOrCreate(['name' => 'Quality Control']);
-        Role::firstOrCreate(['name' => 'General Manager']);
-        Role::firstOrCreate(['name' => 'Factory Manager']);
-        Role::firstOrCreate(['name' => 'QC Manager']);
-        Role::firstOrCreate(['name' => 'Manager']);
-        Role::firstOrCreate(['name' => 'Supervisor']);
-        Role::firstOrCreate(['name' => 'Leader']);
-        Role::firstOrCreate(['name' => 'Operator']);
+        Role::firstOrCreate(['id' => 1], ['name' => 'admin']);
+        Role::firstOrCreate(['id' => 2], ['name' => 'Quality Control']);
+        Role::firstOrCreate(['id' => 3], ['name' => 'General Manager']);
+        Role::firstOrCreate(['id' => 4], ['name' => 'Factory Manager']);
+        Role::firstOrCreate(['id' => 5], ['name' => 'QC Manager']);
+        Role::firstOrCreate(['id' => 6], ['name' => 'Manager']);
+        Role::firstOrCreate(['id' => 7], ['name' => 'Supervisor']);
+        Role::firstOrCreate(['id' => 8], ['name' => 'Leader']);
+        Role::firstOrCreate(['id' => 9], ['name' => 'Operator']);
 
     }
 }
