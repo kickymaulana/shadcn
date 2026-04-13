@@ -14,6 +14,12 @@ class PdfController extends Controller
             'sampel',
             'pemeriksa',
             'penyetuju',
+            'departemen_terlibat' => function($query) {
+                // Pastikan select tabel utama dilakukan agar ID tidak tertimpa
+                $query->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+                    ->orderBy('sub_departemen.urutan', 'asc')
+                    ->select('departemen_terlibat.*'); // CRITICAL: ID harus tetap milik departemen_terlibat
+            },
             'departemen_terlibat.sub_departemen',
             'departemen_terlibat.penerima',
             'departemen_terlibat.qcUser',
