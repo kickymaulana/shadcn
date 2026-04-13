@@ -110,27 +110,25 @@ class TugasProduksiController extends Controller
             ->with('success', 'Data berhasil disimpan');
     }
 
-
     public function show($departemen_terlibat_id)
     {
-        // 1. Cari dulu data departemen_terlibat-nya
         $dt = DepartemenTerlibat::findOrFail($departemen_terlibat_id);
 
-        // 2. Ambil Formulir-nya dan load semua relasi yang dibutuhkan
         $formulir = Formulir::query()
             ->with([
                 'sampel',
                 'pemeriksa',
                 'penyetuju',
                 'departemen_terlibat' => function($query) {
-                    $query->select('departemen_terlibat.*')
-                        ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
-                        ->orderBy('sub_departemen.urutan', 'asc');
+                    // Pastikan select tabel utama dilakukan agar ID tidak tertimpa
+                    $query->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+                        ->orderBy('sub_departemen.urutan', 'asc')
+                        ->select('departemen_terlibat.*'); // CRITICAL: ID harus tetap milik departemen_terlibat
                 },
                 'departemen_terlibat.sub_departemen',
                 'departemen_terlibat.penerima',
-                'departemen_terlibat.qcUser', // Sesuaikan dengan nama method di Model
-                'departemen_terlibat.spvUser'  // Sesuaikan dengan nama method di Model
+                'departemen_terlibat.qcUser',
+                'departemen_terlibat.spvUser'
             ])
             ->findOrFail($dt->formulir_id);
 
@@ -140,4 +138,5 @@ class TugasProduksiController extends Controller
             'active_dept_id' => $departemen_terlibat_id
         ]);
     }
+
 }
