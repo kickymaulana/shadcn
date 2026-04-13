@@ -77,8 +77,7 @@ const submit = () => {
         data_tambahan: dataTambahanObj,
         item_pemeriksaan: data.pemeriksaan,
     })).put(
-        route("formulirs.departemen.update", {
-            formulir: props.formulir.id,
+        route("tugas.produksi.update", {
             departemen_terlibat: props.departemen_terlibat.id,
         }),
     );
@@ -94,16 +93,6 @@ const terimaTugas = () => {
     );
 };
 
-const parafQC = () => {
-    router.patch(
-        route("formulirs.departemen.paraf-qc", {
-            formulir: props.formulir.id,
-            departemen_terlibat: props.departemen_terlibat.id,
-        }),
-        {},
-        { preserveScroll: true },
-    );
-};
 
 const parafSPV = () => {
     router.patch(
@@ -303,37 +292,8 @@ const formatDate = (date: string | null) => {
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <AlertDialog v-if="isReceived && !isQC">
-                                <AlertDialogTrigger as-child>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        class="h-7 border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-bold text-[9px] uppercase px-3 shadow-sm"
-                                    >
-                                        <IconSignature class="mr-1 size-3" />
-                                        Paraf QC
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader
-                                        ><AlertDialogTitle
-                                            >Paraf QC</AlertDialogTitle
-                                        ></AlertDialogHeader
-                                    >
-                                    <AlertDialogFooter
-                                        ><AlertDialogCancel
-                                            >Batal</AlertDialogCancel
-                                        ><AlertDialogAction
-                                            @click="parafQC"
-                                            class="bg-green-600"
-                                            >Ya, Paraf</AlertDialogAction
-                                        ></AlertDialogFooter
-                                    >
-                                </AlertDialogContent>
-                            </AlertDialog>
                             <div
-                                v-else-if="isQC"
+                                v-if="isQC"
                                 class="flex items-center gap-1 text-green-600"
                             >
                                 <IconClipboardCheck class="size-3" /> QC OK

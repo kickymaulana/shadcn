@@ -27,7 +27,7 @@ Route::middleware('guest')->group(function () {
 
 Route::post('logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
 
-Route::middleware('auth', 'role:admin')->group(function () {
+Route::middleware('auth', 'role:admin|Quality Control')->group(function () {
     // ... route lainnya
     Route::get('master/users', [UserController::class, 'index'])->name('users.index');
     Route::get('master/users/create', [UserController::class, 'create'])->name('users.create');
@@ -101,6 +101,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('tugas-produksi', [TugasProduksiController::class, 'index'])->name('tugas.produksi.index');
     Route::get('tugas-produksi/{departemen_terlibat}', [TugasProduksiController::class, 'edit'])->name('tugas.produksi.edit');
+    Route::put('tugas-produksi/{departemen_terlibat}', [TugasProduksiController::class, 'update'])->name('tugas.produksi.update');
     Route::patch('tugas-produksi/{departemen_terlibat}/terima', [TugasProduksiController::class, 'terima'])
     ->name('tugas.produksi.terima');
     Route::patch('formulirs/{formulir}/departemen/{departemen_terlibat}/paraf-spv', [TugasProduksiController::class, 'parafSpv'])

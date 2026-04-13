@@ -93,4 +93,20 @@ class TugasProduksiController extends Controller
 
         return back()->with('success', 'Paraf Supervisor berhasil disimpan.');
     }
+
+    public function update(Request $request, DepartemenTerlibat $departemen_terlibat)
+    {
+        $validated = $request->validate([
+            'sub_departemen_id' => 'required|exists:sub_departemen,id',
+            'qty'               => 'required|integer',
+            'item_pemeriksaan'  => 'nullable|array',
+            'data_tambahan'     => 'nullable|array',
+        ]);
+
+        // Update data (Laravel otomatis menghandle JSON casting karena sudah ada di Model)
+        $departemen_terlibat->update($validated);
+
+        return redirect()->route('tugas.produksi.edit', $departemen_terlibat)
+            ->with('success', 'Data berhasil disimpan');
+    }
 }
