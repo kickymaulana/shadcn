@@ -14,6 +14,7 @@ use App\Http\Controllers\FormulirController;
 use App\Http\Controllers\DepartemenTerlibatController;
 use App\Http\Controllers\TugasProduksiController;
 use App\Http\Controllers\PersetujuanManagerController;
+use App\Http\Controllers\PdfController;
 
 
 
@@ -115,3 +116,5 @@ Route::middleware('auth', 'role:admin|Quality Control|QC Manager|Factory Manager
     Route::post('persetujuan-manager/{formulir}/paraf-penyetuju', [PersetujuanManagerController::class, 'parafPenyetuju'])->name('persetujuan.manager.paraf_penyetuju');
 
 });
+
+Route::get('pdf/formulir/{formulir}', [PdfController::class, 'pdf'])->name('pdf.formulir');
