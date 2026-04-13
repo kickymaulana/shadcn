@@ -97,7 +97,8 @@ Route::middleware('auth', 'role:admin|Quality Control')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('tugas-produksi', [TugasProduksiController::class, 'index'])->name('tugas.produksi.index');
-    Route::get('tugas-produksi/{departemen_terlibat}', [TugasProduksiController::class, 'edit'])->name('tugas.produksi.edit');
+    Route::get('tugas-produksi/{departemen_terlibat}/edit', [TugasProduksiController::class, 'edit'])->name('tugas.produksi.edit');
+    Route::get('tugas-produksi/{departemen_terlibat}/show', [TugasProduksiController::class, 'show'])->name('tugas.produksi.show');
     Route::put('tugas-produksi/{departemen_terlibat}', [TugasProduksiController::class, 'update'])->name('tugas.produksi.update');
     Route::patch('tugas-produksi/{departemen_terlibat}/terima', [TugasProduksiController::class, 'terima'])
     ->name('tugas.produksi.terima');

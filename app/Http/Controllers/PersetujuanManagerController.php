@@ -11,6 +11,7 @@ class PersetujuanManagerController extends Controller
     public function index(Request $request)
     {
         $list_persetujuan = Formulir::query()
+            ->where('status', 'proses')
             ->with(['sampel', 'pemeriksa', 'penyetuju'])
             // Logika pencarian berdasarkan kode sampel atau customer
             ->when($request->search, function ($query, $search) {

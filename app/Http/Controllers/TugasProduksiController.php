@@ -109,4 +109,35 @@ class TugasProduksiController extends Controller
         return redirect()->route('tugas.produksi.edit', $departemen_terlibat)
             ->with('success', 'Data berhasil disimpan');
     }
+
+
+    public function show($departemen_terlibat_id)
+    {
+        // 1. Cari dulu data departemen_terlibat-nya
+        $dt = DepartemenTerlibat::findOrFail($departemen_terlibat_id);
+
+        // 2. Ambil Formulir-nya dan load semua relasi yang dibutuhkan
+        $formulir = Formulir::query()
+            ->with([
+                'sampel',
+                'pemeriksa',
+                'penyetuju',
+                'departemen_terlibat' => function($query) {
+                    $query->select('departemen_terlibat.*')
+                        ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+                        ->orderBy('sub_departemen.urutan', 'asc');
+                },
+                'departemen_terlibat.sub_departemen',
+                'departemen_terlibat.penerima',
+                'departemen_terlibat.qcUser', // Sesuaikan dengan nama method di Model
+                'departemen_terlibat.spvUser'  // Sesuaikan dengan nama method di Model
+            ])
+            ->findOrFail($dt->formulir_id);
+
+        return Inertia::render('TugasProduksi/Show', [
+            'sampel' => $formulir->sampel,
+            'formulir' => $formulir,
+            'active_dept_id' => $departemen_terlibat_id
+        ]);
+    }
 }
