@@ -36,23 +36,27 @@ class PersetujuanManagerController extends Controller
 
 
 
+
+
     public function show(Formulir $formulir)
     {
         $formulir->load([
             'sampel',
             'pemeriksa',
             'penyetuju',
-            // Kita gunakan join agar bisa sorting berdasarkan kolom di tabel sub_departemen
-            'departemen_terlibat' => function($query) {
-                $query->select('departemen_terlibat.*')
-                    ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
-                    ->orderBy('sub_departemen.urutan', 'asc');
-            },
             'departemen_terlibat.sub_departemen',
             'departemen_terlibat.penerima',
-            'departemen_terlibat.qcUser',
-            'departemen_terlibat.spvUser'
+            'departemen_terlibat.qcUser', // Relasi ke paraf_qc
+            'departemen_terlibat.spvUser'  // Relasi ke paraf_spv
         ]);
+
+        // Sorting berdasarkan urutan sub_departemen di level PHP Collection
+        $sortedDepts = $formulir->departemen_terlibat->sortBy(function($dept) {
+            return $dept->sub_departemen->urutan ?? 999;
+        })->values();
+
+        // Timpa relasi departemen_terlibat dengan yang sudah urut
+        $formulir->setRelation('departemen_terlibat', $sortedDepts);
 
         return Inertia::render('PersetujuanManager/Show', [
             'sampel' => $formulir->sampel,
