@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Formulir;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class PersetujuanManagerController extends Controller
 {
@@ -57,5 +58,40 @@ class PersetujuanManagerController extends Controller
             'sampel' => $formulir->sampel,
             'formulir' => $formulir,
         ]);
+    }
+
+
+    public function parafPemeriksa(Formulir $formulir)
+    {
+        // Cek apakah user punya role QC Manager atau Admin
+        if (!Auth::user()->hasAnyRole(['QC Manager', 'admin'])) {
+            return back()->with('error', 'Akses ditolak.');
+        }
+
+        $formulir->update([
+            'diperiksa_oleh' => Auth::id(),
+        ]);
+
+        return back();
+    }
+
+    public function parafPenyetuju(Formulir $formulir)
+    {
+        // Cek apakah user punya role Factory Manager atau Admin
+        if (!Auth::user()->hasAnyRole(['Factory Manager', 'admin'])) {
+            return back()->with('error', 'Akses ditolak.');
+        }
+
+        // Pastikan QC sudah paraf duluan
+        if (!$formulir->diperiksa_oleh) {
+            return back()->with('error', 'Dokumen harus diperiksa QC Manager terlebih dahulu.');
+        }
+
+        $formulir->update([
+            'disetujui_oleh' => Auth::id(),
+            'status' => 'Selesai', // Update status formulir jadi Selesai
+        ]);
+
+        return back();
     }
 }

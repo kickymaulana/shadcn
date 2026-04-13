@@ -33,16 +33,21 @@ const userRoles = computed(() => (page.props.auth as any).roles as string[]);
 
 /**
  * Logika Hak Akses:
- * Menentukan role spesifik untuk filter menu
+ * isAdminOrQC untuk menu Sampel, Formulir, dan Master
  */
 const isAdminOrQC = computed(() => {
     return userRoles.value.includes('admin') || userRoles.value.includes('Quality Control');
 });
 
+/**
+ * Logika Hak Akses:
+ * Khusus Persetujuan Manager (Admin, QC, QC Manager, Factory Manager)
+ */
 const canAccessManagerApproval = computed(() => {
     return isAdminOrQC.value ||
-           userRoles.value.includes('General Manager') ||
-           userRoles.value.includes('Factory Manager');
+           userRoles.value.includes('QC Manager') ||
+           userRoles.value.includes('Factory Manager') ||
+           userRoles.value.includes('General Manager'); // Tetap jaga GM jika ada
 });
 
 /**
@@ -77,7 +82,7 @@ const filteredNavMain = computed(() => {
         root: "TugasProduksi",
     });
 
-    // 3. Menu Persetujuan Manager (Admin, QC, GM, Factory Manager)
+    // 3. Menu Persetujuan Manager
     if (canAccessManagerApproval.value) {
         menus.push({
             title: "Persetujuan Manager",

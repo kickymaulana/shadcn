@@ -90,9 +90,6 @@ Route::middleware('auth', 'role:admin|Quality Control')->group(function () {
     Route::patch('formulirs/{formulir}/departemen/{departemen_terlibat}/paraf-qc', [DepartemenTerlibatController::class, 'parafQc'])
         ->name('formulirs.departemen.paraf-qc');
 
-
-    Route::get('persetujuan-manager', [PersetujuanManagerController::class, 'index'])->name('persetujuan.manager.index');
-    Route::get('persetujuan-manager/{formulir}', [PersetujuanManagerController::class, 'show'])->name('persetujuan.manager.show');
 });
 
 Route::middleware('auth')->group(function () {
@@ -108,4 +105,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware('auth', 'role:admin|Quality Control|QC Manager|Factory Manager|General Manager')->group(function () {
+
+    Route::get('persetujuan-manager', [PersetujuanManagerController::class, 'index'])->name('persetujuan.manager.index');
+    Route::get('persetujuan-manager/{formulir}', [PersetujuanManagerController::class, 'show'])->name('persetujuan.manager.show');
+    Route::post('persetujuan-manager/{formulir}/paraf-pemeriksa', [PersetujuanManagerController::class, 'parafPemeriksa'])->name('persetujuan.manager.paraf_pemeriksa');
+    Route::post('persetujuan-manager/{formulir}/paraf-penyetuju', [PersetujuanManagerController::class, 'parafPenyetuju'])->name('persetujuan.manager.paraf_penyetuju');
+
 });
