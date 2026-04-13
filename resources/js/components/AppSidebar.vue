@@ -33,21 +33,28 @@ const userRoles = computed(() => (page.props.auth as any).roles as string[]);
 
 /**
  * Logika Hak Akses:
- * isAdminOrQC untuk menu Sampel, Formulir, dan Master
+ * isAdminOrQC untuk menu Sampel, Formulir, dan Master Data
  */
 const isAdminOrQC = computed(() => {
     return userRoles.value.includes('admin') || userRoles.value.includes('Quality Control');
 });
 
 /**
- * Logika Hak Akses:
- * Khusus Persetujuan Manager (Admin, QC, QC Manager, Factory Manager)
+ * Logika Hak Akses: Tugas Produksi
+ * Hanya bisa dilihat oleh admin, operator, manager, dan supervisor
+ */
+const canAccessTugasProduksi = computed(() => {
+    const allowed = ['admin', 'operator', 'manager', 'supervisor'];
+    return userRoles.value.some(role => allowed.includes(role.toLowerCase()) || allowed.includes(role));
+});
+
+/**
+ * Logika Hak Akses: Persetujuan Manager
+ * Hanya bisa dibuka oleh admin, QC Manager, dan Factory Manager
  */
 const canAccessManagerApproval = computed(() => {
-    return isAdminOrQC.value ||
-           userRoles.value.includes('QC Manager') ||
-           userRoles.value.includes('Factory Manager') ||
-           userRoles.value.includes('General Manager'); // Tetap jaga GM jika ada
+    const allowed = ['admin', 'QC Manager', 'Factory Manager'];
+    return userRoles.value.some(role => allowed.includes(role));
 });
 
 /**
@@ -74,15 +81,17 @@ const filteredNavMain = computed(() => {
         );
     }
 
-    // 2. Menu Tugas Produksi (Bisa diakses SEMUA user yang login)
-    menus.push({
-        title: "Tugas Produksi",
-        url: route("tugas.produksi.index"),
-        icon: IconClipboardList,
-        root: "TugasProduksi",
-    });
+    // 2. Menu Tugas Produksi (Admin, Operator, Manager, Supervisor)
+    if (canAccessTugasProduksi.value) {
+        menus.push({
+            title: "Tugas Produksi",
+            url: route("tugas.produksi.index"),
+            icon: IconClipboardList,
+            root: "TugasProduksi",
+        });
+    }
 
-    // 3. Menu Persetujuan Manager
+    // 3. Menu Persetujuan Manager (Admin, QC Manager, Factory Manager)
     if (canAccessManagerApproval.value) {
         menus.push({
             title: "Persetujuan Manager",
@@ -139,7 +148,7 @@ const masterData = [
                             class="w-full text-left"
                         >
                             <IconInnerShadowTop class="!size-5" />
-                            <span>Sisamcus</span>
+                            <span class="font-bold tracking-tight">SISAMCUS</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
