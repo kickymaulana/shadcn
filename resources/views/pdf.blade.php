@@ -203,7 +203,7 @@
     @foreach($formulir->departemen_terlibat as $dept)
         <div class="dept-block">
             <div class="dept-header">
-                <span class="dept-num">{{ $dept->sub_departemen->urutan ?? $loop->iteration }}</span>
+                <span class="dept-num">{{ $loop->iteration }}</span>
                 <span class="dept-name">{{ $dept->sub_departemen->nama ?? 'N/A' }}</span>
             </div>
 
