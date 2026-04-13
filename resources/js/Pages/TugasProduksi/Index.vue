@@ -145,6 +145,7 @@ const cleanLabel = (label: string) => {
                                     >Kode Sample</TableHead
                                 >
                                 <TableHead class="font-bold">Size</TableHead>
+                                <TableHead class="font-bold">Sub</TableHead>
                                 <TableHead class="font-bold text-center"
                                     >Run Ke</TableHead
                                 >
@@ -195,6 +196,11 @@ const cleanLabel = (label: string) => {
 
                                 <TableCell class="font-medium">
                                     {{ tugas.formulir.size }}
+                                </TableCell>
+                                <TableCell class="font-medium">
+                                    <Badge variant="outline" class="bg-blue-50 text-blue-700 border-blue-200 uppercase text-[10px] font-bold">
+                                        {{ tugas.sub_departemen?.nama }}
+                                    </Badge>
                                 </TableCell>
 
                                 <TableCell class="text-center">
