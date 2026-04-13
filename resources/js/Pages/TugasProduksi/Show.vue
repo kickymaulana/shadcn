@@ -119,10 +119,10 @@ const formatDate = (dateString: string | null) => {
                         </div>
                     </div>
 
-                    <div v-for="dept in formulir.departemen_terlibat" :key="dept.id" class="mb-8 italic leading-tight">
+                    <div v-for="(dept, index) in formulir.departemen_terlibat" :key="dept.id" class="mb-8 italic leading-tight">
                         <div class="flex items-center gap-2 mb-1.5">
                             <div class="bg-slate-900 text-white size-5 flex items-center justify-center font-bold text-[10px]">
-                                {{ dept.sub_departemen?.urutan }}
+                                {{ index + 1 }}
                             </div>
                             <div class="flex-1 border-b-2 border-slate-900 font-black uppercase text-[11px] tracking-tight text-slate-900">
                                 {{ dept.sub_departemen?.nama }}
