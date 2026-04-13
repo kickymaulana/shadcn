@@ -1,26 +1,18 @@
 <script setup lang="ts">
 import {
-    IconCamera,
-    IconDatabase,
-    IconFileAi,
-    IconFileDescription,
-    IconHelp,
     IconInnerShadowTop,
     IconPackage,
-    IconReport,
+    IconFileDescription,
+    IconClipboardList,
     IconSettingsAutomation,
-    IconSteeringWheel,
     IconUsers,
     IconHierarchy,
     IconBuilding,
     IconGitMerge,
-    IconClipboardList,
 } from "@tabler/icons-vue";
 
-import NavDocuments from "@/components/NavDocuments.vue";
 import Master from "@/components/Master.vue";
 import NavMain from "@/components/NavMain.vue";
-import NavSecondary from "@/components/NavSecondary.vue";
 import NavUser from "@/components/NavUser.vue";
 import {
     Sidebar,
@@ -31,28 +23,29 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Link } from "@inertiajs/vue3";
-import { usePage } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
 
-const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
-    navMain: [
-        {
-            title: "Sampel",
-            url: route("samples.index"),
-            icon: IconPackage,
-            root: "Sample",
-        },
-        {
-            title: "Formulir Permintaan",
-            url: route("formulirs.index"),
-            icon: IconFileDescription,
-            root: "Formulir",
-        },
+// Ambil data auth dari shared props (HandleInertiaRequests.php)
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+const userRoles = computed(() => (page.props.auth as any).roles as string[]);
+
+/**
+ * Logika Hak Akses:
+ * Menentukan apakah user adalah Admin atau Quality Control
+ */
+const isAdminOrQC = computed(() => {
+    return userRoles.value.includes('admin') || userRoles.value.includes('Quality Control');
+});
+
+/**
+ * Menu Navigasi Utama
+ * Menggunakan computed agar daftar menu menyesuaikan dengan role user
+ */
+const filteredNavMain = computed(() => {
+    // Menu yang bisa diakses SEMUA user
+    const commonMenus = [
         {
             title: "Tugas Produksi",
             url: route("tugas.produksi.index"),
@@ -65,36 +58,57 @@ const data = {
             icon: IconSettingsAutomation,
             root: "PersetujuanManager",
         },
-    ],
-    master: [
-        {
-            name: "Pengguna",
-            url: route("users.index"),
-            icon: IconUsers,
-            root: "Master/Users",
-        },
-        {
-            name: "Jabatan",
-            url: route("roles.index"),
-            icon: IconHierarchy,
-            root: "Master/Roles",
-        },
-        {
-            name: "Departemen",
-            url: route("departemens.index"),
-            icon: IconBuilding,
-            root: "Master/Departemen",
-        },
-        {
-            name: "Sub Departemen",
-            url: route("sub.departemens.index"),
-            icon: IconGitMerge,
-            root: "Master/SubDepartemen",
-        },
-    ],
-};
+    ];
 
-const user = usePage().props.auth.user;
+    // Jika user adalah Admin atau QC, tambahkan menu Sampel dan Formulir di awal
+    if (isAdminOrQC.value) {
+        return [
+            {
+                title: "Sampel",
+                url: route("samples.index"),
+                icon: IconPackage,
+                root: "Sample",
+            },
+            {
+                title: "Formulir Permintaan",
+                url: route("formulirs.index"),
+                icon: IconFileDescription,
+                root: "Formulir",
+            },
+            ...commonMenus
+        ];
+    }
+
+    return commonMenus;
+});
+
+// Data untuk menu Master
+const masterData = [
+    {
+        name: "Pengguna",
+        url: route("users.index"),
+        icon: IconUsers,
+        root: "Master/Users",
+    },
+    {
+        name: "Jabatan",
+        url: route("roles.index"),
+        icon: IconHierarchy,
+        root: "Master/Roles",
+    },
+    {
+        name: "Departemen",
+        url: route("departemens.index"),
+        icon: IconBuilding,
+        root: "Master/Departemen",
+    },
+    {
+        name: "Sub Departemen",
+        url: route("sub.departemens.index"),
+        icon: IconGitMerge,
+        root: "Master/SubDepartemen",
+    },
+];
 </script>
 
 <template>
@@ -118,10 +132,13 @@ const user = usePage().props.auth.user;
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
+
         <SidebarContent>
-            <NavMain :items="data.navMain" />
-            <Master :items="data.master" />
+            <NavMain :items="filteredNavMain" />
+
+            <Master v-if="isAdminOrQC" :items="masterData" />
         </SidebarContent>
+
         <SidebarFooter>
             <NavUser :user="user" />
         </SidebarFooter>
