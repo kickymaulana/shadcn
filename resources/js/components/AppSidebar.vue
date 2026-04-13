@@ -44,7 +44,7 @@ const isAdminOrQC = computed(() => {
  * Hanya bisa dilihat oleh admin, operator, manager, dan supervisor
  */
 const canAccessTugasProduksi = computed(() => {
-    const allowed = ['admin', 'operator', 'manager', 'supervisor'];
+    const allowed = ['admin', 'Operator', 'Leader', 'Manager', 'Supervisor'];
     return userRoles.value.some(role => allowed.includes(role.toLowerCase()) || allowed.includes(role));
 });
 
