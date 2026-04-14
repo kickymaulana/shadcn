@@ -62,7 +62,7 @@
         .meta-label { font-weight: bold; background: #fafafa; width: 20%; }
 
         /* Departemen Block */
-        .dept-block { margin-bottom: 20px; width: 100%; page-break-inside: avoid; }
+        .dept-block { margin-bottom: 15px; width: 100%; }
         .dept-header {
             width: 100%;
             margin-bottom: 3px;
@@ -72,12 +72,12 @@
             display: inline-block;
             background: #000;
             color: #fff;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             text-align: center;
-            line-height: 20px;
+            line-height: 18px;
             font-weight: bold;
-            font-size: 11px;
+            font-size: 10px;
             margin-right: 5px;
         }
         .dept-name {
@@ -87,17 +87,37 @@
             text-transform: uppercase;
         }
 
-        .logistik-table { width: 100%; border-collapse: collapse; margin-bottom: 3px; font-size: 9px; }
+        .logistik-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 9px; }
         .logistik-table td { width: 33.3%; vertical-align: top; padding: 1px 0; }
 
-        .tambahan-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 9px; color: #333; }
-        .tambahan-label { width: 120px; text-transform: capitalize; font-weight: bold; color: #555; }
+        /* Data Tambahan Style */
+        .data-tambahan-container {
+            width: 100%;
+            margin-bottom: 8px;
+            font-size: 8.5px;
+        }
+        .data-tambahan-item {
+            width: 48%;
+            display: inline-block;
+            vertical-align: top;
+            margin-bottom: 3px;
+            border-bottom: 0.5px solid #eee;
+            padding-bottom: 2px;
+        }
+        .label-tambahan {
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+            width: 100px;
+            display: inline-block;
+        }
+        .value-tambahan { font-weight: bold; color: #000; }
 
         /* Tabel Pemeriksaan */
         .pemeriksaan-table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid #000;
+            border: 1.2px solid #000;
         }
         .pemeriksaan-table th {
             background-color: #f0f0f0;
@@ -112,11 +132,13 @@
             font-size: 9px;
         }
 
-        /* Status & Signature */
-        .no-break {
+        /* Status & Signature - Page Break Fix */
+        .signature-wrapper {
             page-break-inside: avoid;
+            width: 100%;
+            margin-top: 10px;
         }
-        .status-section { text-align: right; margin-top: 10px; margin-bottom: 5px; }
+        .status-section { text-align: right; margin-bottom: 5px; }
         .status-box {
             display: inline-block;
             border: 2px solid #000;
@@ -128,7 +150,6 @@
         .signature-section {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 0px;
         }
         .signature-section td {
             border: 1px solid #000;
@@ -137,7 +158,7 @@
             text-align: center;
         }
         .sig-header { background: #f0f0f0; border-bottom: 1px solid #000; padding: 4px; font-weight: bold; font-size: 8.5px; }
-        .sig-space { height: 60px; vertical-align: middle; position: relative; }
+        .sig-space { height: 60px; vertical-align: middle; }
         .sig-footer { padding: 5px; line-height: 1.1; }
         .sig-name { font-weight: bold; text-decoration: underline; text-transform: uppercase; font-size: 10px; }
 
@@ -167,8 +188,7 @@
     <table class="header-table">
         <tr>
             <td class="logo-box">
-                {{-- Gunakan public_path agar DomPDF bisa mengambil gambar lokal --}}
-                <img src="{{ public_path('icon_mark.png') }}" style="max-height: 35px;">
+                <img src="{{ public_path('icon_mark.png') }}" style="max-height: 30px;">
             </td>
             <td class="title-box">Formulir Pembuatan Sample Customer</td>
             <td class="doc-info">
@@ -201,7 +221,13 @@
 
     {{-- DEPARTEMEN LIST --}}
     @foreach($formulir->departemen_terlibat as $dept)
-        <div class="dept-block">
+
+        {{-- Jika departemen terakhir, bungkus bersama signature --}}
+        @if($loop->last)
+            <div class="signature-wrapper">
+        @endif
+
+        <div class="dept-block" style="page-break-inside: avoid;">
             <div class="dept-header">
                 <span class="dept-num">{{ $loop->iteration }}</span>
                 <span class="dept-name">{{ $dept->sub_departemen->nama ?? 'N/A' }}</span>
@@ -224,7 +250,17 @@
                 </tr>
             </table>
 
-            {{-- Jika ada item pemeriksaan --}}
+            @if($dept->data_tambahan && is_array($dept->data_tambahan))
+                <div class="data-tambahan-container">
+                    @foreach($dept->data_tambahan as $key => $value)
+                        <div class="data-tambahan-item">
+                            <span class="label-tambahan">{{ $key }}</span>
+                            <span class="value-tambahan">: {{ $value ?? '-' }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
             @if($dept->item_pemeriksaan && count($dept->item_pemeriksaan) > 0)
                 <table class="pemeriksaan-table">
                     <thead>
@@ -246,45 +282,47 @@
                 </table>
             @endif
         </div>
+
+        {{-- Tempelkan Signature tepat setelah departemen terakhir di dalam wrapper yang sama --}}
+        @if($loop->last)
+            <div class="status-section">
+                <div class="status-box">STATUS: {{ strtoupper($formulir->status) }}</div>
+            </div>
+
+            <table class="signature-section">
+                <tr>
+                    <td>
+                        <div class="sig-header">DI PERIKSA OLEH :</div>
+                        <div class="sig-space">
+                            @if($formulir->diperiksa_oleh)
+                                <div class="badge-sign">✔ PASSED</div>
+                                <span class="small-sign-text">Digitally Signed by QC Manager</span>
+                            @endif
+                        </div>
+                        <div class="sig-footer">
+                            <span class="sig-name">{{ $formulir->pemeriksa->name ?? '..........................' }}</span><br>
+                            QC MANAGER
+                        </div>
+                    </td>
+                    <td>
+                        <div class="sig-header">DI SETUJUI OLEH :</div>
+                        <div class="sig-space">
+                            @if($formulir->disetujui_oleh)
+                                <div class="badge-sign badge-sign-blue">✔ APPROVED</div>
+                                <span class="small-sign-text">Digitally Signed by Factory Manager</span>
+                            @endif
+                        </div>
+                        <div class="sig-footer">
+                            <span class="sig-name">{{ $formulir->penyetuju->name ?? '..........................' }}</span><br>
+                            FACTORY MANAGER / GM
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            </div> {{-- Tutup signature-wrapper --}}
+        @endif
+
     @endforeach
-
-    {{-- SIGNATURE SECTION --}}
-    <div class="no-break">
-        <div class="status-section">
-            <div class="status-box">STATUS: {{ strtoupper($formulir->status) }}</div>
-        </div>
-
-        <table class="signature-section">
-            <tr>
-                <td>
-                    <div class="sig-header">DI PERIKSA OLEH :</div>
-                    <div class="sig-space">
-                        @if($formulir->diperiksa_oleh)
-                            <div class="badge-sign">✔ PASSED</div>
-                            <span class="small-sign-text">Digitally Signed by QC Manager</span>
-                        @endif
-                    </div>
-                    <div class="sig-footer">
-                        <span class="sig-name">{{ $formulir->pemeriksa->name ?? '..........................' }}</span><br>
-                        QC MANAGER
-                    </div>
-                </td>
-                <td>
-                    <div class="sig-header">DI SETUJUI OLEH :</div>
-                    <div class="sig-space">
-                        @if($formulir->disetujui_oleh)
-                            <div class="badge-sign badge-sign-blue">✔ APPROVED</div>
-                            <span class="small-sign-text">Digitally Signed by Factory Manager</span>
-                        @endif
-                    </div>
-                    <div class="sig-footer">
-                        <span class="sig-name">{{ $formulir->penyetuju->name ?? '..........................' }}</span><br>
-                        FACTORY MANAGER / GM
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
 
 </body>
 </html>
