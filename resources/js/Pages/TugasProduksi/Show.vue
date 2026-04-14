@@ -73,8 +73,8 @@ const formatDate = (dateString: string | null) => {
         </div>
 
         <div class="w-full flex justify-center">
-            <Card class="border-none shadow-2xl overflow-hidden bg-slate-200 flex justify-center py-10 px-4 w-full">
-                <div class="bg-white w-[210mm] min-h-[297mm] p-[12mm] shadow-sm text-slate-900 font-sans border border-slate-300 mx-auto relative">
+            <Card class="border-none shadow-2xl overflow-x-auto bg-slate-200 flex justify-start md:justify-center py-10 px-4 w-full">
+                <div class="bg-white w-[210mm] min-w-[210mm] min-h-[297mm] p-[12mm] shadow-sm text-slate-900 font-sans border border-slate-300 mx-auto relative">
 
                     <div class="border-2 border-slate-900 grid grid-cols-12 mb-6 text-center italic font-bold">
                         <div class="col-span-3 border-r-2 border-slate-900 p-2 flex items-center justify-center text-[10px] uppercase">
