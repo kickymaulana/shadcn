@@ -28,25 +28,29 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
+        $allowedRoles = ['Manager', 'Supervisor', 'Leader', 'Operator'];
+
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
+            // Validasi email kita hapus dari $request karena tidak dikirim dari form
             'password' => 'required|string|min:8|confirmed',
             'departemen_id' => 'required|exists:departemen,id',
-            'role' => 'required|exists:roles,name', // Validasi input role
+            'role' => ['required', \Illuminate\Validation\Rule::in($allowedRoles)],
         ]);
+
+        // Generate email otomatis berdasarkan username
+        $autoEmail = $request->username . '@sisamcus.com';
 
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
-            'email' => $request->email,
-            'whatsapp' => '62821*******',
+            'email' => $autoEmail, // Pakai email yang di-generate otomatis
+            'whatsapp' => '-', // Beri nilai default jika kolom ini wajib diisi
             'password' => Hash::make($request->password),
             'departemen_id' => $request->departemen_id,
         ]);
 
-        // Berikan role ke user menggunakan trait HasRoles dari Spatie
         $user->assignRole($request->role);
 
         Auth::login($user);

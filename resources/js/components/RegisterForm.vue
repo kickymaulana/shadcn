@@ -12,12 +12,12 @@ const props = defineProps<{
   roles: Array<{ id: number, name: string }>
 }>()
 
+// Email dihapus dari form state karena akan di-generate otomatis di backend
 const form = useForm({
   name: '',
   username: '',
-  email: '',
   departemen_id: '',
-  role: '', // State untuk Spatie Role
+  role: '',
   password: '',
   password_confirmation: '',
 })
@@ -35,7 +35,7 @@ const submit = () => {
       <CardHeader>
         <CardTitle>Daftar Akun</CardTitle>
         <CardDescription>
-          Lengkapi data di bawah untuk mendaftar ke aplikasi Sisamcus
+          Silakan lengkapi data untuk bergabung dengan Sisamcus.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -48,34 +48,22 @@ const submit = () => {
                 id="name"
                 v-model="form.name"
                 type="text"
-                placeholder="Masukkan nama lengkap"
+                placeholder="Contoh: Kicky Maulana"
                 required
               />
               <p v-if="form.errors.name" class="text-destructive text-xs mt-1">{{ form.errors.name }}</p>
             </Field>
 
-            <Field>
+            <Field class="md:col-span-2">
               <FieldLabel for="username">Username</FieldLabel>
               <Input
                 id="username"
                 v-model="form.username"
                 type="text"
-                placeholder="username123"
+                placeholder="Gunakan nama tanpa spasi"
                 required
               />
               <p v-if="form.errors.username" class="text-destructive text-xs mt-1">{{ form.errors.username }}</p>
-            </Field>
-
-            <Field>
-              <FieldLabel for="email">Email</FieldLabel>
-              <Input
-                id="email"
-                v-model="form.email"
-                type="email"
-                placeholder="name@example.com"
-                required
-              />
-              <p v-if="form.errors.email" class="text-destructive text-xs mt-1">{{ form.errors.email }}</p>
             </Field>
 
             <Field>
@@ -83,7 +71,7 @@ const submit = () => {
               <select
                 id="departemen"
                 v-model="form.departemen_id"
-                class="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                class="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 required
               >
                 <option value="" disabled>Pilih Departemen</option>
@@ -99,7 +87,7 @@ const submit = () => {
               <select
                 id="role"
                 v-model="form.role"
-                class="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                class="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 required
               >
                 <option value="" disabled>Pilih Role</option>
@@ -121,7 +109,7 @@ const submit = () => {
             </Field>
 
             <Field>
-              <FieldLabel for="password_confirmation">Konfirmasi Password</FieldLabel>
+              <FieldLabel for="password_confirmation">Konfirmasi</FieldLabel>
               <Input
                 id="password_confirmation"
                 v-model="form.password_confirmation"
@@ -133,16 +121,16 @@ const submit = () => {
 
             <Field class="md:col-span-2 mt-2">
               <Button type="submit" :disabled="form.processing" class="w-full">
-                {{ form.processing ? 'Sedang mendaftar...' : 'Daftar Sekarang' }}
+                {{ form.processing ? 'Memproses...' : 'Daftar Sekarang' }}
               </Button>
             </Field>
           </FieldGroup>
         </form>
 
         <div class="mt-6 text-center text-sm">
-          Sudah memiliki akun?
+          Sudah punya akun?
           <Link :href="route('login')" class="font-medium underline underline-offset-4 hover:text-primary">
-            Masuk di sini
+            Masuk ke Sisamcus
           </Link>
         </div>
       </CardContent>
