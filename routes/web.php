@@ -15,6 +15,7 @@ use App\Http\Controllers\DepartemenTerlibatController;
 use App\Http\Controllers\TugasProduksiController;
 use App\Http\Controllers\PersetujuanManagerController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\Auth\RegisterController;
 
 
 
@@ -24,6 +25,8 @@ Route::get('testing', [DashboardController::class, 'testing'])->name('testing');
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'index'])->name('login');
     Route::post('login', [LoginController::class, 'store'])->name('login.store');
+    Route::get('register', [RegisterController::class, 'index'])->name('register');
+    Route::post('register', [Register8Controller::class, 'store'])->name('register.store');
 });
 
 Route::post('logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
