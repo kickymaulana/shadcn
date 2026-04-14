@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import { Switch } from '@/Components/ui/switch'
 
 interface Event {
     title: string;

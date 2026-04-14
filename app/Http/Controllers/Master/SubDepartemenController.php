@@ -20,8 +20,9 @@ class SubDepartemenController extends Controller
                           $q->where('nama', 'like', "%{$search}%");
                       });
             })
+            ->orderBy('urutan')
             ->latest()
-            ->paginate(10)
+            ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('Master/SubDepartemen/Index', [
