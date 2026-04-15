@@ -90,43 +90,22 @@
         .logistik-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 9px; }
         .logistik-table td { width: 33.3%; vertical-align: top; padding: 1px 0; }
 
-        /* Data Tambahan Style */
-        .data-tambahan-container {
-            width: 100%;
-            margin-bottom: 8px;
-            font-size: 8.5px;
-        }
-        .data-tambahan-item {
-            width: 48%;
-            display: inline-block;
-            vertical-align: top;
-            margin-bottom: 3px;
-            border-bottom: 0.5px solid #eee;
-            padding-bottom: 2px;
-        }
-        .label-tambahan {
-            font-weight: bold;
-            color: #555;
-            text-transform: uppercase;
-            width: 100px;
-            display: inline-block;
-        }
-        .value-tambahan { font-weight: bold; color: #000; }
-
-        /* Tabel Pemeriksaan */
-        .pemeriksaan-table {
+        /* Style Tabel (Digunakan untuk Data Tambahan & Pemeriksaan) */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
             border: 1.2px solid #000;
+            margin-bottom: 8px;
         }
-        .pemeriksaan-table th {
+        .data-table th {
             background-color: #f0f0f0;
             border: 1px solid #000;
             padding: 4px;
             font-size: 8.5px;
             text-align: center;
+            text-transform: uppercase;
         }
-        .pemeriksaan-table td {
+        .data-table td {
             border: 1px solid #000;
             padding: 4px;
             font-size: 9px;
@@ -222,7 +201,6 @@
     {{-- DEPARTEMEN LIST --}}
     @foreach($formulir->departemen_terlibat as $dept)
 
-        {{-- Jika departemen terakhir, bungkus bersama signature --}}
         @if($loop->last)
             <div class="signature-wrapper">
         @endif
@@ -250,23 +228,32 @@
                 </tr>
             </table>
 
+            {{-- DATA TAMBAHAN DALAM BENTUK TABEL --}}
             @if($dept->data_tambahan && is_array($dept->data_tambahan))
-                <div class="data-tambahan-container">
-                    @foreach($dept->data_tambahan as $key => $value)
-                        <div class="data-tambahan-item">
-                            <span class="label-tambahan">{{ $key }}</span>
-                            <span class="value-tambahan">: {{ $value ?? '-' }}</span>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-
-            @if($dept->item_pemeriksaan && count($dept->item_pemeriksaan) > 0)
-                <table class="pemeriksaan-table">
+                <table class="data-table">
                     <thead>
                         <tr>
-                            <th width="55%">ITEM PEMERIKSAAN</th>
-                            <th width="20%">SPEC QC</th>
+                            <th colspan="2" style="text-align: left; background-color: #f9f9f9;">Informasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($dept->data_tambahan as $key => $value)
+                        <tr>
+                            <td width="50%" style="background-color: #fafafa; font-weight: bold; text-transform: uppercase;">{{ $key }}</td>
+                            <td>{{ $value ?? '-' }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+
+            {{-- TABEL PEMERIKSAAN --}}
+            @if($dept->item_pemeriksaan && count($dept->item_pemeriksaan) > 0)
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="50%">ITEM PEMERIKSAAN</th>
+                            <th width="25%">SPEC QC</th>
                             <th width="25%">ACTUAL</th>
                         </tr>
                     </thead>
@@ -283,7 +270,6 @@
             @endif
         </div>
 
-        {{-- Tempelkan Signature tepat setelah departemen terakhir di dalam wrapper yang sama --}}
         @if($loop->last)
             <div class="status-section">
                 <div class="status-box">STATUS: {{ strtoupper($formulir->status) }}</div>
@@ -292,34 +278,38 @@
             <table class="signature-section">
                 <tr>
                     <td>
-                        <div class="sig-header">DI PERIKSA OLEH :</div>
+                        <div class="sig-header">Dibuat Oleh:</div>
                         <div class="sig-space">
-                            @if($formulir->diperiksa_oleh)
-                                <div class="badge-sign">✔ PASSED</div>
-                                <span class="small-sign-text">Digitally Signed by QC Manager</span>
-                            @endif
+                            <div class="badge-sign badge-sign-blue">
+                                E-SIGNED
+                                <span class="small-sign-text">{{ $formulir->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
                         </div>
                         <div class="sig-footer">
-                            <span class="sig-name">{{ $formulir->pemeriksa->name ?? '..........................' }}</span><br>
-                            QC MANAGER
+                            <span class="sig-name">{{ $formulir->creator->name ?? 'Admin QC' }}</span><br>
+                            Staff QC / R&D
                         </div>
                     </td>
                     <td>
-                        <div class="sig-header">DI SETUJUI OLEH :</div>
+                        <div class="sig-header">Diketahui Oleh:</div>
                         <div class="sig-space">
-                            @if($formulir->disetujui_oleh)
-                                <div class="badge-sign badge-sign-blue">✔ APPROVED</div>
-                                <span class="small-sign-text">Digitally Signed by Factory Manager</span>
+                            @if($formulir->status == 'released' || $formulir->status == 'completed')
+                                <div class="badge-sign">
+                                    APPROVED
+                                    <span class="small-sign-text">{{ $formulir->updated_at->format('d/m/Y H:i') }}</span>
+                                </div>
+                            @else
+                                <span style="color: #ccc;">(Belum Disetujui)</span>
                             @endif
                         </div>
                         <div class="sig-footer">
-                            <span class="sig-name">{{ $formulir->penyetuju->name ?? '..........................' }}</span><br>
-                            FACTORY MANAGER / GM
+                            <span class="sig-name">{{ $formulir->approver->name ?? 'Manager QC' }}</span><br>
+                            Kepala Departemen
                         </div>
                     </td>
                 </tr>
             </table>
-            </div> {{-- Tutup signature-wrapper --}}
+            </div> {{-- End of signature-wrapper --}}
         @endif
 
     @endforeach
