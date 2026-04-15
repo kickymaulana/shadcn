@@ -30,7 +30,7 @@ const props = defineProps<{
     list_formulir: {
         data: Array<{
             id: number;
-            sampel: { kode_sample: string; customer: string };
+            sampel: { kode_sample: string; customer: string, model: string };
             size: string;
             qty_sampel_kirim: number;
             running_ke: number;
@@ -149,6 +149,7 @@ const cleanLabel = (label: string) => {
                             <TableRow class="bg-muted/50 hover:bg-muted/50">
                                 <TableHead class="w-[100px]">Status</TableHead>
                                 <TableHead>Kode Sample</TableHead>
+                                <TableHead>Model</TableHead>
                                 <TableHead>Customer</TableHead>
                                 <TableHead>Size / Qty</TableHead>
                                 <TableHead>Tgl Permintaan</TableHead>
@@ -182,6 +183,11 @@ const cleanLabel = (label: string) => {
                                     class="font-mono text-xs font-bold text-primary"
                                 >
                                     {{ item.sampel.kode_sample }}
+                                </TableCell>
+                                <TableCell
+                                    class="font-mono text-xs font-bold text-primary"
+                                >
+                                    {{ item.sampel.model }}
                                 </TableCell>
                                 <TableCell class="font-medium">
                                     {{ item.sampel.customer }}

@@ -13,7 +13,7 @@ class FormulirController extends Controller
     public function index(Request $request): Response
     {
         $list_formulir = Formulir::query()
-            ->with('sampel:id,kode_sample,customer') // Ambil data sampel terkait
+            ->with('sampel:id,kode_sample,customer,model') // Ambil data sampel terkait
             ->when($request->search, function ($query, $search) {
                 $query->whereHas('sampel', function ($q) use ($search) {
                     $q->where('kode_sample', 'like', "%{$search}%")
@@ -34,7 +34,7 @@ class FormulirController extends Controller
     public function create()
     {
         return Inertia::render('Formulir/Create', [
-            'list_samples' => Sample::select('id', 'kode_sample', 'customer')->get()
+            'list_samples' => Sample::select('id', 'kode_sample', 'customer', 'model')->get()
         ]);
     }
 
