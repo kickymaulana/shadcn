@@ -293,7 +293,7 @@
                     <td>
                         <div class="sig-header">Diketahui Oleh:</div>
                         <div class="sig-space">
-                            @if($formulir->status == 'released' || $formulir->status == 'completed')
+                            @if($formulir->status == 'Selesai')
                                 <div class="badge-sign">
                                     APPROVED
                                     <span class="small-sign-text">{{ $formulir->updated_at->format('d/m/Y H:i') }}</span>
