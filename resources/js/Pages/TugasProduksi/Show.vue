@@ -234,86 +234,76 @@ const formatDate = (dateString: string | null) => {
                             </div>
                         </div>
 
-                        <div
-                            v-if="
-                                dept.data_tambahan &&
-                                Object.keys(dept.data_tambahan).length > 0
-                            "
-                            class="mb-3 px-1 mt-3"
-                        >
-                            <div class="grid grid-cols-2 gap-x-8 gap-y-1">
-                                <div
-                                    v-for="(value, key) in dept.data_tambahan"
-                                    :key="key"
-                                    class="flex items-start text-[9px] border-b border-slate-100 pb-0.5"
-                                >
-                                    <span
-                                        class="font-bold text-slate-500 uppercase min-w-[110px]"
-                                        >{{ key }}</span
-                                    >
-                                    <span class="mx-1">:</span>
-                                    <span
-                                        class="font-black text-slate-900 flex-1"
-                                        >{{ value || "-" }}</span
-                                    >
-                                </div>
-                            </div>
-                        </div>
 
                         <div
-                            v-if="
-                                dept.item_pemeriksaan &&
-                                dept.item_pemeriksaan.length > 0
-                            "
-                            class="mt-2 border-2 border-slate-900"
+                            v-if="dept.data_tambahan && Object.keys(dept.data_tambahan).length > 0"
+                            class="border-2 border-slate-900 overflow-hidden mb-3"
                         >
-                            <table class="w-full text-[8px] border-collapse">
-                                <thead
-                                    class="bg-slate-50 font-bold text-slate-900 border-b-2 border-slate-900"
-                                >
-                                    <tr class="uppercase italic h-6">
-                                        <th
-                                            class="border-r-2 border-slate-900 px-2 text-left"
-                                        >
-                                            Item Pemeriksaan
+                            <table class="w-full text-slate-900 border-collapse text-[9px]">
+                                <thead class="bg-slate-50 border-b-2 border-slate-900 uppercase font-black italic">
+                                    <tr class="h-8">
+                                        <th class="px-3 text-left border-r-2 border-slate-900">
+                                            Informasi
                                         </th>
-                                        <th
-                                            class="border-r-2 border-slate-900 px-2 w-24 text-center"
-                                        >
-                                            Spec
-                                        </th>
-                                        <th class="px-2 w-32 text-center">
-                                            Hasil Aktual
+                                        <th class="px-3 text-center w-1/2">
+                                            Detail / Nilai
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr
-                                        v-for="(
-                                            item, idx
-                                        ) in dept.item_pemeriksaan"
-                                        :key="idx"
-                                        class="border-b border-slate-900 last:border-0 h-6"
+                                        v-for="(value, key) in dept.data_tambahan"
+                                        :key="key"
+                                        class="border-b border-slate-900 last:border-0 h-7"
                                     >
-                                        <td
-                                            class="px-2 uppercase border-r-2 border-slate-900"
-                                        >
-                                            {{ item.item }}
+                                        <td class="px-3 font-bold uppercase bg-slate-50/50 border-r-2 border-slate-900 w-[140px]">
+                                            {{ key }}
                                         </td>
-                                        <td
-                                            class="px-2 text-center border-r-2 border-slate-900 font-mono"
-                                        >
-                                            {{ item.spec || "-" }}
-                                        </td>
-                                        <td
-                                            class="px-2 text-center font-black text-primary"
-                                        >
-                                            {{ item.actual || "-" }}
+                                        <td class="px-3 text-center font-black text-slate-900">
+                                            {{ value || "-" }}
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
+
+
+                        <div class="border-2 border-slate-900 overflow-hidden">
+                            <table class="w-full text-slate-900 border-collapse text-[9px] table-fixed">
+                                <thead class="bg-slate-50 border-b-2 border-slate-900 uppercase font-black italic">
+                                    <tr class="h-8">
+                                        <th class="px-3 text-left border-r-2 border-slate-900 w-1/2">
+                                            Item Pemeriksaan
+                                        </th>
+                                        <th class="px-3 text-center border-r-2 border-slate-900 w-1/4">
+                                            Spec
+                                        </th>
+                                        <th class="px-3 text-center w-1/4">
+                                            Actual
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        v-for="(row, idx) in dept.item_pemeriksaan || []"
+                                        :key="idx"
+                                        class="border-b border-slate-900 last:border-0 min-h-7"
+                                    >
+                                        <td class="px-3 py-1 font-bold uppercase break-words border-r-2 border-slate-900">
+                                            {{ row.item }}
+                                        </td>
+                                        <td class="px-3 py-1 text-center border-r-2 border-slate-900 font-mono font-bold break-words">
+                                            {{ row.spec }}
+                                        </td>
+                                        <td class="px-3 py-1 text-center font-black text-primary break-words">
+                                            {{ row.actual || "-" }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
                     </div>
 
                     <div
