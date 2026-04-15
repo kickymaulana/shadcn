@@ -146,7 +146,7 @@ const cleanLabel = (label: string) => {
                             <TableRow class="bg-muted/50 whitespace-nowrap">
                                 <TableHead>Sampel / Customer</TableHead>
                                 <TableHead>Size / Run</TableHead>
-                                <TableHead>Tgl Permintaan</TableHead>
+                                <TableHead>Tgl Permintaan / Model</TableHead>
                                 <TableHead class="text-center"
                                     >Status</TableHead
                                 >
@@ -191,7 +191,14 @@ const cleanLabel = (label: string) => {
                                     </div>
                                 </TableCell>
                                 <TableCell>
+                                    <div class="font-medium">
+                                        {{ form.sampel.model }}
+                                    </div>
+                                    <div
+                                        class="text-[10px] text-muted-foreground"
+                                    >
                                     {{ formatDate(form.tanggal_permintaan) }}
+                                    </div>
                                 </TableCell>
                                 <TableCell class="text-center">
                                     <Badge
