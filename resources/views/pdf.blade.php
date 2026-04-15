@@ -270,6 +270,8 @@
             @endif
         </div>
 
+
+                    {{-- Tempelkan Signature tepat setelah departemen terakhir di dalam wrapper yang sama --}}
         @if($loop->last)
             <div class="status-section">
                 <div class="status-box">STATUS: {{ strtoupper($formulir->status) }}</div>
@@ -278,39 +280,37 @@
             <table class="signature-section">
                 <tr>
                     <td>
-                        <div class="sig-header">Dibuat Oleh:</div>
+                        <div class="sig-header">DI PERIKSA OLEH :</div>
                         <div class="sig-space">
-                            <div class="badge-sign badge-sign-blue">
-                                E-SIGNED
-                                <span class="small-sign-text">{{ $formulir->created_at->format('d/m/Y H:i') }}</span>
-                            </div>
-                        </div>
-                        <div class="sig-footer">
-                            <span class="sig-name">{{ $formulir->creator->name ?? 'Admin QC' }}</span><br>
-                            Staff QC / R&D
-                        </div>
-                    </td>
-                    <td>
-                        <div class="sig-header">Diketahui Oleh:</div>
-                        <div class="sig-space">
-                            @if($formulir->status == 'Selesai')
-                                <div class="badge-sign">
-                                    APPROVED
-                                    <span class="small-sign-text">{{ $formulir->updated_at->format('d/m/Y H:i') }}</span>
-                                </div>
-                            @else
-                                <span style="color: #ccc;">(Belum Disetujui)</span>
+                            @if($formulir->diperiksa_oleh)
+                                <div class="badge-sign">✔ PASSED</div>
+                                <span class="small-sign-text">Digitally Signed by QC Manager</span>
                             @endif
                         </div>
                         <div class="sig-footer">
-                            <span class="sig-name">{{ $formulir->approver->name ?? 'Manager QC' }}</span><br>
-                            Kepala Departemen
+                            <span class="sig-name">{{ $formulir->pemeriksa->name ?? '..........................' }}</span><br>
+                            QC MANAGER
+                        </div>
+                    </td>
+                    <td>
+                        <div class="sig-header">DI SETUJUI OLEH :</div>
+                        <div class="sig-space">
+                            @if($formulir->disetujui_oleh)
+                                <div class="badge-sign badge-sign-blue">✔ APPROVED</div>
+                                <span class="small-sign-text">Digitally Signed by Factory Manager</span>
+                            @endif
+                        </div>
+                        <div class="sig-footer">
+                            <span class="sig-name">{{ $formulir->penyetuju->name ?? '..........................' }}</span><br>
+                            FACTORY MANAGER / GM
                         </div>
                     </td>
                 </tr>
             </table>
-            </div> {{-- End of signature-wrapper --}}
+            </div> {{-- Tutup signature-wrapper --}}
         @endif
+
+
 
     @endforeach
 
