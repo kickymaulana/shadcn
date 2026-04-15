@@ -189,6 +189,10 @@ const formatDate = (date: string | null) => {
                         <p class="font-black text-primary text-xs">{{ formulir.sampel.kode_sample }} / {{ formulir.size }}</p>
                     </div>
                     <div class="space-y-0.5">
+                        <p class="text-muted-foreground font-bold uppercase text-[8px]">Model</p>
+                        <p class="font-black text-primary text-xs">{{ formulir.sampel.model }}</p>
+                    </div>
+                    <div class="space-y-0.5">
                         <p class="text-muted-foreground font-bold uppercase text-[8px]">Running / Tgl Terima</p>
                         <p class="font-bold text-slate-700 uppercase">
                             Run #{{ formulir.running_ke }} — {{ isReceived ? formatDate(departemen_terlibat.tanggal_diterima) : "BELUM" }}
