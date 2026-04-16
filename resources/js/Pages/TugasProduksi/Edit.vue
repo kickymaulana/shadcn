@@ -242,7 +242,7 @@ const formatDate = (date: string | null) => {
                     </CardHeader>
                     <CardContent class="py-4 px-6 bg-primary/5">
                         <div class="max-w-[200px] mx-auto space-y-1">
-                            <Label class="text-[9px] font-black uppercase text-primary tracking-widest block text-center">Jumlah Pcs</Label>
+                            <Label class="text-[9px] font-black uppercase text-primary tracking-widest block text-center">Jumlah</Label>
                             <Input type="number" v-model="form.qty" :disabled="!isReceived" class="h-12 text-3xl font-black focus-visible:ring-primary border-primary/20 bg-white text-center shadow-inner" />
                         </div>
                     </CardContent>

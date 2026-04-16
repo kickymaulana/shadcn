@@ -281,7 +281,7 @@ const parafQC = () => {
                         <div class="space-y-2">
                             <Label
                                 class="text-[10px] font-black uppercase text-muted-foreground tracking-widest"
-                                >Kuantitas (Qty Pcs)</Label
+                                >Kuantitas</Label
                             >
                             <Input
                                 type="number"

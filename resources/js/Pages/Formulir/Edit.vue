@@ -208,7 +208,7 @@ const deleteFormulir = () => {
 
                         <div class="grid gap-2">
                             <Label for="qty_sampel_kirim" class="font-bold"
-                                >Quantity (Pcs)</Label
+                                >Quantity</Label
                             >
                             <Input
                                 id="qty_sampel_kirim"

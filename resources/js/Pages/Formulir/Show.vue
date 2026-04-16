@@ -196,7 +196,7 @@ const getStatusBadge = (status: string) => {
                             <TableCell class="bg-muted/10 font-bold text-[10px] uppercase text-muted-foreground">Penyetuju (FM)</TableCell>
                             <TableCell class="uppercase text-xs font-semibold">{{ formulir.penyetuju?.name || '-' }}</TableCell>
                             <TableCell class="bg-muted/10 font-bold text-[10px] uppercase text-muted-foreground">Qty Kirim</TableCell>
-                            <TableCell class="font-black text-primary">{{ formulir.qty_sampel_kirim }} Pcs</TableCell>
+                            <TableCell class="font-black text-primary">{{ formulir.qty_sampel_kirim }}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
