@@ -79,8 +79,27 @@ class TugasProduksiController extends Controller
         ]);
     }
 
+
+
     public function terima(DepartemenTerlibat $departemen_terlibat)
     {
+        // Ambil urutan master dari departemen yang mau di-klik "Terima" (FQC = 14)
+        $urutanSekarang = $departemen_terlibat->sub_departemen->urutan;
+
+        // Cari departemen sebelumnya yang TERDAFTAR di formulir ini
+        $sebelumnya = DepartemenTerlibat::where('formulir_id', $departemen_terlibat->formulir_id)
+            ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+            ->where('sub_departemen.urutan', '<', $urutanSekarang)
+            ->select('departemen_terlibat.*', 'sub_departemen.nama', 'sub_departemen.urutan')
+            ->orderBy('sub_departemen.urutan', 'desc')
+            ->first();
+
+        // Validasi Paraf QC pada departemen sebelumnya
+        if ($sebelumnya && is_null($sebelumnya->paraf_qc)) {
+            return back()->with('error', "Gagal! Proses {$sebelumnya->nama} belum di-paraf oleh QC.");
+        }
+
+        // Jika lolos (atau tidak ada departemen sebelumnya), update status terima
         if (!$departemen_terlibat->tanggal_diterima) {
             $departemen_terlibat->update([
                 'tanggal_diterima' => now(),
@@ -88,9 +107,10 @@ class TugasProduksiController extends Controller
             ]);
         }
 
-        // Redirect back akan me-refresh props di halaman Edit.vue secara otomatis
-        return back()->with('success', 'Tugas diterima.');
+        return back()->with('success', 'Tugas berhasil diterima.');
     }
+
+
 
 
 
