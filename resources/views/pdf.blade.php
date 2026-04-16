@@ -190,7 +190,7 @@
         </tr>
         <tr>
             <td class="meta-label">Spesifikasi</td><td>: {{ $sampel->spesifikasi }}</td>
-            <td class="meta-label">Qty Kirim</td><td>: <strong>{{ $formulir->qty_sampel_kirim }} Pcs</strong></td>
+            <td class="meta-label">Qty Kirim</td><td>: <strong>{{ $formulir->qty_sampel_kirim }}</strong></td>
         </tr>
         <tr>
             <td class="meta-label">Running Ke</td><td>: {{ $formulir->running_ke }}</td>
@@ -219,7 +219,7 @@
                     </td>
                     <td style="text-align: center;">
                         Tgl Selesai: {{ $dept->tanggal_selesai ? date('d/m/Y H:i', strtotime($dept->tanggal_selesai)) : '-' }}<br>
-                        Qty: <strong>{{ $dept->qty ?? 0 }} Pcs</strong>
+                        Qty: <strong>{{ $dept->qty ?? 0 }}</strong>
                     </td>
                     <td style="text-align: right;">
                         Paraf QC: {{ $dept->qcUser->name ?? '-' }}<br>

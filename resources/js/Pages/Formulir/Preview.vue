@@ -151,7 +151,7 @@ const formatDate = (dateString: string | null) => {
                                 >Qty Minta</span
                             >:
                             <span class="flex-1 font-black underline px-2"
-                                >{{ formulir.qty_sampel_kirim }} Pcs</span
+                                >{{ formulir.qty_sampel_kirim }}</span
                             >
                         </div>
                     </div>
@@ -185,9 +185,9 @@ const formatDate = (dateString: string | null) => {
                                 >
                             </div>
                             <div class="text-center font-black">
-                                Hasil:
+                                Qty:
                                 <span class="underline"
-                                    >{{ dept.qty || 0 }} Pcs</span
+                                    >{{ dept.qty || 0 }}</span
                                 >
                                 (Selesai:
                                 {{ formatDate(dept.tanggal_selesai) }})
