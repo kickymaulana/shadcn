@@ -149,21 +149,30 @@ class TugasProduksiController extends Controller
     }
 
 
-
-
-
     public function parafSpv(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
     {
-        // Pastikan user memiliki hak akses (opsional: bisa tambah role check di sini)
+        $user = auth()->user();
 
-        // Update data paraf supervisor
+        // 1. Validasi khusus jika user yang login berasal dari departemen FQC
+        // Kita cek berdasarkan departemen_id user atau departemen_id di sub_departemen terkait
+        if ($user->departemen_id == 14) {
+
+            // Cek apakah paraf_qc pada record ini masih NULL
+            if (is_null($departemen_terlibat->paraf_qc)) {
+                return back()->with('error', 'Gagal! Tugas di FQC harus di-paraf oleh QC (Sarah) terlebih dahulu sebelum Supervisor.');
+            }
+        }
+
+        // 2. Jika bukan FQC atau jika sudah di-paraf QC, lanjutkan update
         $departemen_terlibat->update([
-            'paraf_spv' => auth()->id(),
-            'tanggal_selesai' => now(), // Mencatat kapan proses di unit ini benar-benar selesai
+            'paraf_spv' => $user->id,
+            'tanggal_selesai' => now(),
         ]);
 
         return back()->with('success', 'Paraf Supervisor berhasil disimpan.');
     }
+
+
 
     public function update(Request $request, DepartemenTerlibat $departemen_terlibat)
     {
