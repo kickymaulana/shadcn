@@ -218,7 +218,10 @@
                         Penerima: {{ $dept->penerima->name ?? '-' }}
                     </td>
                     <td style="text-align: center;">
-                        Tgl Selesai: {{ $dept->tanggal_selesai ? date('d/m/Y H:i', strtotime($dept->tanggal_selesai)) : '-' }}<br>
+                        {{-- Cek jika sub_departemen_id TIDAK SAMA DENGAN 9 --}}
+                        @if($dept->sub_departemen_id != 9)
+                            Tgl Selesai: {{ $dept->tanggal_selesai ? date('d/m/Y H:i', strtotime($dept->tanggal_selesai)) : '-' }}<br>
+                        @endif
                         Qty: <strong>{{ $dept->qty ?? 0 }}</strong>
                     </td>
                     <td style="text-align: right;">
