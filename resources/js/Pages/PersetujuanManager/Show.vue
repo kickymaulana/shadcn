@@ -212,8 +212,9 @@ const formatDate = (dateString: string | null) => {
                                 <span class="font-black underline"
                                     >{{ dept.qty || 0 }}</span
                                 >
-                                (Selesai:
-                                {{ formatDate(dept.tanggal_selesai) }})
+                                <template v-if="dept.sub_departemen_id !== 9">
+                                    (Selesai: {{ formatDate(dept.tanggal_selesai) }})
+                                </template>
                             </div>
                             <div class="text-right font-bold">
                                 QC:
@@ -264,7 +265,7 @@ const formatDate = (dateString: string | null) => {
                         </div>
 
 
-                        <div class="border-2 border-slate-900 overflow-hidden">
+                        <div v-if="dept.item_pemeriksaan && dept.item_pemeriksaan.length > 0" class="border-2 border-slate-900 overflow-hidden">
                             <table class="w-full text-slate-900 border-collapse text-[9px] table-fixed">
                                 <thead class="bg-slate-50 border-b-2 border-slate-900 uppercase font-black italic">
                                     <tr class="h-8">
