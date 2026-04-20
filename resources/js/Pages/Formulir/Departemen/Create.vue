@@ -54,7 +54,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
         ],
         data: [],
     },
-    "FILLING": {
+    FILLING: {
         items: [
             { item: "Berat Basah", spec: "" },
             { item: "Jenis Tapak", spec: "" },
@@ -62,7 +62,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
         ],
         data: [],
     },
-    "WASHING": {
+    WASHING: {
         items: [
             { item: "Berat Kering Sebelum Cuci", spec: "" },
             { item: "Berat Kering Sesudah Cuci", spec: "" },
@@ -73,7 +73,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
         ],
         data: [],
     },
-    "TEXTURE": {
+    TEXTURE: {
         items: [
             { item: "CB", spec: "" },
             { item: "Tinggi Texture", spec: "" },
@@ -104,7 +104,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
         ],
         data: [],
     },
-    "GLAZE": {
+    GLAZE: {
         items: [
             { item: "Jenis Formula", spec: "" },
             { item: "Berat Formula", spec: "" },
@@ -132,7 +132,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
             { key: "Hasil Stempel", value: "" },
         ],
     },
-    "OVEN": {
+    OVEN: {
         items: [],
         data: [
             { key: "No Oven", value: "" },
@@ -140,7 +140,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
             { key: "Tgl Selesai Bakar", value: "" },
         ],
     },
-    "BONGKAR": {
+    BONGKAR: {
         items: [],
         data: [
             { key: "Tanggal Bongkar", value: "" },
@@ -152,9 +152,9 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
             { item: "Asah", spec: "" },
             { item: "Grating", spec: "" },
         ],
-        data: []
+        data: [],
     },
-    "FQC": {
+    FQC: {
         items: [
             { item: "Berat Former", spec: "" },
             { item: "Visual Rejection", spec: "" },
@@ -170,7 +170,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
             { item: "Chemical Test Piece", spec: "" },
             { item: "Chemical visual", spec: "" },
         ],
-        data: []
+        data: [],
     },
 };
 
@@ -242,7 +242,11 @@ const submit = () => {
                     Add Department
                 </h2>
                 <p class="text-muted-foreground text-sm italic">
-                    SISAMCUS - {{ formulir.sampel.kode_sample }}
+                    SISAMCUS - {{ formulir.sampel.kode_sample }} |
+                    {{ formulir.sampel.customer }} | {{ formulir.running_ke }} |
+                    {{ formulir.size }}
+                    | {{ formulir.sampel.spesifikasi }} |
+                    {{ formulir.sampel.model }}
                 </p>
             </div>
         </div>
