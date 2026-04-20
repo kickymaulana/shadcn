@@ -42,48 +42,45 @@ const props = defineProps<{
 const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
     "MOULD DESIGN": {
         items: [
-            { item: "Berat basah mould", spec: "" },
-            { item: "Berat kering mould", spec: "" },
+            { item: "Berat Basah Mould", spec: "Mengikuti" },
+            { item: "Berat Kering Mould", spec: "Mengikuti" },
         ],
         data: [],
     },
     "WORKING MOULD": {
         items: [
-            { item: "Berat basah mould", spec: "" },
-            { item: "Berat kering mould", spec: "" },
+            { item: "Berat Basah Mould", spec: "" },
+            { item: "Berat Kering Mould", spec: "" },
         ],
         data: [],
     },
-    FILLING: {
+    "FILLING": {
         items: [
-            { item: "Berat basah", spec: "" },
-            { item: "Jenis tapak", spec: "" },
-            { item: "Susut former", spec: "" },
-            { item: "Visual Rejection", spec: "" },
+            { item: "Berat Basah", spec: "1200 - 1300" },
+            { item: "Jenis Tapak", spec: "Kossan" },
+            { item: "Visual Rejection", spec: "-" },
         ],
         data: [],
     },
-    WASHING: {
+    "WASHING": {
         items: [
-            { item: "Berat kering sebelum cuci", spec: "" },
-            { item: "Berat kering sesudah cuci", spec: "" },
-            { item: "Dimensi sebelum cuci", spec: "" },
-            { item: "Dimensi setelah cuci", spec: "" },
-            { item: "Visual Rejection", spec: "" },
+            { item: "Berat Kering Sebelum Cuci", spec: "Mengikuti" },
+            { item: "Berat Kering Sesudah Cuci", spec: "Mengikuti" },
+            { item: "Dimensi Sebelum Cuci", spec: "-" },
+            { item: "Dimensi Setelah Cuci", spec: "Mengikuti Spec Inproses" },
+            { item: "Visual Rejection", spec: "-" },
+            { item: "Susut Former", spec: "15% - 15,5%" },
         ],
-        data: [
-            { key: "Perlakuan", value: "" },
-            { key: "Lampiran", value: "" },
-        ],
+        data: [],
     },
-    TEXTURE: {
+    "TEXTURE": {
         items: [
-            { item: "CB", spec: "" },
-            { item: "Tinggi Texture", spec: "" },
-            { item: "Tekanan Angin", spec: "" },
-            { item: "Texturan", spec: "" },
+            { item: "CB", spec: "1,0 - 1,1" },
+            { item: "Tinggi Texture", spec: "Ikut Sample std Inproses" },
+            { item: "Tekanan Angin", spec: "-" },
+            { item: "Texturan", spec: "Ikut Sample std Inproses" },
         ],
-        data: [{ key: "Specification", value: "" }],
+        data: [],
     },
     "SPRAY ON KASAR": {
         items: [
@@ -101,30 +98,28 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
     },
     "CUCI CELUP": {
         items: [
-            { item: "Warna Base", spec: "" },
-            { item: "Tinggi Warna Base", spec: "" },
+            { item: "Warna Base", spec: "Yellow" },
+            { item: "Tinggi Warna Base", spec: "50mm matang (55mm mentah)" },
+            { item: "Visual Rejection", spec: "-" },
         ],
-        data: [{ key: "Specification", value: "" }],
+        data: [],
     },
-    GLAZE: {
-        items: [],
-        data: [
-            { key: "Jenis Formula", value: "" },
-            { key: "Berat Formula", value: "" },
-            { key: "Residue", value: "" },
-            { key: "Visco", value: "" },
-            { key: "Spesification", value: "" },
-            { key: "Lampiran", value: "" },
+    "GLAZE": {
+        items: [
+            { item: "Jenis Formula", spec: "-" },
+            { item: "Berat Formula", spec: "-" },
+            { item: "Residu", spec: "-" },
+            { item: "Visco", spec: "-" },
         ],
+        data: [],
     },
     "SPRAY ON HALUS": {
         items: [
             { item: "Tekanan Angin", spec: "" },
             { item: "Jumlah Tembakan", spec: "" },
-            { item: "Spray on mengikuti sample standard", spec: "" },
+            { item: "Spray On Mengikuti Sample Standard", spec: "Sample std Kossan" },
         ],
         data: [
-            { key: "Spesification", value: "" },
             { key: "Proses mesin", value: "" },
             { key: "Formula yang digunakan", value: "" },
             { key: "Berat Formula", value: "" },
@@ -137,7 +132,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
             { key: "Hasil Stempel", value: "" },
         ],
     },
-    OVEN: {
+    "OVEN": {
         items: [],
         data: [
             { key: "No Oven", value: "" },
@@ -145,22 +140,35 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
             { key: "Tgl Selesai Bakar", value: "" },
         ],
     },
-    BONGKAR: { items: [], data: [] },
-    "ASAH / GRATING": { items: [], data: [] },
-    FQC: {
+    "BONGKAR": {
+        items: [],
+        data: [
+            { key: "Tanggal Bongkar", value: "" },
+            { key: "Jam Bongkar", value: "" },
+        ],
+    },
+    "ASAH / GRATING": {
         items: [
-            { item: "Berat Former", spec: "" },
-            { item: "Visual Rejection", spec: "" },
-            { item: "Dimensi", spec: "" },
-            { item: "Texture", spec: "" },
-            { item: "Spray On", spec: "" },
-            { item: "Roughness 120", spec: "" },
-            { item: "Roughness 145", spec: "" },
-            { item: "Roughness 250", spec: "" },
-            { item: "Thermalshock 180 c", spec: "" },
-            { item: "Thermalshock 200 c", spec: "" },
-            { item: "Chemical test piece", spec: "" },
-            { item: "Chemical visual", spec: "" },
+            { item: "Asah", spec: "Asah Full Body" },
+            { item: "Grating", spec: "Grating (Hanya senget diatas 7mm)" },
+        ],
+        data: []
+    },
+    "FQC": {
+        items: [
+            { item: "Berat Former", spec: "850 - 950" },
+            { item: "Visual Rejection", spec: "-" },
+            { item: "Dimensi", spec: "Mengikuti spec Kossan" },
+            { item: "Texture", spec: "Ikut std Kossan" },
+            { item: "Spray On", spec: "Ikut std Kossan" },
+            { item: "Roughness 120", spec: "3 - 4" },
+            { item: "Roughness 145", spec: "3 - 4" },
+            { item: "Roughness 250", spec: "3 - 4" },
+            { item: "Glossy", spec: "-" },
+            { item: "Thermalshock 180 c", spec: "Pass 100%" },
+            { item: "Thermalshock 200 c", spec: "Pass 75%" },
+            { item: "Chemical Test Piece", spec: "Max 1.7 gr/dm2 (internal control)" },
+            { item: "Chemical visual", spec: "Max 25 titik (internal control)" },
         ],
         data: [
             { key: "Temperatur Bullerings", value: "" },
