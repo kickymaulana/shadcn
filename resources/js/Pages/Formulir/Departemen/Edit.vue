@@ -130,6 +130,10 @@ const parafQC = () => {
                     class="text-muted-foreground text-xs font-bold uppercase tracking-widest"
                 >
                     SISAMCUS - {{ formulir.sampel.kode_sample }}
+                    {{ formulir.sampel.customer }} | {{ formulir.running_ke }} |
+                    {{ formulir.size }}
+                    | {{ formulir.sampel.spesifikasi }} |
+                    {{ formulir.sampel.model }}
                 </p>
             </div>
         </div>
