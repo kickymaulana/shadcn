@@ -54,7 +54,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
         ],
         data: [],
     },
-    FILLING: {
+    "FILLING": {
         items: [
             { item: "Berat Basah", spec: "" },
             { item: "Jenis Tapak", spec: "" },
@@ -62,7 +62,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
         ],
         data: [],
     },
-    WASHING: {
+    "WASHING": {
         items: [
             { item: "Berat Kering Sebelum Cuci", spec: "" },
             { item: "Berat Kering Sesudah Cuci", spec: "" },
@@ -73,7 +73,7 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
         ],
         data: [],
     },
-    TEXTURE: {
+    "TEXTURE": {
         items: [
             { item: "CB", spec: "" },
             { item: "Tinggi Texture", spec: "" },
@@ -104,14 +104,14 @@ const departmentTemplates: Record<string, { items: any[]; data: any[] }> = {
         ],
         data: [],
     },
-    GLAZE: {
-        items: [
-            { item: "Jenis Formula", spec: "" },
-            { item: "Berat Formula", spec: "" },
-            { item: "Residu", spec: "" },
-            { item: "Visco", spec: "" },
+    "GLAZE": {
+        items: [],
+        data: [
+            { key: "Jenis Formula", value: "" },
+            { key: "Berat Formula", value: "" },
+            { key: "Residu", value: "" },
+            { key: "Visco", value: "" },
         ],
-        data: [],
     },
     "SPRAY ON HALUS": {
         items: [
