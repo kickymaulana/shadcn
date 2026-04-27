@@ -19,10 +19,13 @@ const props = defineProps<{
 
 const formatDate = (dateString: string | null) => {
     if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("id-ID", {
+    return new Date(dateString).toLocaleString("id-ID", {
         day: "2-digit",
         month: "long",
         year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        // second: "2-digit", // Tambahkan ini jika ingin detik
     });
 };
 </script>

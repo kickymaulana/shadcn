@@ -95,8 +95,8 @@ class FormulirController extends Controller
                     // Jika ingin menampilkan Nama Departemen Induk juga (misal: WASHING (PRODUKSI))
                     // 'nama_induk'    => $dt->sub_departemen?->departemen?->nama ?? '-',
                     'penerima'         => $dt->penerima?->name ?? '-',
-                    'tanggal_terima'   => $dt->tanggal_diterima ? $dt->tanggal_diterima->format('d M Y') : '-',
-                    'tanggal_selesai'  => $dt->tanggal_selesai ? $dt->tanggal_selesai->format('d M Y') : '-',
+                    'tanggal_terima'  => $dt->tanggal_diterima ? $dt->tanggal_diterima->format('d M Y H:i') : '-',
+                    'tanggal_selesai' => $dt->tanggal_selesai ? $dt->tanggal_selesai->format('d M Y H:i') : '-',
                     'qty'              => $dt->qty ?? 0,
                     'is_qc'            => !is_null($dt->paraf_qc),
                     'is_spv'           => !is_null($dt->paraf_spv),
