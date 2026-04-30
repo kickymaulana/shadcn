@@ -9,6 +9,7 @@ import {
     IconHierarchy,
     IconBuilding,
     IconGitMerge,
+    TugasProduksi,
 } from "@tabler/icons-vue";
 
 import Master from "@/components/Master.vue";
@@ -100,6 +101,13 @@ const filteredNavMain = computed(() => {
             root: "PersetujuanManager",
         });
     }
+
+    menus.push({
+        title: "Daftar Pengguna",
+        url: route("daftar.pengguna.index"),
+        icon: IconUsers,
+        root: "DaftarPengguna",
+    });
 
     return menus;
 });
