@@ -6,6 +6,7 @@ use App\Models\Formulir;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class PersetujuanManagerController extends Controller
 {
@@ -74,7 +75,42 @@ class PersetujuanManagerController extends Controller
 
         $formulir->update([
             'diperiksa_oleh' => Auth::id(),
+
+
         ]);
+
+        try {
+
+            $nomorSampel = $formulir->sampel->kode_sample; // Sesuaikan dengan nama kolom di tabel formulir kamu
+
+            $pesan = "*Notifikasi SISAMSUL*\n\n";
+            $pesan .= "Izin pak, sampel dengan nomor: *{$nomorSampel}* sudah bisa disetujui ya pak.\n";
+            $pesan .= "Tapi dicek cek dulu ya pak mana tau ada yang salah.\n\n";
+
+
+
+            $response = Http::withoutVerifying() // Tambahkan baris ini
+                ->withBasicAuth('root', 'Sukses1234')
+                ->withHeaders([
+                    'X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'
+                ])
+                ->post('https://whatsapp.gotechdynamics.com/send/message', [
+                    // 'phone'   => $manager->whatsapp,
+                    // buk afrida
+                    'phone'   => '6281263241975',
+                    'message' => $pesan,
+                ]);
+
+
+            // Opsional: Log jika gagal
+            if (!$response->successful()) {
+                \Log::error("Gagal kirim WA" . $response->body());
+            }
+        } catch (\Exception $e) {
+            // Supaya kalau server GOWA mati, aplikasi SISAMSUL tetap bisa jalan (tidak error 500)
+            \Log::error("Server WhatsApp tidak terjangkau: " . $e->getMessage());
+            dd($e->getMessage());
+        }
 
         return back();
     }
