@@ -181,7 +181,7 @@ class FormulirController extends Controller
                         'X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'
                     ])
                     ->post('https://whatsapp.gotechdynamics.com/send/message', [
-                        'phone'   => '120363130936425001@g.us', // GANTI DENGAN ID GRUP KAMU
+                        'phone'   => '120363425296176489@g.us', // GANTI DENGAN ID GRUP KAMU
                         'message' => $pesan,
                     ]);
 
