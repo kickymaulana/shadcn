@@ -7,6 +7,8 @@ use App\Models\Sample;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Http;
+
 
 class FormulirController extends Controller
 {
@@ -140,9 +142,10 @@ class FormulirController extends Controller
         ]);
     }
 
+
     public function update(Request $request, Formulir $formulir)
     {
-        // 1. Validasi sesuai struktur tabel formulirs
+        // 1. Validasi
         $request->validate([
             'sampel_id'          => 'required|exists:samples,id',
             'size'               => 'required|string|max:255',
@@ -152,10 +155,41 @@ class FormulirController extends Controller
             'status'             => 'required|in:Draft,Proses,Selesai,Ditolak',
         ]);
 
+        // Simpan status lama sebelum update untuk pengecekan
+        $statusLama = $formulir->status;
+
         // 2. Update data
         $formulir->update($request->all());
 
-        // 3. Redirect ke halaman detail formulir
+        // 3. Logika Notifikasi Grup (Hanya kirim jika status berubah jadi 'Proses')
+        if ($statusLama !== 'Proses' && $request->status === 'Proses') {
+            try {
+                $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+                $namaSampel  = $formulir->sampel->nama_sample ?? '-';
+
+                $pesan = "*NOTIFIKASI GRUP SISAMSUL*\n\n";
+                $pesan .= "📢 Form Sampel telah diupdate ke status: *PROSES*\n\n";
+                $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+                $pesan .= "• *Nama Sampel:* {$namaSampel}\n";
+                $pesan .= "• *Qty:* {$request->qty_sampel_kirim}\n";
+                $pesan .= "• *Running Ke:* {$request->running_ke}\n\n";
+                $pesan .= "Mohon tim terkait untuk mulai memonitor alur sampel ini. Terima kasih.";
+
+                Http::withoutVerifying()
+                    ->withBasicAuth('root', 'Sukses1234')
+                    ->withHeaders([
+                        'X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'
+                    ])
+                    ->post('https://whatsapp.gotechdynamics.com/send/message', [
+                        'phone'   => '120363130936425001@g.us', // GANTI DENGAN ID GRUP KAMU
+                        'message' => $pesan,
+                    ]);
+
+            } catch (\Exception $e) {
+                \Log::error("Gagal kirim notifikasi grup: " . $e->getMessage());
+            }
+        }
+
         return redirect()
             ->route('formulirs.show', $formulir->id)
             ->with('success', 'Data formulir berhasil diperbarui.');
