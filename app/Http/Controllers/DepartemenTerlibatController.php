@@ -84,84 +84,79 @@ class DepartemenTerlibatController extends Controller
             ->with('success', 'Alur proses departemen berhasil dihapus.');
     }
 
+
     public function parafQc(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
     {
-        // 1. Cari sub departemen berikutnya
-        $nextSubDept = SubDepartemen::where('urutan', $departemen_terlibat->sub_departemen->urutan + 1)->first();
-
-        if ($nextSubDept) {
-            // 2. Cari user manager (Gunakan optional untuk menghindari crash jika manager kosong)
-            $manager = $nextSubDept->departemen->users()->role('Manager')->first();
-
-            if ($manager && $manager->whatsapp) {
-                try {
-
-
-                    $nomorSampel = $formulir->sampel->kode_sample; // Sesuaikan dengan nama kolom di tabel formulir kamu
-
-                    $pesan = "*Notifikasi SISAMSUL*\n\n";
-                    $pesan .= "Ada sampel baru dengan nomor: *{$nomorSampel}* yang siap untuk diterima.\n";
-                    $pesan .= "Mohon segera di-input dan diterima melalui sistem.\n\n";
-                    $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample Unit Lengkap_";
-
-                    $response = Http::withoutVerifying() // Tambahkan baris ini
-                        ->withBasicAuth('root', 'Sukses1234')
-                        ->withHeaders([
-                            'X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'
-                        ])
-                        ->post('https://whatsapp.gotechdynamics.com/send/message', [
-                            'phone'   => $manager->whatsapp,
-                            'message' => $pesan,
-                        ]);
-
-                    // Opsional: Log jika gagal
-                    if (!$response->successful()) {
-                        \Log::error("Gagal kirim WA ke {$manager->whatsapp}: " . $response->body());
-                    }
-                } catch (\Exception $e) {
-                    // Supaya kalau server GOWA mati, aplikasi SISAMSUL tetap bisa jalan (tidak error 500)
-                    \Log::error("Server WhatsApp tidak terjangkau: " . $e->getMessage());
-                }
-            }
-        } else {
-
-            try {
-
-                $nomorSampel = $formulir->sampel->kode_sample; // Sesuaikan dengan nama kolom di tabel formulir kamu
-
-                $pesan = "*Notifikasi SISAMSUL*\n\n";
-                $pesan .= "Izin bu, sampel dengan nomor: *{$nomorSampel}* sudah bisa diparaf ya bu.\n";
-                $pesan .= "Tapi dicek cek dulu ya bu mana tau ada yang salah.\n\n";
-
-                $response = Http::withoutVerifying() // Tambahkan baris ini
-                    ->withBasicAuth('root', 'Sukses1234')
-                    ->withHeaders([
-                        'X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'
-                    ])
-                    ->post('https://whatsapp.gotechdynamics.com/send/message', [
-                        // 'phone'   => $manager->whatsapp,
-                        // buk afrida
-                        'phone'   => '6282379728828',
-                        'message' => $pesan,
-                    ]);
-
-                // Opsional: Log jika gagal
-                if (!$response->successful()) {
-                    \Log::error("Gagal kirim WA" . $response->body());
-                }
-            } catch (\Exception $e) {
-                // Supaya kalau server GOWA mati, aplikasi SISAMSUL tetap bisa jalan (tidak error 500)
-                \Log::error("Server WhatsApp tidak terjangkau: " . $e->getMessage());
-                dd($e->getMessage());
-            }
-
-        }
-
-        // 3. Update status paraf
+        // 1. Update status paraf QC terlebih dahulu
         $departemen_terlibat->update([
             'paraf_qc' => auth()->id(),
         ]);
 
-        return redirect()->back()->with('success', 'Berhasil melakukan Paraf QC.');
+        // 2. Cari departemen berikutnya dalam formulir ini berdasarkan urutan sub_departemen
+        $nextDeptTerlibat = DepartemenTerlibat::query()
+            ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+            ->where('departemen_terlibat.formulir_id', $formulir->id)
+            ->where('sub_departemen.urutan', '>', $departemen_terlibat->sub_departemen->urutan)
+            ->orderBy('sub_departemen.urutan', 'asc')
+            ->select('departemen_terlibat.*')
+            ->first(); // Ambil 1 yang urutannya paling dekat setelah departemen ini
+
+        if ($nextDeptTerlibat) {
+            // --- JIKA ADA DEPARTEMEN LANJUTAN ---
+
+            // Ambil Manager dari departemen tersebut
+            $manager = User::role('Manager')
+                ->where('departemen_id', $nextDeptTerlibat->sub_departemen->departemen_id)
+                ->first();
+
+            if ($manager && $manager->whatsapp) {
+                try {
+                    $nomorSampel = $formulir->sampel->kode_sample ?? 'N/A';
+                    $namaSubDeptNext = $nextDeptTerlibat->sub_departemen->nama;
+
+                    $pesan = "*Notifikasi SISAMSUL*\n\n";
+                    $pesan .= "Halo *{$manager->name}*,\n";
+                    $pesan .= "Ada sampel baru dengan nomor: *{$nomorSampel}* yang siap untuk diproses di bagian *{$namaSubDeptNext}*.\n";
+                    $pesan .= "Mohon segera dicek dan diterima melalui sistem.\n\n";
+                    $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+
+                    $this->kirimWhatsApp($manager->whatsapp, $pesan);
+                } catch (\Exception $e) {
+                    \Log::error("Gagal kirim WA Manager: " . $e->getMessage());
+                }
+            }
+        } else {
+            // --- JIKA INI ADALAH DEPARTEMEN TERAKHIR (Contoh: FQC) ---
+            // Kirim ke Bu Afrida (Penyetuju Akhir)
+
+            try {
+                $nomorSampel = $formulir->sampel->kode_sample ?? 'N/A';
+                $pesan = "*Notifikasi SISAMSUL*\n\n";
+                $pesan .= "Izin Bu Afrida, sampel dengan nomor: *{$nomorSampel}* telah selesai diproses di semua departemen.\n";
+                $pesan .= "Mohon kesediaannya untuk melakukan pengecekan akhir dan paraf persetujuan pada sistem.\n\n";
+                $pesan .= "_Terima kasih_";
+
+                $this->kirimWhatsApp('6282379728828', $pesan);
+            } catch (\Exception $e) {
+                \Log::error("Gagal kirim WA Bu Afrida: " . $e->getMessage());
+            }
+        }
+
+        return redirect()->back()->with('success', 'Berhasil melakukan Paraf QC dan mengirim notifikasi.');
     }
+
+    /**
+    * Helper function agar kode tidak duplikat
+    */
+    private function kirimWhatsApp($target, $pesan)
+    {
+        return Http::withoutVerifying()
+            ->withBasicAuth('root', 'Sukses1234')
+            ->withHeaders(['X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'])
+            ->post('https://whatsapp.gotechdynamics.com/send/message', [
+                'phone'   => $target,
+                'message' => $pesan,
+            ]);
+    }
+
 }
