@@ -115,7 +115,6 @@ class DepartemenTerlibatController extends Controller
                     $namaSubDeptNext = $nextDeptTerlibat->sub_departemen->nama;
 
                     $pesan = "*Notifikasi SISAMSUL*\n\n";
-                    $pesan .= "Halo *{$manager->name}*,\n";
                     $pesan .= "Ada sampel baru dengan nomor: *{$nomorSampel}* yang siap untuk diproses di bagian *{$namaSubDeptNext}*.\n";
                     $pesan .= "Mohon segera dicek dan diterima melalui sistem.\n\n";
                     $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
