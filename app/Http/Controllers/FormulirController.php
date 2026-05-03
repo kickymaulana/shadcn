@@ -165,14 +165,20 @@ class FormulirController extends Controller
         if ($statusLama !== 'Proses' && $request->status === 'Proses') {
             try {
                 $nomorSampel = $formulir->sampel->kode_sample ?? '-';
-                $namaSampel  = $formulir->sampel->nama_sample ?? '-';
+                $customer = $formulir->sampel->customer ?? '-';
+                $model = $formulir->sampel->model ?? '-';
+                $size = $formulir->size ?? '-';
+                $running_ke = $formulir->running_ke ?? '-';
+                $qty_sampel_kirim = $formulir->qty_sampel_kirim ?? '-';
 
-                $pesan = "*NOTIFIKASI GRUP SISAMSUL*\n\n";
+                $pesan = "";
                 $pesan .= "📢 Form Sampel telah diupdate ke status: *PROSES*\n\n";
                 $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
-                $pesan .= "• *Nama Sampel:* {$namaSampel}\n";
-                $pesan .= "• *Qty:* {$request->qty_sampel_kirim}\n";
-                $pesan .= "• *Running Ke:* {$request->running_ke}\n\n";
+                $pesan .= "• *Customer:* {$customer}\n";
+                $pesan .= "• *Model:* {$model}\n";
+                $pesan .= "• *Size:* {$size}\n";
+                $pesan .= "• *Running Ke:* {$running_ke}\n";
+                $pesan .= "• *Qty:* {$qty_sampel_kirim}\n";
                 $pesan .= "Mohon tim terkait untuk mulai memonitor alur sampel ini. Terima kasih.";
 
                 Http::withoutVerifying()
