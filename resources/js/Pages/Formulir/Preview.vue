@@ -28,6 +28,16 @@ const formatDate = (dateString: string | null) => {
         // second: "2-digit", // Tambahkan ini jika ingin detik
     });
 };
+
+const formatDateMinta = (dateString: string | null) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        // second: "2-digit", // Tambahkan ini jika ingin detik
+    });
+};
 </script>
 
 <template>
@@ -136,7 +146,7 @@ const formatDate = (dateString: string | null) => {
                                 >Tgl Minta</span
                             >:
                             <span class="flex-1 px-2">{{
-                                formatDate(formulir.tanggal_permintaan)
+                                formatDateMinta(formulir.tanggal_permintaan)
                             }}</span>
                         </div>
                         <div class="flex justify-between">
@@ -155,6 +165,24 @@ const formatDate = (dateString: string | null) => {
                             >:
                             <span class="flex-1 font-black underline px-2"
                                 >{{ formulir.qty_sampel_kirim }}</span
+                            >
+                        </div>
+                        <div class="flex justify-between">
+                            <span
+                                class="w-24 text-slate-500 uppercase font-bold"
+                                >Running ke</span
+                            >:
+                            <span class="flex-1 font-black underline px-2"
+                                >{{ formulir.running_ke }}</span
+                            >
+                        </div>
+                        <div class="flex justify-between">
+                            <span
+                                class="w-24 text-slate-500 uppercase font-bold"
+                                >Status Dokumen</span
+                            >:
+                            <span class="flex-1 font-black underline px-2"
+                                >{{ formulir.status }}</span
                             >
                         </div>
                     </div>
