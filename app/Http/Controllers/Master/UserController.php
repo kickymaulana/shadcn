@@ -92,6 +92,7 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
+            'whatsapp' => ['required', 'string', 'regex:/^628[0-9]{7,12}$/', 'unique:users,whatsapp,' . $user->id],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'departemen_id' => ['nullable', 'exists:departemen,id'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
@@ -100,6 +101,7 @@ class UserController extends Controller
         // Update data dasar
         $user->name = $request->name;
         $user->username = $request->username;
+        $user->whatsapp = $request->whatsapp;
         $user->email = $request->email;
         $user->departemen_id = $request->departemen_id;
 

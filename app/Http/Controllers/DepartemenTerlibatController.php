@@ -87,45 +87,49 @@ class DepartemenTerlibatController extends Controller
 
     public function parafQc(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
     {
-        // 1. Update status paraf QC terlebih dahulu
+        // 1. Update status paraf QC user yang sedang login
         $departemen_terlibat->update([
             'paraf_qc' => auth()->id(),
         ]);
 
-        // 2. Cari departemen berikutnya dalam formulir ini berdasarkan urutan sub_departemen
+        // 2. Cari departemen berikutnya berdasarkan urutan sub_departemen
         $nextDeptTerlibat = DepartemenTerlibat::query()
             ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
             ->where('departemen_terlibat.formulir_id', $formulir->id)
             ->where('sub_departemen.urutan', '>', $departemen_terlibat->sub_departemen->urutan)
             ->orderBy('sub_departemen.urutan', 'asc')
             ->select('departemen_terlibat.*')
-            ->first(); // Ambil 1 yang urutannya paling dekat setelah departemen ini
+            ->first();
 
         if ($nextDeptTerlibat) {
             // --- JIKA ADA DEPARTEMEN LANJUTAN ---
 
-            // Ambil Manager dari departemen tersebut
-            $manager = User::role('Manager')
-                ->where('departemen_id', $nextDeptTerlibat->sub_departemen->departemen_id)
-                ->first();
+            $targetDeptId = $nextDeptTerlibat->sub_departemen->departemen_id;
+            $namaSubDeptNext = $nextDeptTerlibat->sub_departemen->nama;
+            $nomorSampel = $formulir->sampel->kode_sample ?? 'N/A';
 
-            if ($manager && $manager->whatsapp) {
-                try {
-                    $nomorSampel = $formulir->sampel->kode_sample ?? 'N/A';
-                    $namaSubDeptNext = $nextDeptTerlibat->sub_departemen->nama;
+            // Ambil semua User dengan role Manager ATAU Supervisor di departemen tersebut
+            $penerimaNotif = User::role(['Manager', 'Supervisor'])
+                ->where('departemen_id', $targetDeptId)
+                ->whereNotNull('whatsapp')
+                ->get();
 
-                    $pesan = "*Notifikasi SISAMSUL*\n\n";
-                    $pesan .= "Ada sampel baru dengan nomor: *{$nomorSampel}* yang siap untuk diproses di bagian *{$namaSubDeptNext}*.\n";
-                    $pesan .= "Mohon segera dicek dan diterima melalui sistem.\n\n";
-                    $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+            if ($penerimaNotif->isNotEmpty()) {
+                $pesan = "*Notifikasi SISAMSUL*\n\n";
+                $pesan .= "Ada sampel baru dengan nomor: *{$nomorSampel}* yang siap untuk diproses di bagian *{$namaSubDeptNext}*.\n";
+                $pesan .= "Mohon segera dicek dan diterima melalui sistem.\n\n";
+                $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
 
-                    $this->kirimWhatsApp($manager->whatsapp, $pesan);
-                } catch (\Exception $e) {
-                    \Log::error("Gagal kirim WA Manager: " . $e->getMessage());
+                foreach ($penerimaNotif as $user) {
+                    try {
+                        $this->kirimWhatsApp($user->whatsapp, $pesan);
+                    } catch (\Exception $e) {
+                        \Log::error("Gagal kirim WA ke {$user->name} ({$user->roles->first()->name}): " . $e->getMessage());
+                    }
                 }
             }
         } else {
-            // --- JIKA INI ADALAH DEPARTEMEN TERAKHIR (Contoh: FQC) ---
+            // --- JIKA INI ADALAH DEPARTEMEN TERAKHIR ---
             // Kirim ke Bu Afrida (Penyetuju Akhir)
 
             try {
@@ -135,14 +139,16 @@ class DepartemenTerlibatController extends Controller
                 $pesan .= "Mohon kesediaannya untuk melakukan pengecekan akhir dan paraf persetujuan pada sistem.\n\n";
                 $pesan .= "_Terima kasih_";
 
+                // Pastikan nomor WhatsApp Bu Afrida sudah benar
                 $this->kirimWhatsApp('6282379728828', $pesan);
             } catch (\Exception $e) {
                 \Log::error("Gagal kirim WA Bu Afrida: " . $e->getMessage());
             }
         }
 
-        return redirect()->back()->with('success', 'Berhasil melakukan Paraf QC dan mengirim notifikasi.');
+        return redirect()->back()->with('success', 'Berhasil melakukan Paraf QC dan mengirim notifikasi ke Manager & Supervisor.');
     }
+
 
     /**
     * Helper function agar kode tidak duplikat

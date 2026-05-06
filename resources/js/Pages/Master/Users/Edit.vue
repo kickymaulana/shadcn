@@ -26,6 +26,7 @@ const props = defineProps<{
         id: number;
         name: string;
         username: string;
+        whatsapp: string;
         email: string;
         departemen_id: number | null; // Tambahkan ini
     };
@@ -36,6 +37,7 @@ const props = defineProps<{
 const form = useForm({
     name: props.user.name,
     username: props.user.username,
+    whatsapp: props.user.whatsapp,
     email: props.user.email,
     departemen_id: props.user.departemen_id, // Tambahkan ini
     password: "",
@@ -108,40 +110,66 @@ const submit = () => {
                             </p>
                         </div>
 
-                        <div class="grid gap-3">
-                            <Label
-                                for="departemen_id"
-                                class="text-sm font-medium leading-none ml-0.5"
-                                >Departemen</Label
-                            >
-                            <div class="relative">
-                                <select
-                                    id="departemen_id"
-                                    v-model="form.departemen_id"
-                                    class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid gap-3">
+                                <Label
+                                    for="departemen_id"
+                                    class="text-sm font-medium leading-none ml-0.5"
+                                    >Departemen</Label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="departemen_id"
+                                        v-model="form.departemen_id"
+                                        class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+                                        :class="{
+                                            'border-destructive':
+                                                form.errors.departemen_id,
+                                        }"
+                                    >
+                                        <option :value="null">
+                                            Tanpa Departemen
+                                        </option>
+                                        <option
+                                            v-for="dept in departemens"
+                                            :key="dept.id"
+                                            :value="dept.id"
+                                        >
+                                            {{ dept.nama }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <p
+                                    v-if="form.errors.departemen_id"
+                                    class="text-xs font-medium text-destructive"
+                                >
+                                    {{ form.errors.departemen_id }}
+                                </p>
+                            </div>
+
+                            <div class="grid gap-3">
+                                <Label
+                                    for="whatsapp"
+                                    class="text-sm font-medium leading-none ml-0.5"
+                                    >Whatsapp</Label
+                                >
+                                <Input
+                                    id="whatsapp"
+                                    v-model="form.whatsapp"
+                                    type="text"
+                                    class="h-11 shadow-sm"
                                     :class="{
                                         'border-destructive':
-                                            form.errors.departemen_id,
+                                            form.errors.whatsapp,
                                     }"
+                                />
+                                <p
+                                    v-if="form.errors.whatsapp"
+                                    class="text-xs font-medium text-destructive"
                                 >
-                                    <option :value="null">
-                                        Tanpa Departemen
-                                    </option>
-                                    <option
-                                        v-for="dept in departemens"
-                                        :key="dept.id"
-                                        :value="dept.id"
-                                    >
-                                        {{ dept.nama }}
-                                    </option>
-                                </select>
+                                    {{ form.errors.whatsapp }}
+                                </p>
                             </div>
-                            <p
-                                v-if="form.errors.departemen_id"
-                                class="text-xs font-medium text-destructive"
-                            >
-                                {{ form.errors.departemen_id }}
-                            </p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
