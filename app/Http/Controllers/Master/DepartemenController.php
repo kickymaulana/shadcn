@@ -62,8 +62,10 @@ class DepartemenController extends Controller
 
     public function show(Departemen $departemen)
     {
-        // Kita load relasi users agar bisa ditampilkan siapa saja anggotanya
-        $departemen->load('users:id,name,username,email,departemen_id');
+        $departemen->load(['users' => function($query) {
+        $query->select('id', 'name', 'username', 'email', 'departemen_id', 'whatsapp')
+              ->with('roles:id,name'); // Ambil id dan name saja dari roles
+        }]);
 
         return Inertia::render('Master/Departemen/Show', [
             'departemen' => [

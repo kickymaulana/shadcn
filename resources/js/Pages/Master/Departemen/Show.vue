@@ -54,7 +54,13 @@ const props = defineProps<{
             id: number;
             name: string;
             username: string;
+            whatsapp: string;
             email: string;
+            // Tambahkan ini
+            roles: Array<{
+                id: number;
+                name: string;
+            }>;
         }>;
     };
 }>();
@@ -229,7 +235,8 @@ const formatDate = (dateString: string) => {
                                 <TableRow class="bg-muted/50">
                                     <TableHead>Nama Pengguna</TableHead>
                                     <TableHead>Username</TableHead>
-                                    <TableHead>Email</TableHead>
+                                    <TableHead>Whatsapp</TableHead>
+                                    <TableHead>Jabatan</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -255,9 +262,29 @@ const formatDate = (dateString: string) => {
                                             >@{{ member.username }}</span
                                         >
                                     </TableCell>
-                                    <TableCell class="text-sm">{{
-                                        member.email
-                                    }}</TableCell>
+                                    <TableCell>
+                                        <span
+                                            class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded"
+                                            >@{{ member.whatsapp }}</span
+                                        >
+                                    </TableCell>
+                                    <TableCell>
+                                        <div class="flex flex-wrap gap-1">
+                                            <span
+                                                v-for="role in member.roles"
+                                                :key="role.id"
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                                            >
+                                                {{ role.name }}
+                                            </span>
+                                            <span
+                                                v-if="member.roles.length === 0"
+                                                class="text-xs text-muted-foreground italic"
+                                            >
+                                                No Role
+                                            </span>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
