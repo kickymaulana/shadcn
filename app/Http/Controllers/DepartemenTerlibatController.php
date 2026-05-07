@@ -114,11 +114,25 @@ class DepartemenTerlibatController extends Controller
                 ->whereNotNull('whatsapp')
                 ->get();
 
+            $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+            $customer = $formulir->sampel->customer ?? '-';
+            $model = $formulir->sampel->model ?? '-';
+            $size = $formulir->size ?? '-';
+            $running_ke = $formulir->running_ke ?? '-';
+
+
             if ($penerimaNotif->isNotEmpty()) {
                 $pesan = "*Notifikasi SISAMSUL*\n\n";
-                $pesan .= "Ada sampel baru dengan nomor: *{$nomorSampel}* yang siap untuk diproses di bagian *{$namaSubDeptNext}*.\n";
+                $pesan .= "Ada sampel baru yang siap untuk diproses di bagian *{$namaSubDeptNext}*.\n";
+                $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+                $pesan .= "• *Customer:* {$customer}\n";
+                $pesan .= "• *Model:* {$model}\n";
+                $pesan .= "• *Size:* {$size}\n";
+                $pesan .= "• *Running Ke:* {$running_ke}\n";
+
                 $pesan .= "Mohon segera dicek dan diterima melalui sistem.\n\n";
                 $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+
 
                 foreach ($penerimaNotif as $user) {
                     try {
