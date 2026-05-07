@@ -157,7 +157,7 @@ class DepartemenTerlibatController extends Controller
     {
         return Http::withoutVerifying()
             ->withBasicAuth('root', 'Sukses1234')
-            ->withHeaders(['X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'])
+            ->withHeaders(['X-Device-Id' => 'c7d70742-0f1b-414c-b367-0ec156007663'])
             ->post('https://whatsapp.gotechdynamics.com/send/message', [
                 'phone'   => $target,
                 'message' => $pesan,

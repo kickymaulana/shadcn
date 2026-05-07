@@ -92,7 +92,7 @@ class PersetujuanManagerController extends Controller
             $response = Http::withoutVerifying() // Tambahkan baris ini
                 ->withBasicAuth('root', 'Sukses1234')
                 ->withHeaders([
-                    'X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'
+                    'X-Device-Id' => 'c7d70742-0f1b-414c-b367-0ec156007663'
                 ])
                 ->post('https://whatsapp.gotechdynamics.com/send/message', [
                     // 'phone'   => $manager->whatsapp,
