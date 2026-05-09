@@ -141,7 +141,7 @@ class TugasProduksiController extends Controller
         // 3. Logika Validasi Paraf QC
         // Validasi ini HANYA dijalankan jika user yang login BUKAN dari departemen OVEN
         // Berdasarkan tabelmu, OVEN adalah departemen_id = 7
-        if ($user->departemen->nama !== 'OVEN') {
+        if ($user->departemen->nama !== 'OVEN' || $departemen_terlibat->sub_departemen->nama !== 'GLAZE') {
             if ($sebelumnya && is_null($sebelumnya->paraf_qc)) {
                 return back()->with('error', "Gagal! Proses {$sebelumnya->nama} belum di-paraf oleh QC.");
             }
