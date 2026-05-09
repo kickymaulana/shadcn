@@ -12,26 +12,28 @@ use Inertia\Inertia;
 class TugasProduksiController extends Controller
 {
 
-
     public function index(Request $request)
     {
         $user = $request->user();
 
         $tugas_list = DepartemenTerlibat::query()
-            // 1. Lakukan Join dengan sub_departemen agar bisa akses kolom 'urutan'
+            // 1. Join ke sub_departemen untuk kolom 'urutan'
             ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
 
-            // 2. Pastikan select kolom dari departemen_terlibat agar ID tidak tertimpa
+            // 2. Join ke formulirs untuk kolom 'running_ke'
+            ->join('formulirs', 'departemen_terlibat.formulir_id', '=', 'formulirs.id')
+
+            // 3. Join ke samples untuk kolom 'model'
+            ->join('samples', 'formulirs.sampel_id', '=', 'samples.id')
+
+            // 4. Select hanya kolom dari tabel utama agar ID tidak tertimpa join
             ->select('departemen_terlibat.*')
 
-            ->whereHas('formulir', function($query) {
-                $query->where('status', 'Proses');
-            })
+            // Filter status & departemen user
+            ->where('formulirs.status', 'Proses')
+            ->where('sub_departemen.departemen_id', $user->departemen_id)
 
-            // Filter berdasarkan departemen user login
-            ->whereHas('sub_departemen', function ($query) use ($user) {
-                $query->where('departemen_id', $user->departemen_id);
-            })
+            // Eager Loading relasi untuk kebutuhan UI
             ->with([
                 'formulir.sampel',
                 'sub_departemen',
@@ -39,16 +41,24 @@ class TugasProduksiController extends Controller
                 'qcUser',
                 'spvUser'
             ])
+
+            // Filter Search (berdasarkan kode_sample di tabel samples)
             ->when($request->search, function ($query, $search) {
-                $query->whereHas('formulir.sampel', function ($q) use ($search) {
-                    $q->where('kode_sample', 'like', "%{$search}%");
-                });
+                $query->where('samples.kode_sample', 'like', "%{$search}%");
             })
 
-            // 3. Urutkan berdasarkan kolom urutan di tabel sub_departemen
+            // --- LOGIKA PENGURUTAN ---
+
+            // 1. Kelompokkan berdasarkan Formulir ID (atau Sampel)
+            // Ini memastikan QS, OVEN, BONGKAR milik formulir A tetap berkumpul
+            ->orderBy('departemen_terlibat.formulir_id', 'asc')
+
+            // 2. Di dalam formulir yang sama, urutkan berdasarkan alur departemennya
+            // Ini yang membuat tampilannya QS -> OVEN -> BONGKAR
             ->orderBy('sub_departemen.urutan', 'asc')
-            // Bisa juga ditambah urutan kedua jika urutan departemen sama (misal berdasarkan yang terbaru)
-            ->orderBy('departemen_terlibat.created_at', 'desc')
+
+            // 3. Opsional: urutkan berdasarkan running_ke jika ingin melihat iterasi trialnya
+            ->orderBy('formulirs.running_ke', 'asc')
 
             ->paginate(10)
             ->withQueryString();
