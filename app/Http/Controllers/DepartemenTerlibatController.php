@@ -167,12 +167,13 @@ class DepartemenTerlibatController extends Controller
     /**
     * Helper function agar kode tidak duplikat
     */
+
     private function kirimWhatsApp($target, $pesan)
     {
         return Http::withoutVerifying()
-            ->withBasicAuth('root', 'Sukses1234')
-            ->withHeaders(['X-Device-Id' => 'c7d70742-0f1b-414c-b367-0ec156007663'])
-            ->post('https://whatsapp.gotechdynamics.com/send/message', [
+            ->withBasicAuth(config('services.wa_gateway.username'), config('services.wa_gateway.password'))
+            ->withHeaders(['X-Device-Id' => config('services.wa_gateway.device_id')])
+            ->post(config('services.wa_gateway.url'), [
                 'phone'   => $target,
                 'message' => $pesan,
             ]);

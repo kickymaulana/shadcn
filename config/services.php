@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'wa_gateway' => [
+        'username'  => env('WA_GATEWAY_USERNAME'),
+        'password'  => env('WA_GATEWAY_PASSWORD'),
+        'device_id' => env('WA_GATEWAY_DEVICE_ID'),
+        'url'       => env('WA_GATEWAY_URL'),
+    ],
+
 ];
