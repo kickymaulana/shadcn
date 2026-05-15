@@ -90,64 +90,45 @@ class TugasProduksiController extends Controller
     }
 
 
-
-    // public function terima(DepartemenTerlibat $departemen_terlibat)
-    // {
-    //     // Ambil urutan master dari departemen yang mau di-klik "Terima" (FQC = 14)
-    //     $urutanSekarang = $departemen_terlibat->sub_departemen->urutan;
-    //
-    //     // Cari departemen sebelumnya yang TERDAFTAR di formulir ini
-    //     $sebelumnya = DepartemenTerlibat::where('formulir_id', $departemen_terlibat->formulir_id)
-    //         ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
-    //         ->where('sub_departemen.urutan', '<', $urutanSekarang)
-    //         ->select('departemen_terlibat.*', 'sub_departemen.nama', 'sub_departemen.urutan')
-    //         ->orderBy('sub_departemen.urutan', 'desc')
-    //         ->first();
-    //
-    //     // Validasi Paraf QC pada departemen sebelumnya
-    //     if ($sebelumnya && is_null($sebelumnya->paraf_qc)) {
-    //         return back()->with('error', "Gagal! Proses {$sebelumnya->nama} belum di-paraf oleh QC.");
-    //     }
-    //
-    //     // Jika lolos (atau tidak ada departemen sebelumnya), update status terima
-    //     if (!$departemen_terlibat->tanggal_diterima) {
-    //         $departemen_terlibat->update([
-    //             'tanggal_diterima' => now(),
-    //             'diterima_oleh' => auth()->id(),
-    //         ]);
-    //     }
-    //
-    //     return back()->with('success', 'Tugas berhasil diterima.');
-    // }
-    //
-
-
     public function terima(DepartemenTerlibat $departemen_terlibat)
     {
-        // 1. Ambil data user yang sedang login beserta departemennya
         $user = auth()->user();
 
-        // Ambil urutan master dari departemen yang mau di-klik "Terima"
-        $urutanSekarang = $departemen_terlibat->sub_departemen->urutan;
+        $subSekarang = $departemen_terlibat->sub_departemen;
+        $urutanSekarang = $subSekarang->urutan;
+        $namaSubSekarang = strtoupper($subSekarang->nama);
+        $indukSekarang = $subSekarang->departemen_id;
 
-        // 2. Cari departemen sebelumnya yang TERDAFTAR di formulir ini
-        $sebelumnya = DepartemenTerlibat::where('formulir_id', $departemen_terlibat->formulir_id)
-            ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
-            ->where('sub_departemen.urutan', '<', $urutanSekarang)
-            ->select('departemen_terlibat.*', 'sub_departemen.nama', 'sub_departemen.urutan')
-            ->orderBy('sub_departemen.urutan', 'desc')
-            ->first();
+        // JIKA BUKAN GLAZE, TERAPKAN VALIDASI KETAT
+        if ($namaSubSekarang !== 'GLAZE') {
 
-        // 3. Logika Validasi Paraf QC
-        // Validasi ini HANYA dijalankan jika user yang login BUKAN dari departemen OVEN
-        // Berdasarkan tabelmu, OVEN adalah departemen_id = 7
-        if (($user->departemen->nama !== 'OVEN') && ($departemen_terlibat->sub_departemen->nama !== 'GLAZE')) {
-            if ($sebelumnya && is_null($sebelumnya->paraf_qc)) {
-                return back()->with('error', "Gagal! Proses {$sebelumnya->nama} belum di-paraf oleh QC.");
+            // 1. Validasi Urutan: Cek apakah ada proses sebelumnya yang BELUM DITERIMA
+            $belumDiterima = DepartemenTerlibat::where('formulir_id', $departemen_terlibat->formulir_id)
+                ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+                ->where('sub_departemen.urutan', '<', $urutanSekarang)
+                ->whereNull('tanggal_diterima')
+                ->exists();
+
+            if ($belumDiterima) {
+                return back()->with('error', "Gagal! Ada proses sebelumnya yang belum diterima/diproses.");
+            }
+
+            // 2. Validasi Paraf QC: Cek proses dari departemen INDUK LAIN yang belum di-paraf
+            $masihAdaYangBelumQC = DepartemenTerlibat::where('formulir_id', $departemen_terlibat->formulir_id)
+                ->join('sub_departemen', 'departemen_terlibat.sub_departemen_id', '=', 'sub_departemen.id')
+                ->where('sub_departemen.urutan', '<', $urutanSekarang)
+                ->where('sub_departemen.departemen_id', '!=', $indukSekarang) // Pakai != untuk integer ID
+                ->whereNull('paraf_qc')
+                ->select('sub_departemen.nama')
+                ->first();
+
+            if ($masihAdaYangBelumQC) {
+                return back()->with('error', "Gagal! Proses {$masihAdaYangBelumQC->nama} belum di-paraf oleh QC.");
             }
         }
 
-        // 4. Jika lolos (karena dia orang OVEN atau karena sudah di-paraf), update status terima
+        // 3. Update status terima
+        // Jika dia GLAZE, dia akan langsung loncat ke sini tanpa peduli urutan atau QC
         if (!$departemen_terlibat->tanggal_diterima) {
             $departemen_terlibat->update([
                 'tanggal_diterima' => now(),
@@ -157,6 +138,9 @@ class TugasProduksiController extends Controller
 
         return back()->with('success', 'Tugas berhasil diterima.');
     }
+
+
+
 
 
     public function parafSpv(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
