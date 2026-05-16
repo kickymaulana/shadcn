@@ -17,6 +17,7 @@ use App\Http\Controllers\PersetujuanManagerController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DaftarPenggunaController;
+use App\Http\Controllers\NotifikasiController;
 
 
 
@@ -113,6 +114,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('daftar-pengguna', [DaftarPenggunaController::class, 'index'])->name('daftar.pengguna.index');
+    Route::get('notifikasi/index', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::get('notifikasi/{id}/baca', [NotifikasiController::class, 'bacaDanRedirect'])->name('notifikasi.baca');
 });
 
 Route::middleware('auth', 'role:admin|Quality Control|QC Manager|Factory Manager|General Manager')->group(function () {

@@ -10,6 +10,7 @@ use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Http;
+use App\Notifications\SampelSiapDiproses;
 
 class DepartemenTerlibatController extends Controller
 {
@@ -135,6 +136,10 @@ class DepartemenTerlibatController extends Controller
 
 
                 foreach ($penerimaNotif as $user) {
+
+                    // [BARU] Simpan Notifikasi ke Database Aplikasi
+                    $user->notify(new SampelSiapDiproses($formulir, $nextDeptTerlibat->id, "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap diproses di {$namaSubDeptNext}"));
+
                     try {
                         $this->kirimWhatsApp($user->whatsapp, $pesan);
                     } catch (\Exception $e) {
@@ -145,6 +150,12 @@ class DepartemenTerlibatController extends Controller
         } else {
             // --- JIKA INI ADALAH DEPARTEMEN TERAKHIR ---
             // Kirim ke Bu Afrida (Penyetuju Akhir)
+            $buAfrida = User::find(2);
+
+            if ($buAfrida) {
+                // [BARU] Simpan Notifikasi ke Database untuk Bu Afrida
+                $buAfrida->notify(new SampelSiapDiproses($formulir, $departemen_terlibat->id, "Pengecekan Akhir untuk Sampel: {$nomorSampel}"));
+            }
 
             try {
                 $nomorSampel = $formulir->sampel->kode_sample ?? 'N/A';

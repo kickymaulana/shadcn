@@ -139,10 +139,12 @@ const getInitials = (name: string) => {
                                     Account
                                 </Link>
                             </DropdownMenuItem>
-                            <!-- <DropdownMenuItem> -->
-                            <!--     <IconNotification /> -->
-                            <!--     Notifications -->
-                            <!-- </DropdownMenuItem> -->
+                            <DropdownMenuItem as-child>
+                                <Link :href="route('notifikasi.index')">
+                                    <IconNotification class="mr-2 size-4" />
+                                    Notifications
+                                </Link>
+                            </DropdownMenuItem>
                         </DropdownMenuGroup>
 
                         <DropdownMenuSeparator />
