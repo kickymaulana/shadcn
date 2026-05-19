@@ -8,6 +8,8 @@ use App\Models\SubDepartemen;
 use App\Models\Sample;
 use App\Models\Formulir;
 use Inertia\Inertia;
+use App\Notifications\SampelSiapDiproses;
+use App\Models\User;
 
 class TugasProduksiController extends Controller
 {
@@ -157,11 +159,37 @@ class TugasProduksiController extends Controller
             }
         }
 
+        $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+        $customer = $formulir->sampel->customer ?? '-';
+        $model = $formulir->sampel->model ?? '-';
+        $size = $formulir->size ?? '-';
+        $running_ke = $formulir->running_ke ?? '-';
+
+
+        $pesan = "*Notifikasi SISAMSUL*\n\n";
+        $pesan .= "Ada sampel baru yang siap untuk diparaf QC di bagian *{$departemen_terlibat->sub_departemen->nama}*.\n";
+        $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+        $pesan .= "• *Customer:* {$customer}\n";
+        $pesan .= "• *Model:* {$model}\n";
+        $pesan .= "• *Size:* {$size}\n";
+        $pesan .= "• *Running Ke:* {$running_ke}\n";
+
+        $pesan .= "Mohon segera dicek dan diparaf qc melalui sistem.\n\n";
+        $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+        $sarah = User::find(5);
+
+        $sarah->notify(new SampelSiapDiproses($formulir, $departemen_terlibat->id, "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap di paraf qc di {$departemen_terlibat->sub_departemen->nama}"));
         // 2. Jika bukan FQC atau jika sudah di-paraf QC, lanjutkan update
         $departemen_terlibat->update([
             'paraf_spv' => $user->id,
             'tanggal_selesai' => now(),
         ]);
+
+        try {
+            $this->kirimWhatsApp($sarah->whatsapp, $pesan);
+        } catch (\Exception $e) {
+            \Log::error("Gagal kirim WA ke {$sarah->name} ({$sarah->roles->first()->name}): " . $e->getMessage());
+        }
 
         return back()->with('success', 'Paraf Supervisor berhasil disimpan.');
     }
@@ -212,5 +240,17 @@ class TugasProduksiController extends Controller
             'active_dept_id' => $departemen_terlibat_id
         ]);
     }
+
+    private function kirimWhatsApp($target, $pesan)
+    {
+        return Http::withoutVerifying()
+            ->withBasicAuth(config('services.wa_gateway.username'), config('services.wa_gateway.password'))
+            ->withHeaders(['X-Device-Id' => config('services.wa_gateway.device_id')])
+            ->post(config('services.wa_gateway.url'), [
+                'phone'   => $target,
+                'message' => $pesan,
+            ]);
+    }
+
 
 }
