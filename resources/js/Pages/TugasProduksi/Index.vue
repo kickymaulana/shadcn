@@ -145,6 +145,9 @@ const cleanLabel = (label: string) => {
                                     >Kode Sample</TableHead
                                 >
                                 <TableHead class="font-bold"
+                                    >Customer</TableHead
+                                >
+                                <TableHead class="font-bold"
                                     >Model</TableHead
                                 >
                                 <TableHead class="font-bold">Size</TableHead>
@@ -195,6 +198,11 @@ const cleanLabel = (label: string) => {
                                     class="font-mono font-bold text-primary italic"
                                 >
                                     {{ tugas.formulir.sampel.kode_sample }}
+                                </TableCell>
+                                <TableCell
+                                    class="font-mono font-bold text-primary italic"
+                                >
+                                    {{ tugas.formulir.sampel.customer }}
                                 </TableCell>
                                 <TableCell
                                     class="font-mono font-bold text-primary italic"
