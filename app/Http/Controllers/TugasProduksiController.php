@@ -179,8 +179,14 @@ class TugasProduksiController extends Controller
         $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
         $sarah = User::find(5);
 
-        $sarah->notify(new SampelSiapDiproses($formulir, $departemen_terlibat->id, "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap di paraf qc di {$departemen_terlibat->sub_departemen->nama}"));
-        // 2. Jika bukan FQC atau jika sudah di-paraf QC, lanjutkan update
+        $url = route('formulirs.departemen.edit', [
+            'formulir' => $formulir->id,
+            'departemen_terlibat' => $departemen_terlibat->id
+        ]);
+        $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk diparaf qc di {$departemen_terlibat->sub_departemen->nama}";
+
+        $sarah->notify(new SampelSiapDiproses($pesan2, $url));
+
         $departemen_terlibat->update([
             'paraf_spv' => $user->id,
             'tanggal_selesai' => now(),

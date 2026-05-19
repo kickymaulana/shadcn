@@ -126,7 +126,6 @@ const cleanLabel = (label: string) => {
               <TableRow class="bg-muted/50">
                 <TableHead class="w-[100px]">Status</TableHead>
                 <TableHead>Pesan</TableHead>
-                <TableHead>Nomor Sampel</TableHead>
                 <TableHead>Tanggal Masuk</TableHead>
                 <TableHead class="text-right">Buka</TableHead>
               </TableRow>
@@ -159,13 +158,6 @@ const cleanLabel = (label: string) => {
                 <!-- Pesan Notifikasi -->
                 <TableCell>{{ item.data.pesan }}</TableCell>
 
-                <!-- Nomor Sampel -->
-                <TableCell>
-                  <span class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded border">
-                    {{ item.data.nomor_sampel || '-' }}
-                  </span>
-                </TableCell>
-
                 <!-- Waktu Terbuat -->
                 <TableCell class="text-muted-foreground text-sm">
                   {{ formatDate(item.created_at) }}
@@ -176,7 +168,7 @@ const cleanLabel = (label: string) => {
                   <Button size="sm" variant="outline" class="h-8 gap-1.5" as-child>
                     <Link :href="route('notifikasi.baca', item.id)">
                       <IconEye class="size-4" />
-                      <span>Proses</span>
+                      <span>Baca</span>
                     </Link>
                   </Button>
                 </TableCell>

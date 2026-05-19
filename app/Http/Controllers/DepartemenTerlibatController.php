@@ -115,12 +115,27 @@ class DepartemenTerlibatController extends Controller
                 ->whereNotNull('whatsapp')
                 ->get();
 
+            $penerimaNotif2 = User::where('departemen_id', $targetDeptId)
+                ->whereNotNull('whatsapp')
+                ->get();
+
             $nomorSampel = $formulir->sampel->kode_sample ?? '-';
             $customer = $formulir->sampel->customer ?? '-';
             $model = $formulir->sampel->model ?? '-';
             $size = $formulir->size ?? '-';
             $running_ke = $formulir->running_ke ?? '-';
 
+            /* 'url' => route('tugas.produksi.edit', $this->deptTerlibatId), // Sesuaikan dengan nama route detail Anda */
+            $url = route('tugas.produksi.edit', [
+                'departemen_terlibat' => $departemen_terlibat->id
+            ]);
+            $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk diproses di {$namaSubDeptNext}";
+
+            if ($penerimaNotif2->isNotEmpty()) {
+                foreach ($penerimaNotif2 as $user) {
+                    $user->notify(new SampelSiapDiproses($pesan2, $url));
+                }
+            }
 
             if ($penerimaNotif->isNotEmpty()) {
                 $pesan = "*Notifikasi SISAMSUL*\n\n";
@@ -134,12 +149,7 @@ class DepartemenTerlibatController extends Controller
                 $pesan .= "Mohon segera dicek dan diterima melalui sistem.\n\n";
                 $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
 
-
                 foreach ($penerimaNotif as $user) {
-
-                    // [BARU] Simpan Notifikasi ke Database Aplikasi
-                    $user->notify(new SampelSiapDiproses($formulir, $nextDeptTerlibat->id, "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap diproses di {$namaSubDeptNext}"));
-
                     try {
                         $this->kirimWhatsApp($user->whatsapp, $pesan);
                     } catch (\Exception $e) {

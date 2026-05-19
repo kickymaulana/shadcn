@@ -9,16 +9,14 @@ class SampelSiapDiproses extends Notification
 {
     use Queueable;
 
-    protected $formulir;
-    protected $deptTerlibatId;
-    protected $pesanTeks;
+    protected $pesan;
+    protected $url;
 
     // Kita passing data formulir, ID departemen_terlibat, dan teks pesannya
-    public function __construct($formulir, $deptTerlibatId, $pesanTeks)
+    public function __construct($pesan, $url)
     {
-        $this->formulir = $formulir;
-        $this->deptTerlibatId = $deptTerlibatId;
-        $this->pesanTeks = $pesanTeks;
+        $this->pesan = $pesan;
+        $this->url = $url;
     }
 
     // Aktifkan channel 'database'
@@ -31,11 +29,8 @@ class SampelSiapDiproses extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'formulir_id' => $this->formulir->id,
-            'departemen_terlibat_id' => $this->deptTerlibatId, // ID ini untuk link detail nanti
-            'nomor_sampel' => $this->formulir->sampel->kode_sample ?? '-',
-            'pesan' => $this->pesanTeks,
-            'url' => route('tugas.produksi.edit', $this->deptTerlibatId), // Sesuaikan dengan nama route detail Anda
+            'pesan' => $this->pesan,
+            'url' => $this->url,
         ];
     }
 }
