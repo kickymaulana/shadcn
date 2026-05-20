@@ -151,7 +151,7 @@ class DepartemenTerlibatController extends Controller
 
                 foreach ($penerimaNotif as $user) {
                     try {
-                        // $this->kirimWhatsApp($user->whatsapp, $pesan);
+                        $this->kirimWhatsApp($user->whatsapp, $pesan);
                     } catch (\Exception $e) {
                         \Log::error("Gagal kirim WA ke {$user->name} ({$user->roles->first()->name}): " . $e->getMessage());
                     }
@@ -189,7 +189,7 @@ class DepartemenTerlibatController extends Controller
                 try {
 
                     // Pastikan nomor WhatsApp Bu Afrida sudah benar
-                    $this->kirimWhatsApp('6282379728828', $pesan);
+                    $this->kirimWhatsApp($buAfrida->whatsapp, $pesan);
                 } catch (\Exception $e) {
                     \Log::error("Gagal kirim WA Bu Afrida: " . $e->getMessage());
                 }

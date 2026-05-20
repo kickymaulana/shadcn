@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use App\Models\User;
+use App\Notifications\SampelSiapDiproses;
 
 class PersetujuanManagerController extends Controller
 {
@@ -73,43 +75,42 @@ class PersetujuanManagerController extends Controller
             return back()->with('error', 'Akses ditolak.');
         }
 
-        $formulir->update([
-            'diperiksa_oleh' => Auth::id(),
+        // $formulir->update([
+        //     'diperiksa_oleh' => Auth::id(),
+        // ]);
 
+        $pakparinton = User::find(3);
 
-        ]);
+        if ($pakparinton) {
 
-        try {
-
-            $nomorSampel = $formulir->sampel->kode_sample; // Sesuaikan dengan nama kolom di tabel formulir kamu
+            $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+            $customer = $formulir->sampel->customer ?? '-';
+            $model = $formulir->sampel->model ?? '-';
+            $size = $formulir->size ?? '-';
+            $running_ke = $formulir->running_ke ?? '-';
 
             $pesan = "*Notifikasi SISAMSUL*\n\n";
-            $pesan .= "Izin pak, sampel dengan nomor: *{$nomorSampel}* sudah bisa disetujui ya pak.\n";
-            $pesan .= "Tapi dicek cek dulu ya pak mana tau ada yang salah.\n\n";
+            $pesan .= "Ada sampel baru yang siap untuk disetujui";
+            $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+            $pesan .= "• *Customer:* {$customer}\n";
+            $pesan .= "• *Model:* {$model}\n";
+            $pesan .= "• *Size:* {$size}\n";
+            $pesan .= "• *Running Ke:* {$running_ke}\n";
+
+            $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
 
 
+            $url = route('persetujuan.manager.show', [
+                'formulir' => $formulir->id
+            ]);
+            $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk disetujui";
+            $pakparinton->notify(new SampelSiapDiproses($pesan2, $url));
 
-            $response = Http::withoutVerifying() // Tambahkan baris ini
-                ->withBasicAuth('root', 'Sukses1234')
-                ->withHeaders([
-                    'X-Device-Id' => 'c7d70742-0f1b-414c-b367-0ec156007663'
-                ])
-                ->post('https://whatsapp.gotechdynamics.com/send/message', [
-                    // 'phone'   => $manager->whatsapp,
-                    // buk afrida
-                    'phone'   => '6281263241975',
-                    'message' => $pesan,
-                ]);
-
-
-            // Opsional: Log jika gagal
-            if (!$response->successful()) {
-                \Log::error("Gagal kirim WA" . $response->body());
+            try {
+                $this->kirimWhatsApp($pakparinton->whatsapp, $pesan);
+            } catch (\Exception $e) {
+                \Log::error("Gagal kirim WA pak parinton: " . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            // Supaya kalau server GOWA mati, aplikasi SISAMSUL tetap bisa jalan (tidak error 500)
-            \Log::error("Server WhatsApp tidak terjangkau: " . $e->getMessage());
-            dd($e->getMessage());
         }
 
         return back();
@@ -133,5 +134,16 @@ class PersetujuanManagerController extends Controller
         ]);
 
         return back();
+    }
+
+    private function kirimWhatsApp($target, $pesan)
+    {
+        return Http::withoutVerifying()
+            ->withBasicAuth(config('services.wa_gateway.username'), config('services.wa_gateway.password'))
+            ->withHeaders(['X-Device-Id' => config('services.wa_gateway.device_id')])
+            ->post(config('services.wa_gateway.url'), [
+                'phone'   => $target,
+                'message' => $pesan,
+            ]);
     }
 }
