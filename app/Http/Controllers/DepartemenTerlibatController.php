@@ -151,7 +151,7 @@ class DepartemenTerlibatController extends Controller
 
                 foreach ($penerimaNotif as $user) {
                     try {
-                        $this->kirimWhatsApp($user->whatsapp, $pesan);
+                        // $this->kirimWhatsApp($user->whatsapp, $pesan);
                     } catch (\Exception $e) {
                         \Log::error("Gagal kirim WA ke {$user->name} ({$user->roles->first()->name}): " . $e->getMessage());
                     }
@@ -163,22 +163,38 @@ class DepartemenTerlibatController extends Controller
             $buAfrida = User::find(2);
 
             if ($buAfrida) {
-                // [BARU] Simpan Notifikasi ke Database untuk Bu Afrida
-                $buAfrida->notify(new SampelSiapDiproses($formulir, $departemen_terlibat->id, "Pengecekan Akhir untuk Sampel: {$nomorSampel}"));
-            }
 
-            try {
-                $nomorSampel = $formulir->sampel->kode_sample ?? 'N/A';
+                $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+                $customer = $formulir->sampel->customer ?? '-';
+                $model = $formulir->sampel->model ?? '-';
+                $size = $formulir->size ?? '-';
+                $running_ke = $formulir->running_ke ?? '-';
+
                 $pesan = "*Notifikasi SISAMSUL*\n\n";
-                $pesan .= "Izin Bu Afrida, sampel dengan nomor: *{$nomorSampel}* telah selesai diproses di semua departemen.\n";
-                $pesan .= "Mohon kesediaannya untuk melakukan pengecekan akhir dan paraf persetujuan pada sistem.\n\n";
-                $pesan .= "_Terima kasih_";
+                $pesan .= "Ada sampel baru yang siap untuk disetujui";
+                $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+                $pesan .= "• *Customer:* {$customer}\n";
+                $pesan .= "• *Model:* {$model}\n";
+                $pesan .= "• *Size:* {$size}\n";
+                $pesan .= "• *Running Ke:* {$running_ke}\n";
 
-                // Pastikan nomor WhatsApp Bu Afrida sudah benar
-                $this->kirimWhatsApp('6282379728828', $pesan);
-            } catch (\Exception $e) {
-                \Log::error("Gagal kirim WA Bu Afrida: " . $e->getMessage());
+                $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+
+                $url = route('persetujuan.manager.show', [
+                    'formulir' => $formulir->id
+                ]);
+                $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk disetujui";
+                $buAfrida->notify(new SampelSiapDiproses($pesan2, $url));
+
+                try {
+
+                    // Pastikan nomor WhatsApp Bu Afrida sudah benar
+                    $this->kirimWhatsApp('6282379728828', $pesan);
+                } catch (\Exception $e) {
+                    \Log::error("Gagal kirim WA Bu Afrida: " . $e->getMessage());
+                }
             }
+
         }
 
         return redirect()->back()->with('success', 'Berhasil melakukan Paraf QC dan mengirim notifikasi ke Manager & Supervisor.');
