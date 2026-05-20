@@ -181,15 +181,7 @@ class FormulirController extends Controller
                 $pesan .= "• *Qty:* {$qty_sampel_kirim}\n";
                 $pesan .= "Mohon tim terkait untuk mulai memonitor alur sampel ini. Terima kasih.";
 
-                Http::withoutVerifying()
-                    ->withBasicAuth('root', 'Sukses1234')
-                    ->withHeaders([
-                        'X-Device-Id' => 'c6d70742-0f1b-414c-b367-0ec156007663'
-                    ])
-                    ->post('https://whatsapp.gotechdynamics.com/send/message', [
-                        'phone'   => '120363425296176489@g.us', // GANTI DENGAN ID GRUP KAMU
-                        'message' => $pesan,
-                    ]);
+                $this->kirimWhatsApp('120363425296176489@g.us', $pesan);
 
             } catch (\Exception $e) {
                 \Log::error("Gagal kirim notifikasi grup: " . $e->getMessage());
@@ -232,5 +224,17 @@ class FormulirController extends Controller
             'formulir' => $formulir,
         ]);
     }
+
+    private function kirimWhatsApp($target, $pesan)
+    {
+        return Http::withoutVerifying()
+            ->withBasicAuth(config('services.wa_gateway.username'), config('services.wa_gateway.password'))
+            ->withHeaders(['X-Device-Id' => config('services.wa_gateway.device_id')])
+            ->post(config('services.wa_gateway.url'), [
+                'phone'   => $target,
+                'message' => $pesan,
+            ]);
+    }
+
 
 }
