@@ -156,7 +156,7 @@ const masterData = [
                             class="w-full text-left"
                         >
                             <IconInnerShadowTop class="!size-5" />
-                            <span class="font-bold tracking-tight">SISAMCUS</span>
+                            <span class="font-bold tracking-tight">Sisamsul</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
