@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Http;
+use App\Notifications\SampelSiapDiproses;
 
 
 class FormulirController extends Controller
@@ -142,11 +143,10 @@ class FormulirController extends Controller
         ]);
     }
 
-
     public function update(Request $request, Formulir $formulir)
     {
-        // 1. Validasi
-        $request->validate([
+        // 1. Gunakan hasil validasi ke dalam variabel
+        $validatedData = $request->validate([
             'sampel_id'          => 'required|exists:samples,id',
             'size'               => 'required|string|max:255',
             'qty_sampel_kirim'   => 'required|integer|min:1',
@@ -155,36 +155,66 @@ class FormulirController extends Controller
             'status'             => 'required|in:Draft,Proses,Selesai,Ditolak',
         ]);
 
-        // Simpan status lama sebelum update untuk pengecekan
         $statusLama = $formulir->status;
 
-        // 2. Update data
-        $formulir->update($request->all());
+        // 2. Update hanya dengan data yang sudah lolos validasi (lebih aman)
+        // $formulir->update($validatedData);
 
-        // 3. Logika Notifikasi Grup (Hanya kirim jika status berubah jadi 'Proses')
-        if ($statusLama !== 'Proses' && $request->status === 'Proses') {
-            try {
+        // Amankan pengambilan relasi dengan Eager Loading jika memungkinkan, atau minimal cek keberadaannya
+        $departemenPertama = $formulir->departemen_terlibat()
+            ->with('sub_departemen.departemen.users') // Opsional: menghemat query (Eager Loading)
+            ->get()
+            ->sortBy(function ($item) {
+                return $item->sub_departemen->urutan ?? 0;
+            })
+            ->first();
+
+        // 3. Trigger Notifikasi hanya jika status berubah jadi 'Proses' DAN departemennya ada
+        if ($statusLama !== 'Proses' && $request->status === 'Proses' && $departemenPertama) {
+
+            $subDepartemen = $departemenPertama->sub_departemen;
+            $departemen    = $subDepartemen->departemen ?? null;
+            $penerimaNotif = $departemen ? $departemen->users : collect();
+
+            if ($penerimaNotif->isNotEmpty()) {
+
+                // Siapkan variabel text (menggunakan data model terbaru yang fresh dari database)
                 $nomorSampel = $formulir->sampel->kode_sample ?? '-';
-                $customer = $formulir->sampel->customer ?? '-';
-                $model = $formulir->sampel->model ?? '-';
-                $size = $formulir->size ?? '-';
-                $running_ke = $formulir->running_ke ?? '-';
-                $qty_sampel_kirim = $formulir->qty_sampel_kirim ?? '-';
+                $customer    = $formulir->sampel->customer ?? '-';
+                $model       = $formulir->sampel->model ?? '-';
+                $size        = $formulir->size ?? '-';
+                $running_ke  = $formulir->running_ke ?? '-';
+                $namaSubDept = $subDepartemen->nama ?? '-';
 
-                $pesan = "";
-                $pesan .= "📢 Form Sampel telah diupdate ke status: *PROSES*\n\n";
+                $pesan = "*Notifikasi SISAMSUL*\n\n";
+                $pesan .= "Ada sampel baru yang siap untuk diproses di bagian *{$namaSubDept}*.\n";
                 $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
                 $pesan .= "• *Customer:* {$customer}\n";
                 $pesan .= "• *Model:* {$model}\n";
                 $pesan .= "• *Size:* {$size}\n";
-                $pesan .= "• *Running Ke:* {$running_ke}\n";
-                $pesan .= "• *Qty:* {$qty_sampel_kirim}\n";
-                $pesan .= "Mohon tim terkait untuk mulai memonitor alur sampel ini. Terima kasih.";
+                $pesan .= "• *Running Ke:* {$running_ke}\n\n";
+                $pesan .= "Mohon segera dicek dan diterima melalui sistem.\n\n";
+                $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
 
-                $this->kirimWhatsApp('120363425296176489@g.us', $pesan);
 
-            } catch (\Exception $e) {
-                \Log::error("Gagal kirim notifikasi grup: " . $e->getMessage());
+                $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk diproses di {$namaSubDept}";
+
+                $url = route('tugas.produksi.edit', [
+                    'departemen_terlibat' => $departemenPertama->id
+                ]);
+
+                foreach ($penerimaNotif as $user) {
+                    // Bungkus try-catch DI DALAM loop agar jika 1 user gagal (misal nomor WA tidak valid),
+                    // user setelahnya tetap kebagian notifikasi.
+                    try {
+                        if ($user->whatsapp) {
+                            $this->kirimWhatsApp($user->whatsapp, $pesan);
+                        }
+                        $user->notify(new SampelSiapDiproses($pesan2, $url));
+                    } catch (\Exception $e) {
+                        \Log::error("Gagal kirim notifikasi ke User ID {$user->id}: " . $e->getMessage());
+                    }
+                }
             }
         }
 
@@ -192,6 +222,7 @@ class FormulirController extends Controller
             ->route('formulirs.show', $formulir->id)
             ->with('success', 'Data formulir berhasil diperbarui.');
     }
+
 
     public function destroy(Formulir $formulir)
     {
