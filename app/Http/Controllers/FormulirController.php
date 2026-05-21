@@ -158,7 +158,7 @@ class FormulirController extends Controller
         $statusLama = $formulir->status;
 
         // 2. Update hanya dengan data yang sudah lolos validasi (lebih aman)
-        // $formulir->update($validatedData);
+        $formulir->update($validatedData);
 
         // Amankan pengambilan relasi dengan Eager Loading jika memungkinkan, atau minimal cek keberadaannya
         $departemenPertama = $formulir->departemen_terlibat()
