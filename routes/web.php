@@ -116,6 +116,7 @@ Route::middleware('auth')->group(function () {
     Route::get('daftar-pengguna', [DaftarPenggunaController::class, 'index'])->name('daftar.pengguna.index');
     Route::get('notifikasi/index', [NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::get('notifikasi/{id}/baca', [NotifikasiController::class, 'bacaDanRedirect'])->name('notifikasi.baca');
+    Route::post('notifikasi/tandai-semua-dibaca', [NotifikasiController::class, 'tandai_semua_dibaca'])->name('notifikasi.tandai-semua-dibaca');
 });
 
 Route::middleware('auth', 'role:admin|Quality Control|QC Manager|Factory Manager|General Manager')->group(function () {

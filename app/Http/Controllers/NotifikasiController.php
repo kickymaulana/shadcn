@@ -44,4 +44,16 @@ class NotifikasiController extends Controller
         // Redirect langsung ke detail departemen_terlibat terkait
         return redirect($urlTujuan)->with('success', 'Notifikasi diperbarui.');
     }
+
+    public function tandai_semua_dibaca(Request $request)
+    {
+        // 1. Ambil user yang sedang login
+        $user = $request->user();
+
+        // 2. Cari semua notifikasi yang belum dibaca (read_at IS NULL) dan update menjadi sekarang
+        $user->unreadNotifications->markAsRead();
+
+        // 3. Kembali ke halaman sebelumnya dengan pesan sukses (opsional)
+        return redirect()->back()->with('success', 'Semua notifikasi berhasil ditandai sebagai dibaca.');
+    }
 }

@@ -20,6 +20,16 @@ import {
   IconBellOff
 } from "@tabler/icons-vue"
 import { ref, watch } from 'vue'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 // 1. Persistent Layout
 defineOptions({ layout: AuthenticatedLayout })
@@ -87,6 +97,20 @@ const cleanLabel = (label: string) => {
   if (label.includes('Next')) return 'Selanjutnya'
   return label
 }
+
+
+// 2. Tambahkan ref baru untuk mengontrol Dialog
+const showMarkAllDialog = ref(false)
+
+// 3. Modifikasi fungsi markAllAsRead (Hapus fungsi confirm bawaan)
+const markAllAsRead = () => {
+  router.post(route('notifikasi.tandai-semua-dibaca'), {}, {
+    preserveScroll: true,
+    onSuccess: () => {
+      showMarkAllDialog.value = false // Tutup dialog setelah berhasil
+    }
+  })
+}
 </script>
 
 <template>
@@ -101,6 +125,19 @@ const cleanLabel = (label: string) => {
         </CardTitle>
 
         <div class="flex items-center gap-2 w-full md:w-auto">
+
+
+          <!-- Tombol Pemicu Dialog -->
+          <Button
+            variant="secondary"
+            size="sm"
+            class="w-full sm:w-auto h-9 gap-1.5 order-2 sm:order-1"
+            @click="showMarkAllDialog = true"
+          >
+            <IconBellOff class="size-4 text-muted-foreground" />
+            <span>Tandai Semua Dibaca</span>
+          </Button>
+
           <div class="relative w-full md:w-72">
             <IconSearch class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
@@ -209,4 +246,29 @@ const cleanLabel = (label: string) => {
       </CardContent>
     </Card>
   </div>
+
+
+  <!-- Komponen AlertDialog untuk Konfirmasi Pembacaan Masul -->
+  <AlertDialog
+    :open="showMarkAllDialog"
+    @update:open="showMarkAllDialog = $event"
+  >
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Tandai Semua Telah Dibaca?</AlertDialogTitle>
+        <AlertDialogDescription>
+          Tindakan ini akan mengubah status seluruh notifikasi baru Anda menjadi <strong>Sudah Dibaca</strong> secara sekaligus.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Batal</AlertDialogCancel>
+        <AlertDialogAction
+          @click="markAllAsRead"
+          class="bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          Ya, Tandai Semua
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
