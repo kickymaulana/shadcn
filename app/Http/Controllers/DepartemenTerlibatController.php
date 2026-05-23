@@ -125,10 +125,12 @@ class DepartemenTerlibatController extends Controller
             $size = $formulir->size ?? '-';
             $running_ke = $formulir->running_ke ?? '-';
 
+
             /* 'url' => route('tugas.produksi.edit', $this->deptTerlibatId), // Sesuaikan dengan nama route detail Anda */
             $url = route('tugas.produksi.edit', [
-                'departemen_terlibat' => $departemen_terlibat->id
+                'departemen_terlibat' => $nextDeptTerlibat->id
             ]);
+            dd($url);
             $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk diproses di {$namaSubDeptNext}";
 
             if ($penerimaNotif2->isNotEmpty()) {
