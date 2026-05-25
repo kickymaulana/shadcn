@@ -52,6 +52,10 @@ const props = defineProps<{
         status: string;
     };
     list_samples: Array<{ id: number; kode_sample: string; customer: string }>;
+    filters: {
+        page: string | number;
+        search: string;
+    };
 }>();
 
 const showDeleteDialog = ref(false);
@@ -66,7 +70,11 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route("formulirs.update", props.formulir.id), {
+    form.put(route("formulirs.update", {
+        formulir: props.formulir.id,
+        page: props.filters.page,
+        search: props.filters.search
+    }), {
         preserveScroll: true,
     });
 };
@@ -91,7 +99,7 @@ const deleteFormulir = () => {
                 as-child
                 class="-ml-2 text-muted-foreground hover:text-foreground"
             >
-                <Link :href="route('formulirs.show', formulir.id)">
+                <Link :href="route('formulirs.show', { formulir: formulir.id, page: filters.page, search: filters.search })">
                     <IconArrowLeft class="mr-2 size-4" />
                     Kembali ke Detail
                 </Link>
@@ -266,7 +274,7 @@ const deleteFormulir = () => {
                             :disabled="form.processing"
                             class="h-10 px-6"
                         >
-                            <Link :href="route('formulirs.show', formulir.id)"
+                            <Link :href="route('formulirs.show', { formulir: formulir.id, page: filters.page, search: filters.search })"
                                 >Batal</Link
                             >
                         </Button>

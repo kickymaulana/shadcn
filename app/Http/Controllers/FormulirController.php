@@ -139,11 +139,16 @@ class FormulirController extends Controller
 
 
 
-    public function edit(Formulir $formulir): Response
+    public function edit(Formulir $formulir, Request $request): Response
     {
         return Inertia::render('Formulir/Edit', [
             'formulir' => $formulir,
-            'list_samples' => Sample::select('id', 'kode_sample', 'customer')->get()
+            'list_samples' => Sample::select('id', 'kode_sample', 'customer')->get(),
+            // Tangkap parameter halaman aktif saat ini
+            'filters' => [
+                'page' => $request->query('page', 1),
+                'search' => $request->query('search', ''),
+            ]
         ]);
     }
 
@@ -223,7 +228,11 @@ class FormulirController extends Controller
         }
 
         return redirect()
-            ->route('formulirs.show', $formulir->id)
+            ->route('formulirs.show', [
+                'formulir' => $formulir->id,
+                'page' => $request->query('page', 1),
+                'search' => $request->query('search', '')
+            ])
             ->with('success', 'Data formulir berhasil diperbarui.');
     }
 

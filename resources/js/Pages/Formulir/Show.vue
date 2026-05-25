@@ -128,7 +128,7 @@ const getStatusBadge = (status: string) => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-40">
                         <DropdownMenuItem as-child>
-                            <Link :href="route('formulirs.edit', formulir.id)" class="flex items-center">
+                            <Link :href="route('formulirs.edit', formulir.id)" :data="{ page: filters.page, search: filters.search }" class="flex items-center">
                                 <IconPencil class="mr-2 size-4 text-orange-500" /> Edit Data
                             </Link>
                         </DropdownMenuItem>
