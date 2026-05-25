@@ -265,7 +265,8 @@ const getStatusBadge = (status: string) => {
                             <TableCell class="text-center">
                                 <div class="flex justify-center gap-2">
                                     <Button variant="ghost" size="icon" as-child class="size-8 text-orange-500">
-                                        <Link :href="route('formulirs.departemen.edit', { formulir: formulir.id, departemen_terlibat: dept.id })">
+                                        <Link :href="route('formulirs.departemen.edit', { formulir: formulir.id, departemen_terlibat: dept.id })"
+                                                :data="{ page: filters.page, search: filters.search }">
                                             <IconPencil class="size-4" />
                                         </Link>
                                     </Button>

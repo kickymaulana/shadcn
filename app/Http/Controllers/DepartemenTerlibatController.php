@@ -43,7 +43,7 @@ class DepartemenTerlibatController extends Controller
             ->with('success', 'Departemen berhasil ditambahkan ke alur proses.');
     }
 
-    public function edit(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
+    public function edit(Formulir $formulir, DepartemenTerlibat $departemen_terlibat, Request $request)
     {
         // Load relasi agar nama muncul di frontend
         $departemen_terlibat->load('sub_departemen');
@@ -56,6 +56,10 @@ class DepartemenTerlibatController extends Controller
             ]),
             'list_sub_departemen' => SubDepartemen::with('departemen')->orderBy('urutan')->get(),
             'list_users' => User::select('id', 'name')->get(),
+            'filters' => [
+                'page' => $request->query('page', 1),
+                'search' => $request->query('search', ''),
+            ]
         ]);
     }
 
@@ -71,7 +75,11 @@ class DepartemenTerlibatController extends Controller
         // Update data (Laravel otomatis menghandle JSON casting karena sudah ada di Model)
         $departemen_terlibat->update($validated);
 
-        return redirect()->route('formulirs.show', $formulir->id)
+        return redirect()->route('formulirs.show',[
+                'formulir' => $formulir->id,
+                'page' => $request->query('page', 1),
+                'search' => $request->query('search', ''),
+            ])
             ->with('success', 'Alur departemen berhasil diperbarui.');
     }
 

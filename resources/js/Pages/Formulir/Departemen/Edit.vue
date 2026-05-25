@@ -50,6 +50,10 @@ const props = defineProps<{
     formulir: any;
     departemen_terlibat: any;
     list_sub_departemen: Array<any>;
+    filters: {
+        page: string | number;
+        search: string;
+    };
 }>();
 
 // LOGIC: Inisialisasi Data Tambahan (Object ke Array)
@@ -86,6 +90,8 @@ const submit = () => {
         route("formulirs.departemen.update", {
             formulir: props.formulir.id,
             departemen_terlibat: props.departemen_terlibat.id,
+            page: props.filters.page,
+            search: props.filters.search,
         }),
     );
 };
@@ -116,7 +122,7 @@ const parafQC = () => {
     <div class="flex flex-col gap-6 p-4 md:p-8 pt-1">
         <div class="flex items-center gap-4">
             <Button variant="outline" size="icon" as-child class="rounded-full">
-                <Link :href="route('formulirs.show', formulir.id)">
+                <Link :href="route('formulirs.show', { formulir: formulir.id, page: filters.page, search: filters.search })">
                     <IconArrowLeft class="size-4" />
                 </Link>
             </Button>
@@ -449,7 +455,7 @@ const parafQC = () => {
                         as-child
                         class="font-bold text-xs uppercase"
                     >
-                        <Link :href="route('formulirs.show', formulir.id)"
+                        <Link :href="route('formulirs.show', { formulir: formulir.id, page: filters.page, search: filters.search })"
                             >Batal</Link
                         >
                     </Button>
