@@ -68,6 +68,10 @@ const props = defineProps<{
         created_at: string;
         departemen_terlibat: Array<any>;
     };
+    filters: {
+        page: string | number;
+        search: string;
+    };
 }>();
 
 const deleteFormulir = () => {
@@ -104,7 +108,7 @@ const getStatusBadge = (status: string) => {
                 as-child
                 class="-ml-2 text-muted-foreground hover:text-foreground"
             >
-                <Link :href="route('formulirs.index')">
+                <Link :href="route('formulirs.index', { page: filters.page, search: filters.search })">
                     <IconArrowLeft class="mr-2 size-4" /> Kembali
                 </Link>
             </Button>

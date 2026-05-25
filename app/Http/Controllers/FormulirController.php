@@ -24,7 +24,7 @@ class FormulirController extends Controller
                 })->orWhere('status', 'like', "%{$search}%");
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(7)
             ->withQueryString();
 
         return Inertia::render('Formulir/Index', [
@@ -70,7 +70,7 @@ class FormulirController extends Controller
 
 
 
-    public function show(Formulir $formulir): Response
+    public function show(Formulir $formulir, Request $request): Response
     {
         // 1. Eager Load semua relasi yang dibutuhkan agar tidak N+1 query
         // Kita muat sampel, lalu departemen_terlibat beserta sub_departemen dan departemen induknya
@@ -129,6 +129,10 @@ class FormulirController extends Controller
                 'pemeriksa'          => $formulir->pemeriksa ?? '-', // Sesuaikan dengan field di tabel formulirs
                 'penyetuju'          => $formulir->penyetuju ?? '-', // Sesuaikan dengan field di tabel formulirs
                 'departemen_terlibat'=> $departemen_terlibat,
+            ],
+            'filters' => [
+                'page' => $request->query('page', 1),
+                'search' => $request->query('search', ''),
             ]
         ]);
     }

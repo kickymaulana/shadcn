@@ -215,14 +215,8 @@ const cleanLabel = (label: string) => {
                                         as-child
                                         class="size-8"
                                     >
-                                        <Link
-                                            :href="
-                                                route('formulirs.show', item.id)
-                                            "
-                                        >
-                                            <IconEye
-                                                class="size-4 text-primary"
-                                            />
+                                        <Link :href="route('formulirs.show', item.id)" :data="{ page: list_formulir.current_page, search: search }">
+                                            <IconEye class="size-4 text-primary" />
                                         </Link>
                                     </Button>
                                 </TableCell>
