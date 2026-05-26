@@ -169,40 +169,74 @@ class DepartemenTerlibatController extends Controller
         } else {
             // --- JIKA INI ADALAH DEPARTEMEN TERAKHIR ---
             // Kirim ke Bu Afrida (Penyetuju Akhir)
-            $buAfrida = User::find(2);
+            // $buAfrida = User::find(2);
+            //
+            // if ($buAfrida) {
+            //
+            //     $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+            //     $customer = $formulir->sampel->customer ?? '-';
+            //     $model = $formulir->sampel->model ?? '-';
+            //     $size = $formulir->size ?? '-';
+            //     $running_ke = $formulir->running_ke ?? '-';
+            //
+            //     $pesan = "*Notifikasi SISAMSUL*\n\n";
+            //     $pesan .= "Ada sampel baru yang siap untuk disetujui";
+            //     $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+            //     $pesan .= "• *Customer:* {$customer}\n";
+            //     $pesan .= "• *Model:* {$model}\n";
+            //     $pesan .= "• *Size:* {$size}\n";
+            //     $pesan .= "• *Running Ke:* {$running_ke}\n";
+            //
+            //     $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+            //
+            //     $url = route('persetujuan.manager.show', [
+            //         'formulir' => $formulir->id
+            //     ]);
+            //     $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk disetujui";
+            //     $buAfrida->notify(new SampelSiapDiproses($pesan2, $url));
+            //
+            //     try {
+            //
+            //         // Pastikan nomor WhatsApp Bu Afrida sudah benar
+            //         $this->kirimWhatsApp($buAfrida->whatsapp, $pesan);
+            //     } catch (\Exception $e) {
+            //         \Log::error("Gagal kirim WA Bu Afrida: " . $e->getMessage());
+            //     }
+            // }
 
-            if ($buAfrida) {
+             $dina = User::find(32);
 
-                $nomorSampel = $formulir->sampel->kode_sample ?? '-';
-                $customer = $formulir->sampel->customer ?? '-';
-                $model = $formulir->sampel->model ?? '-';
-                $size = $formulir->size ?? '-';
-                $running_ke = $formulir->running_ke ?? '-';
+             if ($dina) {
 
-                $pesan = "*Notifikasi SISAMSUL*\n\n";
-                $pesan .= "Ada sampel baru yang siap untuk disetujui";
-                $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
-                $pesan .= "• *Customer:* {$customer}\n";
-                $pesan .= "• *Model:* {$model}\n";
-                $pesan .= "• *Size:* {$size}\n";
-                $pesan .= "• *Running Ke:* {$running_ke}\n";
+                 $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+                 $customer = $formulir->sampel->customer ?? '-';
+                 $model = $formulir->sampel->model ?? '-';
+                 $size = $formulir->size ?? '-';
+                 $running_ke = $formulir->running_ke ?? '-';
 
-                $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+                 $pesan = "*Notifikasi SISAMSUL*\n\n";
+                 $pesan .= "Ada sampel sudah diparafQC";
+                 $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+                 $pesan .= "• *Customer:* {$customer}\n";
+                 $pesan .= "• *Model:* {$model}\n";
+                 $pesan .= "• *Size:* {$size}\n";
+                 $pesan .= "• *Running Ke:* {$running_ke}\n";
 
-                $url = route('persetujuan.manager.show', [
-                    'formulir' => $formulir->id
+                 $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+
+                $url = route('tugas.produksi.edit', [
+                    'departemen_terlibat' => $departemen_terlibat->id
                 ]);
-                $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk disetujui";
-                $buAfrida->notify(new SampelSiapDiproses($pesan2, $url));
+                $pesan2 = "Sampel {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} sudah diparafQC {$departemen_terlibat->sub_departemen->nama}";
 
-                try {
+                $dina->notify(new SampelSiapDiproses($pesan2, $url));
 
-                    // Pastikan nomor WhatsApp Bu Afrida sudah benar
-                    $this->kirimWhatsApp($buAfrida->whatsapp, $pesan);
-                } catch (\Exception $e) {
-                    \Log::error("Gagal kirim WA Bu Afrida: " . $e->getMessage());
-                }
-            }
+                 try {
+                     $this->kirimWhatsApp($dina->whatsapp, $pesan);
+                 } catch (\Exception $e) {
+                     \Log::error("Gagal kirim WA Bu Afrida: " . $e->getMessage());
+                 }
+             }
 
         }
 
