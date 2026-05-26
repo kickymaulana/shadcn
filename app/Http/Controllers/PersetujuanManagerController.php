@@ -75,9 +75,9 @@ class PersetujuanManagerController extends Controller
             return back()->with('error', 'Akses ditolak.');
         }
 
-        // $formulir->update([
-        //     'diperiksa_oleh' => Auth::id(),
-        // ]);
+        $formulir->update([
+             'diperiksa_oleh' => Auth::id(),
+        ]);
 
         $pakparinton = User::find(3);
 
