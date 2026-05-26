@@ -141,61 +141,142 @@ class TugasProduksiController extends Controller
 
         return back()->with('success', 'Tugas berhasil diterima.');
     }
-
-
-
-
+    //
+    //
+    //
+    //
+    //
+    // public function parafSpv(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
+    // {
+    //     $user = auth()->user();
+    //
+    //     // 1. Validasi khusus jika user yang login berasal dari departemen FQC
+    //     // Kita cek berdasarkan departemen_id user atau departemen_id di sub_departemen terkait
+    //     if ($user->departemen_id == 14) {
+    //
+    //         // Cek apakah paraf_qc pada record ini masih NULL
+    //         if (is_null($departemen_terlibat->paraf_qc)) {
+    //             return back()->with('error', 'Gagal! Tugas di FQC harus di-paraf oleh QC (Sarah) terlebih dahulu sebelum Supervisor.');
+    //         }
+    //     }
+    //
+    //     $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+    //     $customer = $formulir->sampel->customer ?? '-';
+    //     $model = $formulir->sampel->model ?? '-';
+    //     $size = $formulir->size ?? '-';
+    //     $running_ke = $formulir->running_ke ?? '-';
+    //
+    //
+    //     $pesan = "*Notifikasi SISAMSUL*\n\n";
+    //     $pesan .= "Ada sampel baru yang siap untuk diparaf QC di bagian *{$departemen_terlibat->sub_departemen->nama}*.\n";
+    //     $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+    //     $pesan .= "• *Customer:* {$customer}\n";
+    //     $pesan .= "• *Model:* {$model}\n";
+    //     $pesan .= "• *Size:* {$size}\n";
+    //     $pesan .= "• *Running Ke:* {$running_ke}\n";
+    //
+    //     $pesan .= "Mohon segera dicek dan diparaf qc melalui sistem.\n\n";
+    //     $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+    //     $sarah = User::find(5);
+    //
+    //     $url = route('formulirs.departemen.edit', [
+    //         'formulir' => $formulir->id,
+    //         'departemen_terlibat' => $departemen_terlibat->id
+    //     ]);
+    //     $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk diparaf qc di {$departemen_terlibat->sub_departemen->nama}";
+    //
+    //     $sarah->notify(new SampelSiapDiproses($pesan2, $url));
+    //
+    //     $departemen_terlibat->update([
+    //         'paraf_spv' => $user->id,
+    //         'tanggal_selesai' => now(),
+    //     ]);
+    //
+    //     try {
+    //         $this->kirimWhatsApp($sarah->whatsapp, $pesan);
+    //     } catch (\Exception $e) {
+    //         \Log::error("Gagal kirim WA ke {$sarah->name} ({$sarah->roles->first()->name}): " . $e->getMessage());
+    //     }
+    //
+    //     return back()->with('success', 'Paraf Supervisor berhasil disimpan.');
+    // }
 
     public function parafSpv(Formulir $formulir, DepartemenTerlibat $departemen_terlibat)
     {
         $user = auth()->user();
 
-        // 1. Validasi khusus jika user yang login berasal dari departemen FQC
-        // Kita cek berdasarkan departemen_id user atau departemen_id di sub_departemen terkait
+        // 1. Validasi khusus jika user yang login berasal dari departemen FQC (ID: 14)
         if ($user->departemen_id == 14) {
-
-            // Cek apakah paraf_qc pada record ini masih NULL
             if (is_null($departemen_terlibat->paraf_qc)) {
-                return back()->with('error', 'Gagal! Tugas di FQC harus di-paraf oleh QC (Sarah) terlebih dahulu sebelum Supervisor.');
+                return back()->with('error', 'Gagal! Tugas di FQC harus di-paraf oleh QC terlebih dahulu sebelum Supervisor.');
             }
         }
 
-        $nomorSampel = $formulir->sampel->kode_sample ?? '-';
-        $customer = $formulir->sampel->customer ?? '-';
-        $model = $formulir->sampel->model ?? '-';
-        $size = $formulir->size ?? '-';
-        $running_ke = $formulir->running_ke ?? '-';
+        // 2. Tentukan Penerima, Jabatan, dan Kata Aksi di Pesan secara Dinamis
+        $penerimaNotif = null;
+        $jabatanTujuan = '';
+        $statusPesan   = '';
 
+        switch ($user->id) {
+            case 32: // Jika yang login Dina
+                $penerimaNotif = User::find(2); // ID Bu Afrida
+                $jabatanTujuan = 'QC Manager / Bu Afrida';
+                $statusPesan   = 'disetujui';
+                break;
 
-        $pesan = "*Notifikasi SISAMSUL*\n\n";
-        $pesan .= "Ada sampel baru yang siap untuk diparaf QC di bagian *{$departemen_terlibat->sub_departemen->nama}*.\n";
-        $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
-        $pesan .= "• *Customer:* {$customer}\n";
-        $pesan .= "• *Model:* {$model}\n";
-        $pesan .= "• *Size:* {$size}\n";
-        $pesan .= "• *Running Ke:* {$running_ke}\n";
+            default: // Defaultnya dikirim ke Sarah
+                $penerimaNotif = User::find(5); // ID Sarah
+                $jabatanTujuan = 'QC (Sarah)';
+                $statusPesan   = 'diparaf qc';
+                break;
+        }
 
-        $pesan .= "Mohon segera dicek dan diparaf qc melalui sistem.\n\n";
-        $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
-        $sarah = User::find(5);
+        // Antisipasi jika user tidak ditemukan
+        if (!$penerimaNotif) {
+            return back()->with('error', 'Gagal! Data penerima notifikasi tidak ditemukan.');
+        }
 
-        $url = route('formulirs.departemen.edit', [
-            'formulir' => $formulir->id,
-            'departemen_terlibat' => $departemen_terlibat->id
-        ]);
-        $pesan2 = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk diparaf qc di {$departemen_terlibat->sub_departemen->nama}";
-
-        $sarah->notify(new SampelSiapDiproses($pesan2, $url));
-
+        // 3. Update data database terlebih dahulu
         $departemen_terlibat->update([
             'paraf_spv' => $user->id,
             'tanggal_selesai' => now(),
         ]);
 
-        try {
-            $this->kirimWhatsApp($sarah->whatsapp, $pesan);
-        } catch (\Exception $e) {
-            \Log::error("Gagal kirim WA ke {$sarah->name} ({$sarah->roles->first()->name}): " . $e->getMessage());
+        // 4. Ambil data sampel
+        $nomorSampel = $formulir->sampel->kode_sample ?? '-';
+        $customer    = $formulir->sampel->customer ?? '-';
+        $model       = $formulir->sampel->model ?? '-';
+        $size        = $formulir->size ?? '-';
+        $running_ke  = $formulir->running_ke ?? '-';
+        $subDeptNama = $departemen_terlibat->sub_departemen->nama ?? '-';
+
+        // 5. Draft format template WhatsApp (Otomatis menyesuaikan nilai $statusPesan)
+        $pesan = "*Notifikasi SISAMSUL*\n\n";
+        $pesan .= "Ada sampel baru yang siap untuk {$statusPesan} di bagian *{$subDeptNama}*.\n";
+        $pesan .= "• *Nomor Sampel:* {$nomorSampel}\n";
+        $pesan .= "• *Customer:* {$customer}\n";
+        $pesan .= "• *Model:* {$model}\n";
+        $pesan .= "• *Size:* {$size}\n";
+        $pesan .= "• *Running Ke:* {$running_ke}\n\n";
+        $pesan .= "Mohon segera dicek dan diproses melalui sistem.\n\n";
+        $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
+
+        // 6. Kirim In-App Notification
+        $url = route('formulirs.departemen.edit', [
+            'formulir' => $formulir->id,
+            'departemen_terlibat' => $departemen_terlibat->id
+        ]);
+        $pesanInApp = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk {$statusPesan} oleh {$jabatanTujuan} di {$subDeptNama}";
+
+        $penerimaNotif->notify(new SampelSiapDiproses($pesanInApp, $url));
+
+        // 7. Kirim WhatsApp Gateway
+        if (!empty($penerimaNotif->whatsapp)) {
+            try {
+                $this->kirimWhatsApp($penerimaNotif->whatsapp, $pesan);
+            } catch (\Exception $e) {
+                \Log::error("Gagal kirim WA ke {$penerimaNotif->name}: " . $e->getMessage());
+            }
         }
 
         return back()->with('success', 'Paraf Supervisor berhasil disimpan.');
