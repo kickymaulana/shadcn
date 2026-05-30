@@ -9,6 +9,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Http;
 use App\Notifications\SampelSiapDiproses;
+use App\Models\DepartemenTerlibat;
+use Illuminate\Support\Facades\DB;
 
 
 class FormulirController extends Controller
@@ -41,7 +43,6 @@ class FormulirController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         $request->validate([
@@ -53,19 +54,79 @@ class FormulirController extends Controller
             'status'             => 'required|in:Draft,Proses,Selesai,Ditolak',
         ]);
 
-        Formulir::create([
-            'sampel_id'          => $request->sampel_id,
-            'size'               => $request->size,
-            'qty_sampel_kirim'   => $request->qty_sampel_kirim,
-            'running_ke'         => $request->running_ke,
-            'tanggal_permintaan' => $request->tanggal_permintaan,
-            'status'             => $request->status,
-            // diperiksa_oleh dan disetujui_oleh biasanya diisi saat proses update/approval
-        ]);
+        // Menggunakan Database Transaction agar jika salin departemen gagal, formulir tidak kepalang dibuat
+        DB::beginTransaction();
 
-        return redirect()->route('formulirs.index')
-            ->with('success', 'Formulir permintaan berhasil dibuat.');
+        try {
+            // 1. Buat Formulir Baru
+            $formulirBaru = Formulir::create([
+                'sampel_id'          => $request->sampel_id,
+                'size'               => $request->size,
+                'qty_sampel_kirim'   => $request->qty_sampel_kirim,
+                'running_ke'         => $request->running_ke,
+                'tanggal_permintaan' => $request->tanggal_permintaan,
+                'status'             => $request->status,
+            ]);
+
+            // 2. Logika Otomatis jika running_ke > 1
+            if ((int)$request->running_ke > 1) {
+
+                // Cari formulir running sebelumnya (bisa running ke-1, atau running terakhir sebelum ini)
+                $formulirLama = Formulir::where('sampel_id', $request->sampel_id)
+                    ->where('id', '!=', $formulirBaru->id)
+                    ->orderBy('running_ke', 'desc')
+                    ->first();
+
+                if ($formulirLama) {
+                    // Ambil semua departemen terlibat dari running sebelumnya
+                    $departemenLama = DepartemenTerlibat::where('formulir_id', $formulirLama->id)->get();
+
+                    foreach ($departemenLama as $dept) {
+
+                        // Bersihkan nilai 'actual' di dalam json item_pemeriksaan agar di running baru bisa diisi ulang
+                        $itemPemeriksaanBersih = [];
+                        if (is_array($dept->item_pemeriksaan)) {
+                            foreach ($dept->item_pemeriksaan as $item) {
+                                $itemPemeriksaanBersih[] = [
+                                    'item'   => $item['item'] ?? '',
+                                    'spec'   => $item['spec'] ?? '',
+                                    'actual' => '', // Dikosongkan untuk diisi pada running baru
+                                ];
+                            }
+                        }
+
+                        // Duplikasi data departemen ke formulir baru
+                        DepartemenTerlibat::create([
+                            'formulir_id'       => $formulirBaru->id,
+                            'sub_departemen_id' => $dept->sub_departemen_id,
+                            'tanggal_diterima'  => now(), // otomatis diset tanggal sekarang saat running baru dibuat
+                            'diterima_oleh'     => null,  // dikosongkan karena harus diterima ulang oleh dept terkait
+                            'tanggal_selesai'   => null,
+                            'qty'               => $request->qty_sampel_kirim, // otomatis mengikuti qty kirim baru
+                            'paraf_qc'          => null,
+                            'paraf_spv'         => null,
+                            'data_tambahan'     => $dept->data_tambahan, // kerangka data tambahan dipertahankan
+                            'item_pemeriksaan'  => $itemPemeriksaanBersih,
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('formulirs.index')
+                ->with('success', 'Formulir permintaan ' . ($request->running_ke > 1 ? 'dan master departemen otomatis ' : '') . 'berhasil dibuat.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withErrors(['error' => 'Gagal membuat formulir: ' . $e->getMessage()])
+                ->withInput();
+        }
     }
+
+
+
 
 
 
