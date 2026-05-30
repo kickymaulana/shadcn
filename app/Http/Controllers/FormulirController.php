@@ -102,7 +102,7 @@ class FormulirController extends Controller
                             'tanggal_diterima'  => now(), // otomatis diset tanggal sekarang saat running baru dibuat
                             'diterima_oleh'     => null,  // dikosongkan karena harus diterima ulang oleh dept terkait
                             'tanggal_selesai'   => null,
-                            'qty'               => $request->qty_sampel_kirim, // otomatis mengikuti qty kirim baru
+                            'qty'               => 0,
                             'paraf_qc'          => null,
                             'paraf_spv'         => null,
                             'data_tambahan'     => $dept->data_tambahan, // kerangka data tambahan dipertahankan
