@@ -99,7 +99,7 @@ class FormulirController extends Controller
                         DepartemenTerlibat::create([
                             'formulir_id'       => $formulirBaru->id,
                             'sub_departemen_id' => $dept->sub_departemen_id,
-                            'tanggal_diterima'  => now(), // otomatis diset tanggal sekarang saat running baru dibuat
+                            'tanggal_diterima'  => null, // otomatis diset tanggal sekarang saat running baru dibuat
                             'diterima_oleh'     => null,  // dikosongkan karena harus diterima ulang oleh dept terkait
                             'tanggal_selesai'   => null,
                             'qty'               => 0,
