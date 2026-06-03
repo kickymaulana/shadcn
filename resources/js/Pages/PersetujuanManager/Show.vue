@@ -55,6 +55,19 @@ const formatDate = (dateString: string | null) => {
         year: "numeric",
     });
 };
+
+// Helper untuk cek apakah seluruh departemen sudah selesai semua
+const isSemuaDepartemenSelesai = () => {
+    if (!props.formulir.departemen_terlibat || props.formulir.departemen_terlibat.length === 0) {
+        return false;
+    }
+    // Mengembalikan false jika ada salah satu departemen yang paraf_spv atau tanggal_selesai-nya null
+    return !props.formulir.departemen_terlibat.some((dept: any) => !dept.paraf_spv || !dept.tanggal_selesai);
+};
+
+// Modifikasi helper canParafPemeriksa untuk menyertakan kondisi di atas
+const canParafPemeriksa = () =>
+    (userRoles.includes("QC Manager") || userRoles.includes("admin")) && isSemuaDepartemenSelesai();
 </script>
 
 <template>
@@ -324,8 +337,8 @@ const formatDate = (dateString: string | null) => {
                                         >Digitally Signed</span
                                     >
                                 </template>
-                                <template v-else-if="canParafPemeriksa()">
-                                    <AlertDialog>
+                                <template v-else-if="userRoles.includes('QC Manager') || userRoles.includes('admin')">
+                                    <AlertDialog v-if="isSemuaDepartemenSelesai()">
                                         <AlertDialogTrigger as-child>
                                             <Button
                                                 size="sm"
@@ -366,6 +379,9 @@ const formatDate = (dateString: string | null) => {
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
                                     </AlertDialog>
+                                    <div v-else class="text-center p-2 border border-dashed border-destructive rounded bg-destructive/5 text-destructive font-semibold text-[9px]">
+                                        Belum Bisa Paraf: Menunggu Semua SPV Sub-Dept Selesai
+                                    </div>
                                 </template>
                                 <IconClock
                                     v-else
