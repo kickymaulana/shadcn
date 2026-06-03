@@ -71,26 +71,27 @@ class FormulirController extends Controller
             // 2. Logika Otomatis jika running_ke > 1
             if ((int)$request->running_ke > 1) {
 
-                // Cari formulir running sebelumnya (bisa running ke-1, atau running terakhir sebelum ini)
+                // CARI FORMULIR TERAKHIR: Yang sampel_id SAMA dan SIZE-nya juga harus SAMA
                 $formulirLama = Formulir::where('sampel_id', $request->sampel_id)
+                    ->where('size', $request->size) // <-- KUNCINYA DI SINI: Mengikuti size yang sama
                     ->where('id', '!=', $formulirBaru->id)
                     ->orderBy('running_ke', 'desc')
                     ->first();
 
                 if ($formulirLama) {
-                    // Ambil semua departemen terlibat dari running sebelumnya
+                    // Ambil semua departemen terlibat dari running sebelumnya dengan size yang sama
                     $departemenLama = DepartemenTerlibat::where('formulir_id', $formulirLama->id)->get();
 
                     foreach ($departemenLama as $dept) {
 
-                        // Bersihkan nilai 'actual' di dalam json item_pemeriksaan agar di running baru bisa diisi ulang
+                        // Bersihkan nilai 'actual' di dalam json item_pemeriksaan agar di running baru kosong
                         $itemPemeriksaanBersih = [];
                         if (is_array($dept->item_pemeriksaan)) {
                             foreach ($dept->item_pemeriksaan as $item) {
                                 $itemPemeriksaanBersih[] = [
-                                    'item'   => $item['item'] ?? '',
-                                    'spec'   => $item['spec'] ?? '',
-                                    'actual' => '', // Dikosongkan untuk diisi pada running baru
+                                    'item'   => $item['item'] ?? '', // Mengikuti item terakhir milik size ini
+                                    'spec'   => $item['spec'] ?? '', // Mengikuti spec terakhir milik size ini
+                                    'actual' => '',                  // Dikosongkan untuk running baru
                                 ];
                             }
                         }
@@ -99,13 +100,13 @@ class FormulirController extends Controller
                         DepartemenTerlibat::create([
                             'formulir_id'       => $formulirBaru->id,
                             'sub_departemen_id' => $dept->sub_departemen_id,
-                            'tanggal_diterima'  => null, // otomatis diset tanggal sekarang saat running baru dibuat
-                            'diterima_oleh'     => null,  // dikosongkan karena harus diterima ulang oleh dept terkait
+                            'tanggal_diterima'  => null,
+                            'diterima_oleh'     => null,
                             'tanggal_selesai'   => null,
                             'qty'               => 0,
                             'paraf_qc'          => null,
                             'paraf_spv'         => null,
-                            'data_tambahan'     => $dept->data_tambahan, // kerangka data tambahan dipertahankan
+                            'data_tambahan'     => $dept->data_tambahan, // Mengikuti data tambahan terakhir milik size ini
                             'item_pemeriksaan'  => $itemPemeriksaanBersih,
                         ]);
                     }
