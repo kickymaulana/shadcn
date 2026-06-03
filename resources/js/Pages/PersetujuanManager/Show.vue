@@ -34,8 +34,6 @@ const page = usePage();
 const userRoles: string[] = (page.props.auth as any).roles || [];
 
 // Helper pengecekan hak akses
-const canParafPemeriksa = () =>
-    userRoles.includes("QC Manager") || userRoles.includes("admin");
 const canParafPenyetuju = () =>
     userRoles.includes("Factory Manager") || userRoles.includes("admin");
 
