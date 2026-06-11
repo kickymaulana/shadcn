@@ -216,18 +216,24 @@ class TugasProduksiController extends Controller
         $penerimaNotif = null;
         $jabatanTujuan = '';
         $statusPesan   = '';
+        $url           = '';
 
         switch ($user->id) {
             case 32: // Jika yang login Dina
                 $penerimaNotif = User::find(2); // ID Bu Afrida
                 $jabatanTujuan = 'QC Manager / Bu Afrida';
                 $statusPesan   = 'disetujui';
+                $url = route('persetujuan.manager.show', ['formulir' => $formulir->id]);
                 break;
 
             default: // Defaultnya dikirim ke Sarah
                 $penerimaNotif = User::find(5); // ID Sarah
                 $jabatanTujuan = 'QC (Sarah)';
                 $statusPesan   = 'diparaf qc';
+                $url = route('formulirs.departemen.edit', [
+                    'formulir' => $formulir->id,
+                    'departemen_terlibat' => $departemen_terlibat->id
+                ]);
                 break;
         }
 
@@ -261,11 +267,6 @@ class TugasProduksiController extends Controller
         $pesan .= "Mohon segera dicek dan diproses melalui sistem.\n\n";
         $pesan .= "_Pesan otomatis dari Sistem Monitoring Sample_";
 
-        // 6. Kirim In-App Notification
-        $url = route('formulirs.departemen.edit', [
-            'formulir' => $formulir->id,
-            'departemen_terlibat' => $departemen_terlibat->id
-        ]);
         $pesanInApp = "Sampel baru {$nomorSampel} {$customer} {$model} {$size} run: {$running_ke} siap untuk {$statusPesan} oleh {$jabatanTujuan} di {$subDeptNama}";
 
         $penerimaNotif->notify(new SampelSiapDiproses($pesanInApp, $url));
