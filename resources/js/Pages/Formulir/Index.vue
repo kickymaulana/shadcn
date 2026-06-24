@@ -19,6 +19,7 @@ import {
     IconX,
     IconFileDescription,
     IconClipboardList,
+    IconCheck,
 } from "@tabler/icons-vue";
 import { ref, watch } from "vue";
 
@@ -36,6 +37,8 @@ const props = defineProps<{
             running_ke: number;
             tanggal_permintaan: string;
             status: "Draft" | "Proses" | "Selesai" | "Ditolak";
+            fqc_spv_checked: boolean;
+            fqc_qc_checked: boolean;
         }>;
         links: Array<{ url: string | null; label: string; active: boolean }>;
         from: number;
@@ -148,6 +151,8 @@ const cleanLabel = (label: string) => {
                         <TableHeader>
                             <TableRow class="bg-muted/50 hover:bg-muted/50">
                                 <TableHead class="w-[100px]">Status</TableHead>
+                                <TableHead class="text-center">Fqc</TableHead>
+                                <TableHead class="text-center">Qc</TableHead>
                                 <TableHead>Kode Sample</TableHead>
                                 <TableHead>Model</TableHead>
                                 <TableHead>Customer</TableHead>
@@ -178,6 +183,23 @@ const cleanLabel = (label: string) => {
                                     >
                                         {{ item.status }}
                                     </Badge>
+                                </TableCell>
+                                <TableCell class="text-center">
+                                    <div v-if="item.fqc_spv_checked" class="flex justify-center">
+                                        <div class="p-1 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full">
+                                            <IconCheck class="size-4 stroke-[3]" />
+                                        </div>
+                                    </div>
+                                    <span v-else class="text-muted-foreground text-xs">-</span>
+                                </TableCell>
+
+                                <TableCell class="text-center">
+                                    <div v-if="item.fqc_qc_checked" class="flex justify-center">
+                                        <div class="p-1 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full">
+                                            <IconCheck class="size-4 stroke-[3]" />
+                                        </div>
+                                    </div>
+                                    <span v-else class="text-muted-foreground text-xs">-</span>
                                 </TableCell>
                                 <TableCell
                                     class="font-mono text-xs font-bold text-primary"

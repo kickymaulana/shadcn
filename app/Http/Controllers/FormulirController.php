@@ -15,10 +15,14 @@ use Illuminate\Support\Facades\DB;
 
 class FormulirController extends Controller
 {
+
     public function index(Request $request): Response
     {
         $list_formulir = Formulir::query()
-            ->with('sampel:id,kode_sample,customer,model') // Ambil data sampel terkait
+            ->with(['sampel:id,kode_sample,customer,model', 'departemen_terlibat' => function($query) {
+                // Hanya ambil data departemen_terlibat yang sub_departemen_id nya 11 (FQC)
+                $query->where('sub_departemen_id', 11);
+            }])
             ->when($request->search, function ($query, $search) {
                 $query->whereHas('sampel', function ($q) use ($search) {
                     $q->where('kode_sample', 'like', "%{$search}%")
@@ -28,6 +32,26 @@ class FormulirController extends Controller
             ->latest()
             ->paginate(7)
             ->withQueryString();
+
+        // Transformasi data untuk menyisipkan status centang FQC & QC khusus sub_departemen_id = 11
+        $list_formulir->through(function ($formulir) {
+            // Cari baris FQC jika ada
+            $fqcDept = $formulir->departemen_terlibat->first();
+
+            return [
+                'id' => $formulir->id,
+                'sampel' => $formulir->sampel,
+                'size' => $formulir->size,
+                'qty_sampel_kirim' => $formulir->qty_sampel_kirim,
+                'running_ke' => $formulir->running_ke,
+                'tanggal_permintaan' => $formulir->tanggal_permintaan,
+                'status' => $formulir->status,
+                // Cek apakah paraf_spv di FQC tidak null dan tidak kosong
+                'fqc_spv_checked' => $fqcDept ? !is_null($fqcDept->paraf_spv) : false,
+                // Cek apakah paraf_qc di FQC tidak null dan tidak kosong
+                'fqc_qc_checked' => $fqcDept ? !is_null($fqcDept->paraf_qc) : false,
+            ];
+        });
 
         return Inertia::render('Formulir/Index', [
             'list_formulir' => $list_formulir,
