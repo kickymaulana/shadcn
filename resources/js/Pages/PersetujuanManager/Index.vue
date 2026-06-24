@@ -19,6 +19,7 @@ import {
     IconSearch,
     IconX,
     IconUserCheck,
+    IconCheck,
 } from "@tabler/icons-vue";
 import { ref, watch } from "vue";
 
@@ -41,6 +42,8 @@ const props = defineProps<{
             pemeriksa: { name: string } | null;
             penyetuju: { name: string } | null;
             created_at: string;
+            fqc_spv_checked: boolean;
+            fqc_qc_checked: boolean;
         }>;
         links: Array<{
             url: string | null;
@@ -147,6 +150,8 @@ const cleanLabel = (label: string) => {
                                 <TableHead>Sampel / Customer</TableHead>
                                 <TableHead>Size / Run</TableHead>
                                 <TableHead>Tgl Permintaan / Model</TableHead>
+                                <TableHead class="text-center">Dina</TableHead>
+                                <TableHead class="text-center">Sarah</TableHead>
                                 <TableHead class="text-center"
                                     >Status</TableHead
                                 >
@@ -199,6 +204,23 @@ const cleanLabel = (label: string) => {
                                     >
                                     {{ formatDate(form.tanggal_permintaan) }}
                                     </div>
+                                </TableCell>
+                                <TableCell class="text-center">
+                                    <div v-if="form.fqc_spv_checked" class="flex justify-center">
+                                        <div class="p-1 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full">
+                                            <IconCheck class="size-4 stroke-[3]" />
+                                        </div>
+                                    </div>
+                                    <span v-else class="text-muted-foreground text-xs">-</span>
+                                </TableCell>
+
+                                <TableCell class="text-center">
+                                    <div v-if="form.fqc_qc_checked" class="flex justify-center">
+                                        <div class="p-1 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full">
+                                            <IconCheck class="size-4 stroke-[3]" />
+                                        </div>
+                                    </div>
+                                    <span v-else class="text-muted-foreground text-xs">-</span>
                                 </TableCell>
                                 <TableCell class="text-center">
                                     <Badge

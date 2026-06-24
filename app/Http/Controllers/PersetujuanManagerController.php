@@ -12,27 +12,48 @@ use App\Notifications\SampelSiapDiproses;
 
 class PersetujuanManagerController extends Controller
 {
+
     public function index(Request $request)
     {
         $list_persetujuan = Formulir::query()
             ->where('status', 'proses')
-            ->with(['sampel', 'pemeriksa', 'penyetuju'])
-            // Logika pencarian berdasarkan kode sampel atau customer
+            // Muat relasi sampel, pemeriksa, penyetuju, dan departemen_terlibat khusus FQC (id: 11)
+            ->with(['sampel', 'pemeriksa', 'penyetuju', 'departemen_terlibat' => function($query) {
+                $query->where('sub_departemen_id', 11);
+            }])
             ->when($request->search, function ($query, $search) {
                 $query->whereHas('sampel', function ($q) use ($search) {
                     $q->where('kode_sample', 'like', "%{$search}%")
                       ->orWhere('customer', 'like', "%{$search}%");
                 });
             })
-            // Filter status agar hanya yang perlu disetujui (opsional)
-            // ->where('status', 'Proses')
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
+        // Map data untuk menyisipkan variabel status centang fqc_spv dan fqc_qc
+        $list_persetujuan->through(function ($formulir) {
+            $fqcDept = $formulir->departemen_terlibat->first();
+
+            return [
+                'id'                 => $formulir->id,
+                'sampel'             => $formulir->sampel,
+                'size'               => $formulir->size,
+                'running_ke'         => $formulir->running_ke,
+                'tanggal_permintaan' => $formulir->tanggal_permintaan,
+                'status'             => $formulir->status,
+                'pemeriksa'          => $formulir->pemeriksa,
+                'penyetuju'          => $formulir->penyetuju,
+                'created_at'         => $formulir->created_at,
+                // Status paraf FQC
+                'fqc_spv_checked'    => $fqcDept ? !is_null($fqcDept->paraf_spv) : false,
+                'fqc_qc_checked'     => $fqcDept ? !is_null($fqcDept->paraf_qc) : false,
+            ];
+        });
+
         return Inertia::render('PersetujuanManager/Index', [
             'list_persetujuan' => $list_persetujuan,
-            'filters' => $request->only(['search'])
+            'filters'          => $request->only(['search'])
         ]);
     }
 
